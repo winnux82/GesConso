@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GesConso.Entities
 {
-    public class ArticleDTO
+    public class Article
     {
         [Key]
         [Column("Id_Article")]

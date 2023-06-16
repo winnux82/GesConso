@@ -1,25 +1,167 @@
 ﻿@page "/article"
+@inject StateContainer StateContainer
+@inject HttpClient HttpClient;
+@inject NavigationManager NavigationManager
+@using GesConso.Entities;
 
-<PageTitle>Articles</PageTitle>
 
-<h1>Articles</h1>
+<PageTitle>Gestion des articles</PageTitle>
 
+<h1>Gestion des articles</h1>
+
+<form>
+    <div class="form-group">
+        <label for="denomination">Dénomination</label>
+        <input id="denomination" type="text" class="form-control" @bind="@article.Denomination" />
+    </div>
+    <div class="form-group">
+        <label for="description">Description</label>
+        <input id="description" type="text" class="form-control" @bind="@article.Description" />
+    </div>
+    <div class="form-group">
+        <label for="puHtva">PuHtva</label>
+        <input id="puHtva" type="number" class="form-control" @bind="@article.PuHtva" />
+    </div>
+
+
+    <div class="buttonsGroup">
+        @*<button type="button" class="btn btn-primary" @onclick=@AddAgent>Add</button>*@
+        <button type="button" class="btn btn-primary" @onclick=@AddArticle>Add</button>
+
+
+        <button type="button" class="btn btn-secondary" >Reset</button>
+    </div>
+</form>
 
 qdsfqsdùfpokdqsùfokqsdùfpodkqsfùdoqsk fùdqsfjdqs d,qsmfl njqsdnjdml nfqsdf qsd
 
 
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Dénomiation</th>
+            <th>LastName</th>
+            <th>Matricule</th>
+            <th>Mail</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var article in StateContainer.Articles)
+        {
+            var isSelected = this.selected == article;
+            var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
+
+            <tr @onclick=@((e) => { SelectArticle(article); }) style=@style>
+                <td>@article.Id</td>
+                <td>@article.Denomination</td>
+                <td>@article.Description</td>
+                <td>@article.PuHtva</td>
+     
+            </tr>
+        }
+    </tbody>
+</table>
 
 
+@*
 
 <p role="status">Current count: @currentCount</p>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>*@
 
 @code {
-    private int currentCount = 0;
 
-    private void IncrementCount()
+    Article article = new Article();
+    private Article? selected = null;
+    private string? _denomination;
+    private string? _description;
+    private double? _puhtva;
+
+    [Parameter]
+    public Action<Article?>? OnArticleSelected { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        currentCount++;
+        if (firstRender)
+        {
+            var requestMsg = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/article/getall");
+
+            using (var msg = await HttpClient.SendAsync(requestMsg))
+            {
+                if (msg.IsSuccessStatusCode)
+                {
+                    var articles = await msg.Content.ReadFromJsonAsync<List<Article>>();
+                    if (articles != null)
+                    {
+                        StateContainer.Articles = articles;
+                        await InvokeAsync(StateHasChanged);
+                    }
+                }
+                else
+                {
+                    // Gérer l'échec de la requête
+                }
+            }
+        }
     }
+
+    private async Task AddArticle()
+    {
+        var newArticle = new Article
+            {
+                Id = Guid.NewGuid(),
+                Denomination = _denomination,
+                Description = _description,
+                PuHtva = _puhtva
+            };
+
+
+
+        var content = JsonContent.Create(newArticle);
+
+        var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/article/add");
+        requestMsg.Content = content;
+
+        using (var msg = await HttpClient.SendAsync(requestMsg))
+        {
+            if (msg.IsSuccessStatusCode)
+            {
+                //ToastService.ShowSuccess("Agent ajouté!");
+            }
+            else
+            {
+                //ToastService.ShowError("Une erreur s'est produite.");
+            }
+        }
+
+        StateContainer.Articles?.Add(newArticle);
+
+        //RESET
+        _denomination = string.Empty;
+
+        _description = string.Empty;
+
+    }
+
+    private void SelectArticle(Article article)
+    {
+        this.selected = article;
+        this.OnArticleSelected?.Invoke(article);
+
+
+        this._denomination = article?.Denomination;
+        this._description = article?.Description;
+        //this._puhtva = article?.PuHtva;
+    }
+
+
+    
+
+    //private int currentCount = 0;
+
+    //private void IncrementCount()
+    //{
+    //    currentCount++;
+    //}
 }

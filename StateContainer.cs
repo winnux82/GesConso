@@ -4,6 +4,6 @@ namespace GesConso
 {
     public class StateContainer
     {
-        public List<ArticleDTO>? Articles { get; set; } = new();
+        public List<Article>? Articles { get; set; } = new();
     }
 }
