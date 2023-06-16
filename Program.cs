@@ -15,9 +15,9 @@ builder.Services.AddHttpClient();
 builder.Services.AddSingleton<StateContainer>();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddDbContext<Database>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("MainConnection")));
-//builder.Services.AddBlazorStrap();
-////Ajout du service Toast
-//builder.Services.AddBlazoredToast();
+builder.Services.AddBlazorStrap();
+//Ajout du service Toast
+builder.Services.AddBlazoredToast();
 
 var app = builder.Build();
 

@@ -1,77 +1,85 @@
 ﻿@page "/article"
 @inject StateContainer StateContainer
-@inject HttpClient HttpClient;
+@inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
-@using GesConso.Entities;
+@inject IJSRuntime JsRuntime
+
+@using GesConso.Entities
+@*@using System*@
 
 
 <PageTitle>Gestion des articles</PageTitle>
 
 <h1>Gestion des articles</h1>
 
-<form>
-    <div class="form-group">
-        <label for="denomination">Dénomination</label>
-        <input id="denomination" type="text" class="form-control" @bind="@_denomination" />
+<div class="row">
+    <div class="col-md-6">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Dénomination</th>
+                    <th>Description</th>
+                    <th>PuHtva</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var article in StateContainer.Articles)
+                {
+                    var isSelected = selected == article;
+                    var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
+
+                    <tr @onclick="(() => SelectArticle(article))" style="@GetRowStyle(article)">
+                        <td>@article.Id</td>
+                        <td>@article.Denomination</td>
+                        <td>@article.Description</td>
+                        <td>@article.PuHtva</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
     </div>
-    <div class="form-group">
-        <label for="description">Description</label>
-        <input id="description" type="text" class="form-control" @bind="@_description" />
+    <div class="col-md-6">
+        <form>
+            <div class="form-group">
+                <label for="denomination">Dénomination</label>
+                <input id="denomination" type="text" class="form-control" @bind="_denomination" />
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <input id="description" type="text" class="form-control" @bind="_description" />
+            </div>
+            <div class="form-group">
+                <label for="puHtva">PuHtva</label>
+                <input id="puHtva" type="number" class="form-control" @bind="_puhtva" />
+            </div>
+
+
+            <div class="buttonsGroup m-1">
+                <!-- Ajout de la classe "ml-auto" -->
+                @if (selected is null)
+                {
+                    <button type="button" class="btn btn-primary" @onclick="AddArticle">Add</button>
+                }
+                else
+                {
+                    <input type="button" class="btn btn-danger" value="Sauver" @onclick="UpdateArticle" />
+                }
+                <button type="button" class="btn btn-secondary" value="Reset" @onclick="Reset">Reset</button>
+
+                @if (selected is not null)
+                {
+                    <input type="button" class="btn btn-danger  ml-auto" value="Delete" @onclick="DeleteArticle" />
+                }
+            </div>
+        </form>
     </div>
-    <div class="form-group">
-        <label for="puHtva">PuHtva</label>
-        <input id="puHtva" type="number" class="form-control" @bind="@_puhtva" />
-    </div>
 
+</div>
 
-    <div class="buttonsGroup">
-        
-        <button type="button" class="btn btn-primary" @onclick=@AddArticle>Add</button>
-
-
-        <button type="button" class="btn btn-secondary" >Reset</button>
-    </div>
-</form>
-
-qdsfqsdùfpokdqsùfokqsdùfpodkqsfùdoqsk fùdqsfjdqs d,qsmfl njqsdnjdml nfqsdf qsd
-
-
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Dénomination</th>
-            <th>Description</th>
-            <th>PuHtva</th>
-
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var article in StateContainer.Articles)
-        {
-            var isSelected = this.selected == article;
-            var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
-
-            <tr @onclick=@((e) => { SelectArticle(article); }) style=@style>
-                <td>@article.Id</td>
-                <td>@article.Denomination</td>
-                <td>@article.Description</td>
-                <td>@article.PuHtva</td>
-     
-            </tr>
-        }
-    </tbody>
-</table>
-
-
-@*
-
-<p role="status">Current count: @currentCount</p>
-
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>*@
 
 @code {
-
     Article article = new Article();
     private Article? selected = null;
     private string? _denomination;
@@ -106,17 +114,16 @@ qdsfqsdùfpokdqsùfokqsdùfpodkqsfùdoqsk fùdqsfjdqs d,qsmfl njqsdnjdml nfqsdf 
         }
     }
 
+    // Ajouter un article
     private async Task AddArticle()
     {
         var newArticle = new Article
-            {
-                Id = Guid.NewGuid(),
-                Denomination = _denomination,
-                Description = _description,
-                PuHtva = _puhtva
-            };
-
-
+        {
+            Id = Guid.NewGuid(),
+            Denomination = _denomination,
+            Description = _description,
+            PuHtva = _puhtva
+        };
 
         var content = JsonContent.Create(newArticle);
 
@@ -137,31 +144,118 @@ qdsfqsdùfpokdqsùfokqsdùfpodkqsfùdoqsk fùdqsfjdqs d,qsmfl njqsdnjdml nfqsdf 
 
         StateContainer.Articles?.Add(newArticle);
 
-        //RESET
-        _denomination = string.Empty;
-
-        _description = string.Empty;
-
+        Reset();
     }
 
+    // Mettre à jour un article
+    private async Task UpdateArticle()
+    {
+        if (selected is null)
+        {
+            return;
+        }
+
+        var articleUpdate = new Article
+            {
+                Id = this.selected.Id,
+                Denomination = _denomination,
+                Description = _description,
+                PuHtva = _puhtva,
+            };
+
+        Console.WriteLine("Article Update:");
+        Console.WriteLine($"ID: {articleUpdate.Id}");
+        Console.WriteLine($"Denomination: {articleUpdate.Denomination}");
+        Console.WriteLine($"Description: {articleUpdate.Description}");
+        Console.WriteLine($"PuHtva: {articleUpdate.PuHtva}");
+
+        var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/article/update");
+        requestMsg.Content = JsonContent.Create(articleUpdate);
+
+        using (var msg = await HttpClient.SendAsync(requestMsg))
+        {
+            if (msg.IsSuccessStatusCode)
+            {
+                var index = StateContainer.Articles.IndexOf(selected);
+                if (index != -1)
+                {
+                    StateContainer.Articles[index] = articleUpdate;
+                    UnSelectArticle();
+                }
+            }
+        }
+    }
+
+
+
+    // RESET
+    private void Reset()
+    {
+        _denomination = string.Empty;
+        _description = string.Empty;
+        _puhtva = 0;
+        selected = null;
+        
+    }
+
+    // Effacer un Article
+    private async Task DeleteArticle()
+    {
+        if (selected is null)
+        {
+            return;
+        }
+        bool confirmed = await ConfirmDelete();
+
+        if (!confirmed)
+        {
+            return;
+        }
+        var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/article/delete");
+        requestMsg.Content = JsonContent.Create(selected);
+        using (var msg = await HttpClient.SendAsync(requestMsg))
+        {
+            if (msg.IsSuccessStatusCode)
+            {
+                StateContainer.Articles.Remove(selected);
+                UnSelectArticle();
+            }
+        }
+    }
+
+
+    // Selectionner un article
     private void SelectArticle(Article article)
     {
-        this.selected = article;
-        this.OnArticleSelected?.Invoke(article);
+        selected = article;
+        OnArticleSelected?.Invoke(article);
 
+        _denomination = article?.Denomination;
+        _description = article?.Description;
+        _puhtva = article?.PuHtva;
+    }
 
-        this._denomination = article?.Denomination;
-        this._description = article?.Description;
-        this._puhtva = article?.PuHtva;
+    private void UnSelectArticle()
+    {
+        selected = null;
+        Reset();
+    }
+    private string GetRowStyle(Article article)
+    {
+        return selected == article ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
+    }
+
+    //private async Task<bool> ShowConfirmationDialog(string message)
+    //{
+    //    bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", message);
+    //    return confirmed;
+    //}
+
+    async Task<bool> ConfirmDelete()
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Êtes-vous sûr de vouloir supprimer cet article ??");
+        return confirmed;
     }
 
 
-    
-
-    //private int currentCount = 0;
-
-    //private void IncrementCount()
-    //{
-    //    currentCount++;
-    //}
 }

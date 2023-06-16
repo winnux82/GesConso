@@ -44,5 +44,53 @@ namespace GesConso.Controllers
                 return StatusCode(StatusCodes.Status400BadRequest, "Article is null.");
             }
         }
+
+
+        // Modification d'un article
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult Update(Article updatedArticle)
+        {
+            Console.WriteLine(updatedArticle);
+
+            var article = context.Articles.Find(updatedArticle.Id);
+
+            if (article == null)
+            {
+                return NotFound("Article not found.");
+            }
+
+            article.Denomination = updatedArticle.Denomination;
+            article.Description = updatedArticle.Description;
+            article.PuHtva = updatedArticle.PuHtva;
+ 
+
+            this.context.Articles.Update(article);
+            this.context.SaveChanges();
+            return StatusCode(StatusCodes.Status200OK, null);
+        }
+
+        // Effacer un article
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult Delete(Article art)
+        {
+            var article = this.context.Articles.Find(art.Id);
+
+            if (article == null)
+            {
+                return StatusCode(StatusCodes.Status404NotFound, "Agent not found.");
+            }
+
+            this.context.Articles.Remove(article);
+            this.context.SaveChanges();
+
+            return StatusCode(StatusCodes.Status200OK, null);
+
+
+        }
+
+
+
     }
 }
