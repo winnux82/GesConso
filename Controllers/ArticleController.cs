@@ -51,8 +51,6 @@ namespace GesConso.Controllers
         [AllowAnonymous]
         public IActionResult Update(Article updatedArticle)
         {
-            Console.WriteLine(updatedArticle);
-
             var article = context.Articles.Find(updatedArticle.Id);
 
             if (article == null)

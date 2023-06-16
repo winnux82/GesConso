@@ -17,7 +17,7 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    @*<th>ID</th>*@
                     <th>Dénomination</th>
                     <th>Description</th>
                     <th>PuHtva</th>
@@ -30,7 +30,7 @@
                     var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
 
                     <tr @onclick="(() => SelectArticle(article))" style="@GetRowStyle(article)">
-                        <td>@article.Id</td>
+                        @*<td>@article.Id</td>*@
                         <td>@article.Denomination</td>
                         <td>@article.Description</td>
                         <td>@article.PuHtva</td>
@@ -56,23 +56,25 @@
             </div>
 
 
-            <div class="buttonsGroup m-1">
-                <!-- Ajout de la classe "ml-auto" -->
+            <div class="buttonsGroup m-1 ml-auto" style="display: flex; gap: 5px; justify-content: flex-end;">
                 @if (selected is null)
                 {
                     <button type="button" class="btn btn-primary" @onclick="AddArticle">Add</button>
                 }
                 else
                 {
-                    <input type="button" class="btn btn-danger" value="Sauver" @onclick="UpdateArticle" />
+                    <button type="button" class="btn btn-danger" @onclick="UpdateArticle">Sauver</button>
                 }
-                <button type="button" class="btn btn-secondary" value="Reset" @onclick="Reset">Reset</button>
+                <button type="button" class="btn btn-secondary" @onclick="Reset">Reset</button>
 
                 @if (selected is not null)
                 {
-                    <input type="button" class="btn btn-danger  ml-auto" value="Delete" @onclick="DeleteArticle" />
+                    <button type="button" class="btn btn-danger" @onclick="DeleteArticle">Delete</button>
                 }
             </div>
+
+
+
         </form>
     </div>
 
