@@ -25,10 +25,11 @@ namespace GesConso.Controllers
             var articles = this.context.Articles.ToList();
             return StatusCode(StatusCodes.Status200OK, articles);
         }
+
         // Ajout d'un article
         [HttpPost]
         [AllowAnonymous]
-        public IActionResult Add(Article article)
+        public IActionResult Add([FromBody] Article article)
         {
             if (article != null)
             {
@@ -43,6 +44,5 @@ namespace GesConso.Controllers
                 return StatusCode(StatusCodes.Status400BadRequest, "Article is null.");
             }
         }
-
     }
 }

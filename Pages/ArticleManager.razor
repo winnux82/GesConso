@@ -12,20 +12,20 @@
 <form>
     <div class="form-group">
         <label for="denomination">Dénomination</label>
-        <input id="denomination" type="text" class="form-control" @bind="@article.Denomination" />
+        <input id="denomination" type="text" class="form-control" @bind="@_denomination" />
     </div>
     <div class="form-group">
         <label for="description">Description</label>
-        <input id="description" type="text" class="form-control" @bind="@article.Description" />
+        <input id="description" type="text" class="form-control" @bind="@_description" />
     </div>
     <div class="form-group">
         <label for="puHtva">PuHtva</label>
-        <input id="puHtva" type="number" class="form-control" @bind="@article.PuHtva" />
+        <input id="puHtva" type="number" class="form-control" @bind="@_puhtva" />
     </div>
 
 
     <div class="buttonsGroup">
-        @*<button type="button" class="btn btn-primary" @onclick=@AddAgent>Add</button>*@
+        
         <button type="button" class="btn btn-primary" @onclick=@AddArticle>Add</button>
 
 
@@ -40,10 +40,10 @@ qdsfqsdùfpokdqsùfokqsdùfpodkqsfùdoqsk fùdqsfjdqs d,qsmfl njqsdnjdml nfqsdf 
     <thead>
         <tr>
             <th>ID</th>
-            <th>Dénomiation</th>
-            <th>LastName</th>
-            <th>Matricule</th>
-            <th>Mail</th>
+            <th>Dénomination</th>
+            <th>Description</th>
+            <th>PuHtva</th>
+
         </tr>
     </thead>
     <tbody>
@@ -76,7 +76,7 @@ qdsfqsdùfpokdqsùfokqsdùfpodkqsfùdoqsk fùdqsfjdqs d,qsmfl njqsdnjdml nfqsdf 
     private Article? selected = null;
     private string? _denomination;
     private string? _description;
-    private double? _puhtva;
+    private float? _puhtva;
 
     [Parameter]
     public Action<Article?>? OnArticleSelected { get; set; }
@@ -127,7 +127,7 @@ qdsfqsdùfpokdqsùfokqsdùfpodkqsfùdoqsk fùdqsfjdqs d,qsmfl njqsdnjdml nfqsdf 
         {
             if (msg.IsSuccessStatusCode)
             {
-                //ToastService.ShowSuccess("Agent ajouté!");
+                //ToastService.ShowSuccess("Article ajouté!");
             }
             else
             {
@@ -152,7 +152,7 @@ qdsfqsdùfpokdqsùfokqsdùfpodkqsfùdoqsk fùdqsfjdqs d,qsmfl njqsdnjdml nfqsdf 
 
         this._denomination = article?.Denomination;
         this._description = article?.Description;
-        //this._puhtva = article?.PuHtva;
+        this._puhtva = article?.PuHtva;
     }
 
 
