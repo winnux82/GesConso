@@ -16,8 +16,8 @@ namespace GesConso.Entities
         public string? Description { get; set; }
 
         [Column("PuHtva")]
-        public float? PuHtva { get; set; }
+        public double? PuHtva { get; set; }
 
-   }
+    }
 
 }
