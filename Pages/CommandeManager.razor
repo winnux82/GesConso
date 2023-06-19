@@ -1,0 +1,405 @@
+﻿@page "/commande"
+@inject StateContainer StateContainer
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime
+
+@using GesConso.Entities
+@*@using System*@
+
+
+<PageTitle>Gestion des commandes</PageTitle>
+
+<h1>Gestion des commandes</h1>
+
+<div class="row">
+    <div class="col-md-6">
+
+        <div class="highlight">
+            <h2>Admin</h2>
+        </div>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>ID_Date</th>
+                    <th>Date Commande</th>
+                    <th>Prix Htva</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var commande in StateContainer.Commandes)
+                {
+                    @*var isSelected = selected == commande;*@
+                    var isSelected = selected?.Equals(commande) ?? false;
+
+                    var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
+
+                    <tr @onclick="(() => SelectCommande(commande))" style="@GetRowStyle(commande)">
+                        <td>@commande.Id</td>
+                        <td>
+                            @if (commande.Id_Date != null)
+                            {
+                                @(((DateTime)commande.Id_Date).ToString("yyyyMMdd"))
+                            }
+                        </td>
+
+
+                        <td>@commande.DateCommande</td>
+                        <td>@commande.PrixHtva</td>
+
+                    </tr>
+                }
+
+
+            </tbody>
+        </table>
+        <div class="highlight">
+            <h2>User</h2>
+        </div>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>ID_Date</th>
+                    <th>Date Commande</th>
+                    <th>Prix Htva</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var commande in StateContainer.Commandes)
+                {
+                    // Vérifier si l'commande est supprimé
+                    var isDeleted = commande.DeletedAt != null;
+
+                    // Ignorer les commandes supprimés
+                    if (isDeleted)
+                    {
+                        continue;
+                    }
+
+                    var isSelected = selected == commande;
+                    var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
+
+                    <tr @onclick="(() => SelectCommande(commande))" style="@style">
+                        <td>@commande.Id</td>
+                        <td>
+                            @if (commande.Id_Date != null)
+                            {
+                                @(((DateTime)commande.Id_Date).ToString("yyyyMMdd"))
+                            }
+                        </td>
+
+                        <td>@commande.DateCommande</td>
+                        <td>@commande.PrixHtva</td>
+                    </tr>
+                }
+
+
+            </tbody>
+        </table>
+
+
+    </div>
+    <div class="col-md-6">
+        <form>
+            @if (_idDate is not null)
+            {
+                <H2>ID Commande : @_idDate?.ToString("yyyyMMdd")</H2>
+                
+            }
+            <div class="form-group">
+                <label for="prixHtva">prixHtva</label>
+                <input id="prixHtva" type="text" class="form-control" @bind="_prixHtva" />
+            </div>
+            <div class="form-group">
+                <label for="date">Date et heure de la Commande</label>
+                <input id="date" type="datetime-local" class="form-control" @bind="@_dateCommande" />
+            </div>
+
+
+            <div>
+                @if (_createdAt is not null)
+                {
+                    <p>Créé : @(_createdAt ?? DateTime.MinValue)</p>
+                    <p>Modifié : @(_updatedAt ?? DateTime.MinValue)</p>
+
+                }
+                @if (_deletedAt is not null)
+                {
+                    <p>Effacé : @_deletedAt</p>
+
+                }
+            </div>
+
+
+
+            <div class="buttonsGroup m-1 ml-auto" style="display: flex; gap: 5px; justify-content: flex-end;">
+                @if (selected is null)
+                {
+                    <button type="button" class="btn btn-primary" @onclick="AddCommande">Add</button>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-danger" @onclick="UpdateCommande">Sauver</button>
+                }
+                <button type="button" class="btn btn-secondary" @onclick="Reset">Reset</button>
+
+                @if (selected is not null)
+                {
+                    @if (_deletedAt is null)
+                    {
+                        <button type="button" class="btn btn-danger" @onclick="DeleteCommande">Delete</button>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-danger" @onclick="DeleteCompleteCommande">Effacer définitivement</button>
+                    }
+                }
+
+            </div>
+
+
+
+        </form>
+    </div>
+
+</div>
+
+
+@code {
+    Commande commande = new Commande();
+    private Commande? selected = null;
+
+    private DateTime? _idDate = null;
+    private DateTime? _dateCommande = null;
+    private double? _prixHtva = null;
+
+    private DateTime? _createdAt = null;
+    private DateTime? _updatedAt = null;
+    private DateTime? _deletedAt = null;
+
+
+    [Parameter]
+    public Action<Commande?>? OnCommandeSelected { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var requestMsg = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/commande/getall");
+
+            using (var msg = await HttpClient.SendAsync(requestMsg))
+            {
+                if (msg.IsSuccessStatusCode)
+                {
+                    var commandes = await msg.Content.ReadFromJsonAsync<List<Commande>>();
+                    if (commandes != null)
+                    {
+                        StateContainer.Commandes = commandes;
+                        await InvokeAsync(StateHasChanged);
+                    }
+                }
+                else
+                {
+                    // Gérer l'échec de la requête
+                }
+            }
+        }
+    }
+
+    // Ajouter un commande
+    private async Task AddCommande()
+    {
+        var newCommande = new Commande
+            {
+                Id = Guid.NewGuid(),
+                Id_Date = DateTime.Now,
+                DateCommande = _dateCommande,
+                    PrixHtva = _prixHtva,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+
+    };
+
+        var content = JsonContent.Create(newCommande);
+
+        var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/commande/add");
+        requestMsg.Content = content;
+
+        using (var msg = await HttpClient.SendAsync(requestMsg))
+        {
+            if (msg.IsSuccessStatusCode)
+            {
+                //ToastService.ShowSuccess("Commande ajouté!");
+            }
+            else
+            {
+                //ToastService.ShowError("Une erreur s'est produite.");
+            }
+        }
+
+        StateContainer.Commandes?.Add(newCommande);
+
+        Reset();
+    }
+
+    // Mettre à jour un commande
+    private async Task UpdateCommande()
+    {
+        if (selected is null)
+        {
+            return;
+        }
+
+        var commandeUpdate = new Commande
+            {
+                Id = this.selected.Id,
+
+
+                Id_Date = _idDate,
+                DateCommande = _dateCommande,
+                PrixHtva = _prixHtva,
+
+                CreatedAt = _createdAt,
+                UpdatedAt = DateTime.Now,
+                DeletedAt = _deletedAt,
+            };
+
+
+        var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/commande/update");
+        requestMsg.Content = JsonContent.Create(commandeUpdate);
+
+        using (var msg = await HttpClient.SendAsync(requestMsg))
+        {
+            if (msg.IsSuccessStatusCode)
+            {
+                var index = StateContainer.Commandes.IndexOf(selected);
+                if (index != -1)
+                {
+                    StateContainer.Commandes[index] = commandeUpdate;
+                    UnSelectCommande();
+                }
+            }
+        }
+    }
+
+
+
+    // RESET
+    private void Reset()
+    {
+        _idDate = null;
+        _dateCommande = null;
+        _prixHtva = 0;
+        _createdAt = null;
+        _updatedAt = null;
+        _deletedAt = null;
+        selected = null;
+
+    }
+
+    // Delete Commande 
+    private async Task DeleteCommande()
+    {
+        if (selected is null)
+        {
+            return;
+        }
+
+        var commandeUpdate = new Commande
+            {
+
+                Id = this.selected.Id,
+                Id_Date = _idDate,
+                DateCommande = _dateCommande,
+                PrixHtva = _prixHtva,
+                CreatedAt = _createdAt,
+                UpdatedAt = DateTime.Now,
+                DeletedAt = DateTime.Now,
+            };
+
+        var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/commande/update");
+        requestMsg.Content = JsonContent.Create(commandeUpdate);
+
+        using (var msg = await HttpClient.SendAsync(requestMsg))
+        {
+            if (msg.IsSuccessStatusCode)
+            {
+                var index = StateContainer.Commandes.IndexOf(selected);
+                if (index != -1)
+                {
+                    StateContainer.Commandes[index] = commandeUpdate;
+                    UnSelectCommande();
+                }
+            }
+        }
+    }
+
+    // Effacer un Commande
+    private async Task DeleteCompleteCommande()
+    {
+        if (selected is null)
+        {
+            return;
+        }
+        bool confirmed = await ConfirmDelete();
+
+        if (!confirmed)
+        {
+            return;
+        }
+        var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/commande/delete");
+        requestMsg.Content = JsonContent.Create(selected);
+        using (var msg = await HttpClient.SendAsync(requestMsg))
+        {
+            if (msg.IsSuccessStatusCode)
+            {
+                StateContainer.Commandes.Remove(selected);
+                UnSelectCommande();
+            }
+        }
+    }
+
+
+    // Selectionner une commande
+    private void SelectCommande(Commande commande)
+    {
+        selected = commande;
+        OnCommandeSelected?.Invoke(commande);
+
+        _idDate = commande?.Id_Date;
+        _dateCommande = commande?.DateCommande;
+        _prixHtva = commande?.PrixHtva;
+        _createdAt = commande?.CreatedAt;
+        _updatedAt = commande?.UpdatedAt;
+        _deletedAt = commande?.DeletedAt;
+    }
+
+    private void UnSelectCommande()
+    {
+        selected = null;
+        Reset();
+    }
+    private string GetRowStyle(Commande commande)
+    {
+        return selected == commande ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
+    }
+
+    //private async Task<bool> ShowConfirmationDialog(string message)
+    //{
+    //    bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", message);
+    //    return confirmed;
+    //}
+
+    async Task<bool> ConfirmDelete()
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Êtes-vous sûr de vouloir supprimer définitivement cet commande ??");
+        return confirmed;
+    }
+
+
+}

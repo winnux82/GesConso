@@ -352,8 +352,8 @@
         selected = article;
         OnArticleSelected?.Invoke(article);
 
-        _denomination = article?.Denomination;
-        _description = article?.Description;
+        _denomination = article?.Denomination ?? string.Empty;
+        _description = article?.Description ?? string.Empty;
         _puhtva = article?.PuHtva;
         _createdAt = article?.CreatedAt;
         _updatedAt = article?.UpdatedAt;

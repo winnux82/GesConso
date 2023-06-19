@@ -26,7 +26,7 @@ namespace GesConso.Controllers
             return StatusCode(StatusCodes.Status200OK, commandes);
         }
 
-        // Ajout d'un commande
+        // Ajout d'une commande
         [HttpPost]
         [AllowAnonymous]
         public IActionResult Add([FromBody] Commande commande)
@@ -40,13 +40,13 @@ namespace GesConso.Controllers
             }
             else
             {
-                // L'commande est null, vous pouvez retourner un code d'erreur approprié
+                // La commande est null, vous pouvez retourner un code d'erreur approprié
                 return StatusCode(StatusCodes.Status400BadRequest, "Commande is null.");
             }
         }
 
 
-        // Modification d'un commande
+        // Modification d'une commande
         [HttpPost]
         [AllowAnonymous]
         public IActionResult Update(Commande updatedCommande)
@@ -60,6 +60,7 @@ namespace GesConso.Controllers
 
             commande.Id_Date = updatedCommande.Id_Date;
             commande.DateCommande = updatedCommande.DateCommande;
+            commande.PrixHtva = updatedCommande.PrixHtva;
             commande.CreatedAt = updatedCommande.CreatedAt;
             commande.UpdatedAt = updatedCommande.UpdatedAt;
             commande.DeletedAt = updatedCommande.DeletedAt;
