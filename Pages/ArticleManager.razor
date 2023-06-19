@@ -22,7 +22,7 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    @*<th>ID</th>*@
+                    <th>ID</th>
                     <th>Dénomination</th>
                     <th>Description</th>
                     <th>PuHtva</th>
@@ -35,7 +35,7 @@
                     var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
 
                     <tr @onclick="(() => SelectArticle(article))" style="@GetRowStyle(article)">
-                        @*<td>@article.Id</td>*@
+                        <td>@article.Id</td>
                         <td>@article.Denomination</td>
                         <td>@article.Description</td>
                         <td>@article.PuHtva</td>
