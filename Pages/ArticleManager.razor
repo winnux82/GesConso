@@ -56,6 +56,21 @@
             </div>
 
 
+            <div>
+                @if (_createdAt is not null)
+                {
+                    <p>Créé : @_createdAt</p>
+                    <p>Modifié : @_updatedAt</p>
+                }
+                @if (_deletedAt is not null)
+                {
+                    <p>Effacé : @_deletedAt</p>
+
+                }
+            </div>
+
+
+
             <div class="buttonsGroup m-1 ml-auto" style="display: flex; gap: 5px; justify-content: flex-end;">
                 @if (selected is null)
                 {
@@ -70,6 +85,8 @@
                 @if (selected is not null)
                 {
                     <button type="button" class="btn btn-danger" @onclick="DeleteArticle">Delete</button>
+
+                    <button type="button" class="btn btn-danger" @onclick="DeleteCompleteArticle">Effacer définitivement</button>
                 }
             </div>
 
@@ -87,6 +104,9 @@
     private string? _denomination;
     private string? _description;
     private double? _puhtva;
+    private DateTime? _createdAt;
+    private DateTime? _updatedAt;
+    private DateTime? _deletedAt;
 
     [Parameter]
     public Action<Article?>? OnArticleSelected { get; set; }
@@ -120,12 +140,15 @@
     private async Task AddArticle()
     {
         var newArticle = new Article
-        {
-            Id = Guid.NewGuid(),
-            Denomination = _denomination,
-            Description = _description,
-            PuHtva = _puhtva
-        };
+            {
+                Id = Guid.NewGuid(),
+                Denomination = _denomination,
+                Description = _description,
+                PuHtva = _puhtva,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+
+    };
 
         var content = JsonContent.Create(newArticle);
 
@@ -163,6 +186,9 @@
                 Denomination = _denomination,
                 Description = _description,
                 PuHtva = _puhtva,
+                CreatedAt = _createdAt,
+                UpdatedAt = DateTime.Now,
+                DeletedAt = _deletedAt,
             };
 
         Console.WriteLine("Article Update:");
@@ -196,12 +222,40 @@
         _denomination = string.Empty;
         _description = string.Empty;
         _puhtva = 0;
+        _createdAt = null;
+        _updatedAt = null;
+        _deletedAt = null;
         selected = null;
-        
+
     }
 
     // Effacer un Article
     private async Task DeleteArticle()
+    {
+        if (selected is null)
+        {
+            return;
+        }
+        bool confirmed = await ConfirmDelete();
+
+        if (!confirmed)
+        {
+            return;
+        }
+        var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/article/delete");
+        requestMsg.Content = JsonContent.Create(selected);
+        using (var msg = await HttpClient.SendAsync(requestMsg))
+        {
+            if (msg.IsSuccessStatusCode)
+            {
+                StateContainer.Articles.Remove(selected);
+                UnSelectArticle();
+            }
+        }
+    }
+
+    // Effacer un Article
+    private async Task DeleteCompleteArticle()
     {
         if (selected is null)
         {
@@ -235,6 +289,9 @@
         _denomination = article?.Denomination;
         _description = article?.Description;
         _puhtva = article?.PuHtva;
+        _createdAt = article?.CreatedAt;
+        _updatedAt = article?.UpdatedAt;
+        _deletedAt = article?.DeletedAt;
     }
 
     private void UnSelectArticle()
@@ -255,7 +312,7 @@
 
     async Task<bool> ConfirmDelete()
     {
-        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Êtes-vous sûr de vouloir supprimer cet article ??");
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Êtes-vous sûr de vouloir supprimer définitivement cet article ??");
         return confirmed;
     }
 

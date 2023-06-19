@@ -61,6 +61,9 @@ namespace GesConso.Controllers
             article.Denomination = updatedArticle.Denomination;
             article.Description = updatedArticle.Description;
             article.PuHtva = updatedArticle.PuHtva;
+            article.CreatedAt = updatedArticle.CreatedAt;
+            article.UpdatedAt = updatedArticle.UpdatedAt;
+            article.DeletedAt = updatedArticle.DeletedAt;
  
 
             this.context.Articles.Update(article);

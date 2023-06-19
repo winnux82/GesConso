@@ -18,6 +18,15 @@ namespace GesConso.Entities
         [Column("PuHtva")]
         public double? PuHtva { get; set; }
 
+        [Column("CreatedAt")]
+        public DateTime? CreatedAt { get; set; }
+
+        [Column("UpdatedAt")]
+        public DateTime? UpdatedAt { get; set; }
+
+        [Column("DeletedAt")]
+        public DateTime? DeletedAt { get; set; }
+
     }
 
 }
