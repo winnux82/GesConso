@@ -1,0 +1,387 @@
+﻿@page "/commandearticle"
+@inject StateContainer StateContainer
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime
+@using GesConso
+@using GesConso.Entities
+@*@using System*@
+
+
+<PageTitle>Gestion des commandes Articles</PageTitle>
+<div class="row">
+    <div class="col-md-6">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID_Commande</th>
+                    <th>ID_Article</th>
+                    <th>Quantité</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var commandeArticle in StateContainer.CommandeArticle)
+                {
+                    var isSelected = selected == commandeArticle;
+                    var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
+
+                    <tr @onclick="(() => SelectCommandeArticle(commandeArticle))" style="@GetRowStyle(commandeArticle)">
+                        <td>@commandeArticle.Id_Commande</td>
+                        <td>@commandeArticle.Id_Article</td>
+                        <td>@commandeArticle.Quantite</td>
+
+                    </tr>
+                }
+
+
+            </tbody>
+        </table>
+
+
+@*    </div>
+    <div class="col-md-6">*@
+        <form>
+
+            <label for="commande">Choisissez une commande :</label>
+            <select id="commande" class="form-control" @bind="@_idCommande">
+                @foreach (var commande in StateContainer.Commandes)
+                {
+                    <option value="@commande.Id">@commande.Id</option>
+                }
+            </select>
+
+            <label for="article">Choisissez un article :</label>
+            <select id="article" class="form-control" @bind="@_idArticle">
+                @foreach (var article in StateContainer.Articles)
+                {
+                    <option value="@article.Id">@article.Denomination</option>
+                }
+            </select>
+
+
+
+            <div class="form-group">
+                <label for="quantite">Quantité</label>
+                <input id="quantite" type="number" class="form-control" @bind="_quantite" min="1" />
+            </div>
+
+
+
+
+            <div>
+                @if (_createdAt is not null)
+                {
+                    <p>Créé : @_createdAt</p>
+                    <p>Modifié : @_updatedAt</p>
+                }
+                @if (_deletedAt is not null)
+                {
+                    <p>Effacé : @_deletedAt</p>
+
+                }
+            </div>
+
+
+
+            <div class="buttonsGroup m-1 ml-auto" style="display: flex; gap: 5px; justify-content: flex-end;">
+                @if (selected is null)
+                {
+                    <button type="button" class="btn btn-primary" @onclick="AddCommandeArticle">Ajouter</button>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-danger" @onclick="UpdateCommandeArticle">Sauver</button>
+                }
+                <button type="button" class="btn btn-secondary" @onclick="Reset">Reset</button>
+
+                @if (selected is not null)
+                {
+                    @if (_deletedAt is null)
+                    {
+                        <button type="button" class="btn btn-danger" @onclick="DeleteCommandeArticle">Delete</button>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-danger" @onclick="DeleteCompleteCommandeArticle">Effacer définitivement</button>
+                    }
+                }
+
+            </div>
+
+
+
+        </form>
+    </div>
+
+</div>
+
+
+@code {
+
+    [Parameter]
+    public Action<CommandeArticle?>? OnArticleSelected { get; set; }
+    public Action<CommandeArticle?>? selectionCommande { get; set; }
+
+
+    CommandeArticle commandeArticle = new CommandeArticle();
+    private CommandeArticle? selected = null;
+
+    private string? _addArticle;
+    private string? _addCommande;
+
+    private Guid _idCommande = Guid.Empty;
+    private Guid _idArticle = Guid.Empty;
+
+    private int _quantite = 1;
+
+
+    private DateTime? _createdAt = null;
+    private DateTime? _updatedAt = null;
+    private DateTime? _deletedAt = null;
+
+
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        await LoadDataAsync<List<Commande>>("api/commande/getall", commandes =>
+        {
+            StateContainer.Commandes = commandes;
+        });
+
+        await LoadDataAsync<List<Article>>("api/article/getall", articles =>
+        {
+            StateContainer.Articles = articles;
+        });
+
+        await LoadDataAsync<List<CommandeArticle>>("api/commandearticle/getall", commandeArticles =>
+        {
+            StateContainer.CommandeArticle = commandeArticles;
+        });
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task LoadDataAsync<T>(string requestUri, Action<T> setDataAction)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}{requestUri}");
+
+        using (var response = await HttpClient.SendAsync(request))
+        {
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadFromJsonAsync<T>();
+                setDataAction(data);
+            }
+            else
+            {
+                Console.WriteLine("Error");
+            }
+        }
+    }
+
+
+    // Ajouter une commande d'article
+    private async Task AddCommandeArticle()
+    {
+        var newCommandeArticle = new CommandeArticle
+            {
+                Id = Guid.NewGuid(),
+                Id_Commande = _idCommande,
+                Id_Article = _idArticle,
+                Quantite = _quantite,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+
+    };
+
+        Console.WriteLine(newCommandeArticle);
+        var content = JsonContent.Create(newCommandeArticle);
+
+        var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/commandearticle/add");
+        requestMsg.Content = content;
+
+        using (var msg = await HttpClient.SendAsync(requestMsg))
+        {
+            if (msg.IsSuccessStatusCode)
+            {
+                //ToastService.ShowSuccess("Article ajouté!");
+            }
+            else
+            {
+                //ToastService.ShowError("Une erreur s'est produite.");
+            }
+        }
+
+        StateContainer.CommandeArticle?.Add(newCommandeArticle);
+
+        Reset();
+    }
+
+    // Mettre à jour une commande d'article
+    private async Task UpdateCommandeArticle()
+    {
+        if (selected is null)
+        {
+            return;
+        }
+
+        var commandeArticleUpdate = new CommandeArticle
+            {
+                Id = this.selected.Id,
+                Id_Article = _idArticle,
+                Id_Commande = _idCommande,
+                Quantite = _quantite,
+                CreatedAt = _createdAt,
+                UpdatedAt = DateTime.Now,
+                DeletedAt = _deletedAt,
+            };
+
+        Console.WriteLine("Commande Article Update:");
+        Console.WriteLine($"ID: {commandeArticleUpdate.Id_Commande}");
+
+
+        var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/commandearticle/update");
+        requestMsg.Content = JsonContent.Create(commandeArticleUpdate);
+
+        using (var msg = await HttpClient.SendAsync(requestMsg))
+        {
+            if (msg.IsSuccessStatusCode)
+            {
+                var index = StateContainer.CommandeArticle.IndexOf(selected);
+                if (index != -1)
+                {
+                    StateContainer.CommandeArticle[index] = commandeArticleUpdate;
+                    UnSelectCommandeArticle();
+                }
+            }
+        }
+    }
+
+
+
+    // RESET
+    private void Reset()
+    {
+        _idArticle = Guid.Empty;
+        _idCommande = Guid.Empty;
+        _quantite = 1;
+        _createdAt = null;
+        _updatedAt = null;
+        _deletedAt = null;
+        selected = null;
+
+    }
+
+    // Delete Commande d'Article
+    private async Task DeleteCommandeArticle()
+    {
+        if (selected is null)
+        {
+            return;
+        }
+
+        var commandeArticleUpdate = new CommandeArticle
+            {
+                Id = this.selected.Id,
+                Id_Article = _idArticle,
+                Id_Commande = _idCommande,
+                Quantite = _quantite,
+                CreatedAt = _createdAt,
+                UpdatedAt = DateTime.Now,
+                DeletedAt = DateTime.Now,
+            };
+
+        Console.WriteLine(commandeArticleUpdate);
+        var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/commandearticle/update");
+        requestMsg.Content = JsonContent.Create(commandeArticleUpdate);
+
+        using (var response = await HttpClient.SendAsync(requestMsg))
+        {
+            if (response.IsSuccessStatusCode)
+            {
+                var index = StateContainer.CommandeArticle.IndexOf(selected);
+                if (index != -1)
+                {
+                    StateContainer.CommandeArticle[index] = commandeArticleUpdate;
+                    UnSelectCommandeArticle();
+                }
+            }
+        }
+    }
+
+
+    // Effacer un Article
+    private async Task DeleteCompleteCommandeArticle()
+    {
+        if (selected is null)
+        {
+            return;
+        }
+        bool confirmed = await ConfirmDelete();
+
+        if (!confirmed)
+        {
+            return;
+        }
+        var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/commandearticle/delete");
+        requestMsg.Content = JsonContent.Create(selected);
+        using (var msg = await HttpClient.SendAsync(requestMsg))
+        {
+            if (msg.IsSuccessStatusCode)
+            {
+                StateContainer.CommandeArticle.Remove(selected);
+                UnSelectCommandeArticle();
+            }
+        }
+    }
+    //selection d'une commande
+    public void selection2Commande(Commande commande)
+    {
+
+        _idCommande = (Guid)commande.Id;
+
+    }
+    // Selectionner une Commande d'article
+    private void SelectCommandeArticle(CommandeArticle commandeArticle)
+    {
+        selected = commandeArticle;
+        OnArticleSelected?.Invoke(commandeArticle);
+
+        _idArticle = commandeArticle?.Id_Article ?? Guid.Empty;
+        _idCommande = commandeArticle?.Id_Commande ?? Guid.Empty;
+        _quantite = commandeArticle?.Quantite ?? int.MinValue;
+        _createdAt = commandeArticle?.CreatedAt;
+        _updatedAt = commandeArticle?.UpdatedAt;
+        _deletedAt = commandeArticle?.DeletedAt;
+    }
+
+
+
+    private void UnSelectCommandeArticle()
+    {
+        selected = null;
+        Reset();
+    }
+    private string GetRowStyle(CommandeArticle commandeArticle)
+    {
+        return selected == commandeArticle ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
+    }
+
+    //private async Task<bool> ShowConfirmationDialog(string message)
+    //{
+    //    bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", message);
+    //    return confirmed;
+    //}
+
+    async Task<bool> ConfirmDelete()
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Êtes-vous sûr de vouloir supprimer définitivement cet article ??");
+        return confirmed;
+    }
+
+
+}

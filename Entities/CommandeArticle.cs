@@ -6,6 +6,10 @@ namespace GesConso.Entities
     public class CommandeArticle
     {
         [Key]
+
+        [Column("Id_CommandeArticle")]
+        public Guid? Id { get; set; }
+
         [Column("Id_Commande")]
         public Guid? Id_Commande { get; set; }
 

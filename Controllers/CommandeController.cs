@@ -74,13 +74,13 @@ namespace GesConso.Controllers
         // Effacer un commande
         [HttpPost]
         [AllowAnonymous]
-        public IActionResult Delete(Commande art)
+        public IActionResult Delete(Commande com)
         {
-            var commande = this.context.Commandes.Find(art.Id);
+            var commande = this.context.Commandes.Find(com.Id);
 
             if (commande == null)
             {
-                return StatusCode(StatusCodes.Status404NotFound, "Agent not found.");
+                return StatusCode(StatusCodes.Status404NotFound, "Commande not found.");
             }
 
             this.context.Commandes.Remove(commande);

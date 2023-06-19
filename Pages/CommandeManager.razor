@@ -3,7 +3,7 @@
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JsRuntime
-
+@using GesConso
 @using GesConso.Entities
 @*@using System*@
 
@@ -15,9 +15,9 @@
 <div class="row">
     <div class="col-md-6">
 
-        <div class="highlight">
+@*        <div class="highlight">
             <h2>Admin</h2>
-        </div>
+        </div>*@
 
         <table class="table table-striped">
             <thead>
@@ -55,112 +55,76 @@
 
             </tbody>
         </table>
-        <div class="highlight">
-            <h2>User</h2>
+        <div>
+            @if (_createdAt is not null)
+            {
+                <p>Créé : @(_createdAt ?? DateTime.MinValue)</p>
+                <p>Modifié : @(_updatedAt ?? DateTime.MinValue)</p>
+
+            }
+            @if (_deletedAt is not null)
+            {
+                <p>Effacé : @_deletedAt</p>
+
+            }
         </div>
 
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>ID_Date</th>
-                    <th>Date Commande</th>
-                    <th>Prix Htva</th>
-                </tr>
-            </thead>
-            <tbody>
-
-                @foreach (var commande in StateContainer.Commandes)
-                {
-                    // Vérifier si l'commande est supprimé
-                    var isDeleted = commande.DeletedAt != null;
-
-                    // Ignorer les commandes supprimés
-                    if (isDeleted)
-                    {
-                        continue;
-                    }
-
-                    var isSelected = selected == commande;
-                    var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
-
-                    <tr @onclick="(() => SelectCommande(commande))" style="@style">
-                        <td>@commande.Id</td>
-                        <td>
-                            @if (commande.Id_Date != null)
-                            {
-                                @(((DateTime)commande.Id_Date).ToString("yyyyMMdd"))
-                            }
-                        </td>
-
-                        <td>@commande.DateCommande</td>
-                        <td>@commande.PrixHtva</td>
-                    </tr>
-                }
 
 
-            </tbody>
-        </table>
-
-
-    </div>
-    <div class="col-md-6">
-        <form>
-            @if (_idDate is not null)
+        <div class="buttonsGroup m-1 ml-auto" style="display: flex; gap: 5px; justify-content: flex-end;">
+            @if (selected is null)
             {
-                <H2>ID Commande : @_idDate?.ToString("yyyyMMdd")</H2>
-                
+                <button type="button" class="btn btn-primary" @onclick="AddCommande">Ajouter</button>
             }
-            <div class="form-group">
-                <label for="prixHtva">prixHtva</label>
-                <input id="prixHtva" type="text" class="form-control" @bind="_prixHtva" />
-            </div>
-            <div class="form-group">
-                <label for="date">Date et heure de la Commande</label>
-                <input id="date" type="datetime-local" class="form-control" @bind="@_dateCommande" />
-            </div>
+            else
+            {
+                <button type="button" class="btn btn-danger" @onclick="UpdateCommande">Sauver</button>
+            }
+            <button type="button" class="btn btn-secondary" @onclick="Reset">Reset</button>
 
-
-            <div>
-                @if (_createdAt is not null)
+            @if (selected is not null)
+            {
+                @if (_deletedAt is null)
                 {
-                    <p>Créé : @(_createdAt ?? DateTime.MinValue)</p>
-                    <p>Modifié : @(_updatedAt ?? DateTime.MinValue)</p>
-
-                }
-                @if (_deletedAt is not null)
-                {
-                    <p>Effacé : @_deletedAt</p>
-
-                }
-            </div>
-
-
-
-            <div class="buttonsGroup m-1 ml-auto" style="display: flex; gap: 5px; justify-content: flex-end;">
-                @if (selected is null)
-                {
-                    <button type="button" class="btn btn-primary" @onclick="AddCommande">Add</button>
+                    <button type="button" class="btn btn-danger" @onclick="DeleteCommande">Delete</button>
                 }
                 else
                 {
-                    <button type="button" class="btn btn-danger" @onclick="UpdateCommande">Sauver</button>
+                    <button type="button" class="btn btn-danger" @onclick="DeleteCompleteCommande">Effacer définitivement</button>
                 }
-                <button type="button" class="btn btn-secondary" @onclick="Reset">Reset</button>
+            }
 
+        </div>
+@*
+    </div>
+    <div class="col-md-6">*@
+        <form>
+            @if(_idCommande is not null)
+            {
+                @if (_idDate is not null)
+                {
+                    <h2>ID Commande : @_idDate?.ToString("yyyyMMdd")</h2>
+                }
+                <h3>Ajout d'un article</h3>
                 @if (selected is not null)
                 {
-                    @if (_deletedAt is null)
-                    {
-                        <button type="button" class="btn btn-danger" @onclick="DeleteCommande">Delete</button>
-                    }
-                    else
-                    {
-                        <button type="button" class="btn btn-danger" @onclick="DeleteCompleteCommande">Effacer définitivement</button>
-                    }
+                    <CommandeArticleManager />
                 }
+                <div class="form-group">
+                    <label for="prixHtva">prixHtva</label>
+                    <input id="prixHtva" type="text" class="form-control" @bind="_prixHtva" />
+                </div>
+                <div class="form-group">
+                    <label for="date">Date et heure de la Commande</label>
+                    <input id="date" type="datetime-local" class="form-control" @bind="@_dateCommande" />
+                </div>
 
-            </div>
+            }
+
+            
+
+
+
 
 
 
@@ -173,6 +137,9 @@
 @code {
     Commande commande = new Commande();
     private Commande? selected = null;
+
+
+    private Guid? _idCommande = null;
 
     private DateTime? _idDate = null;
     private DateTime? _dateCommande = null;
@@ -206,6 +173,26 @@
                 else
                 {
                     // Gérer l'échec de la requête
+                }
+            }
+
+
+            var requestArticles = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/article/getall");
+
+            using (var responseArticles = await HttpClient.SendAsync(requestArticles))
+            {
+                if (responseArticles.IsSuccessStatusCode)
+                {
+                    var articles = await responseArticles.Content.ReadFromJsonAsync<List<Article>>();
+                    if (articles != null)
+                    {
+                        StateContainer.Articles = articles;
+                        await InvokeAsync(StateHasChanged);
+                    }
+                }
+                else
+                {
+                    // Gérer l'échec de la requête pour les articles
                 }
             }
         }
@@ -370,7 +357,7 @@
     {
         selected = commande;
         OnCommandeSelected?.Invoke(commande);
-
+        _idCommande = commande?.Id;
         _idDate = commande?.Id_Date;
         _dateCommande = commande?.DateCommande;
         _prixHtva = commande?.PrixHtva;

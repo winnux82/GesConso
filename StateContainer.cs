@@ -6,5 +6,6 @@ namespace GesConso
     {
         public List<Article> Articles { get; set; } = new();
         public List<Commande> Commandes { get; set; } = new();
+        public List<CommandeArticle> CommandeArticle { get; set; } = new();
     }
 }
