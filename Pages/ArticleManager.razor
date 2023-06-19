@@ -14,6 +14,11 @@
 
 <div class="row">
     <div class="col-md-6">
+
+        <div class="highlight">
+            <h2>Admin</h2>
+        </div>
+
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -36,8 +41,50 @@
                         <td>@article.PuHtva</td>
                     </tr>
                 }
+
+
             </tbody>
         </table>
+        <div class="highlight">
+            <h2>User</h2>
+        </div>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    @*<th>ID</th>*@
+                    <th>Dénomination</th>
+                    <th>Description</th>
+                    <th>PuHtva</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var article in StateContainer.Articles)
+                {
+                    // Vérifier si l'article est supprimé
+                    var isDeleted = article.DeletedAt != null;
+
+                    // Ignorer les articles supprimés
+                    if (isDeleted)
+                    {
+                        continue;
+                    }
+
+                    var isSelected = selected == article;
+                    var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
+
+                    <tr @onclick="(() => SelectArticle(article))" style="@style">
+                        <td>@article.Denomination</td>
+                        <td>@article.Description</td>
+                        <td>@article.PuHtva</td>
+                    </tr>
+                }
+
+
+            </tbody>
+        </table>
+
 
     </div>
     <div class="col-md-6">
@@ -84,10 +131,16 @@
 
                 @if (selected is not null)
                 {
-                    <button type="button" class="btn btn-danger" @onclick="DeleteArticle">Delete</button>
-
-                    <button type="button" class="btn btn-danger" @onclick="DeleteCompleteArticle">Effacer définitivement</button>
+                    @if (_deletedAt is null)
+                    {
+                        <button type="button" class="btn btn-danger" @onclick="DeleteArticle">Delete</button>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-danger" @onclick="DeleteCompleteArticle">Effacer définitivement</button>
+                    }
                 }
+
             </div>
 
 
@@ -101,12 +154,14 @@
 @code {
     Article article = new Article();
     private Article? selected = null;
-    private string? _denomination;
-    private string? _description;
-    private double? _puhtva;
-    private DateTime? _createdAt;
-    private DateTime? _updatedAt;
-    private DateTime? _deletedAt;
+
+    private string _denomination = string.Empty;
+    private string _description = string.Empty;
+    private double? _puhtva = null;
+    private DateTime? _createdAt = null;
+    private DateTime? _updatedAt = null;
+    private DateTime? _deletedAt = null;
+
 
     [Parameter]
     public Action<Article?>? OnArticleSelected { get; set; }
@@ -229,27 +284,38 @@
 
     }
 
-    // Effacer un Article
+    // Delete Article 
     private async Task DeleteArticle()
     {
         if (selected is null)
         {
             return;
         }
-        bool confirmed = await ConfirmDelete();
 
-        if (!confirmed)
-        {
-            return;
-        }
-        var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/article/delete");
-        requestMsg.Content = JsonContent.Create(selected);
+        var articleUpdate = new Article
+            {
+                Id = this.selected.Id,
+                Denomination = _denomination,
+                Description = _description,
+                PuHtva = _puhtva,
+                CreatedAt = _createdAt,
+                UpdatedAt = DateTime.Now,
+                DeletedAt = DateTime.Now,
+            };
+
+        var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/article/update");
+        requestMsg.Content = JsonContent.Create(articleUpdate);
+
         using (var msg = await HttpClient.SendAsync(requestMsg))
         {
             if (msg.IsSuccessStatusCode)
             {
-                StateContainer.Articles.Remove(selected);
-                UnSelectArticle();
+                var index = StateContainer.Articles.IndexOf(selected);
+                if (index != -1)
+                {
+                    StateContainer.Articles[index] = articleUpdate;
+                    UnSelectArticle();
+                }
             }
         }
     }
