@@ -11,31 +11,92 @@
 <PageTitle>Gestion des commandes Articles</PageTitle>
 <div class="row">
     @*<div class="col-md-6">*@
-
-    Commande sélectionnée @CommandeId
-
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>ID_Commande</th>
+                @if (CommandeIdSelected != Guid.Empty)
+                {
+
+                    <th>Dénomination Article</th>
+                    <th>Quantité</th>
+                    <th>PuHtva</th>
+                }
+                else
+                {
+                    
+                <th>ID_Commande</th>
                     <th>ID_Article</th>
                     <th>Quantité</th>
+                
+            }
+ 
                     
                 </tr>
             </thead>
             <tbody>
-                @foreach (var commandeArticle in StateContainer.CommandeArticle)
+            @if (CommandeIdSelected != Guid.Empty)
+            {
+                var totals = new Dictionary<Guid, double>(); // Dictionnaire pour stocker les totaux par commande
+
+                foreach (var commandeArticle in StateContainer.CommandeArticle)
                 {
-                    var isSelected = selected == commandeArticle;
-                    var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
+                    if (commandeArticle.Id_Commande == CommandeIdSelected)
+                    {
+                        var isSelected = selected == commandeArticle;
+                        var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
 
-                    <tr @onclick="(() => SelectCommandeArticle(commandeArticle))" style="@GetRowStyle(commandeArticle)">
-                        <td>@commandeArticle.Id_Commande</td>
-                        <td>@commandeArticle.Id_Article</td>
-                        <td>@commandeArticle.Quantite</td>
+                        var article = StateContainer.Articles.FirstOrDefault(a => a.Id == commandeArticle.Id_Article);
+                        if (article != null)
+                        {
+                            double calculatedValue = CalculatePuHtva(article, commandeArticle.Quantite.GetValueOrDefault());
 
+                            if (!totals.ContainsKey(CommandeIdSelected))
+                            {
+                                totals[CommandeIdSelected] = calculatedValue;
+                            }
+                            else
+                            {
+                                totals[CommandeIdSelected] += calculatedValue;
+                            }
+
+                            <tr @onclick="(() => SelectCommandeArticle(commandeArticle))" style="@(GetRowStyle(commandeArticle))">
+                                <td>@article.Denomination</td>
+                                <td>@commandeArticle.Quantite</td>
+                                <td>@CalculatePuHtva(article, commandeArticle.Quantite.GetValueOrDefault())</td>
+                            </tr>
+                        }
+                    }
+                }
+
+                if (totals.ContainsKey(CommandeIdSelected))
+                {
+                    double total = totals[CommandeIdSelected];
+                    <tr>
+                        <td colspan="2"><strong>Total:</strong></td>
+                        <td><strong>@total</strong></td>
                     </tr>
                 }
+            }
+
+            else
+            {
+                @foreach (var commandeArticle in StateContainer.CommandeArticle)
+                {
+                    // Vérifier si la commande correspond à CommandeId
+
+                        var isSelected = selected == commandeArticle;
+                        var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
+                        <tr @onclick="(() => SelectCommandeArticle(commandeArticle))" style="@(GetRowStyle(commandeArticle))">
+                            <td>@commandeArticle.Id_Commande</td>
+                            <td>@commandeArticle.Id_Article</td>
+                            <td>@commandeArticle.Quantite</td>
+                        </tr>
+
+                }
+            }
+
+
+
 
 
             </tbody>
@@ -46,14 +107,16 @@
     <div class="col-md-6">*@
         <form>
 
-            <label for="commande">Choisissez une commande :</label>
-            <select id="commande" class="form-control" @bind="@_idCommande">
+@*            <label for="commande">Choisissez une commande :</label>
+*@
+
+@*            <select id="commande" class="form-control" @bind="@_idCommande">
                 @foreach (var commande in StateContainer.Commandes)
                 {
                     <option value="@commande.Id">@commande.Id</option>
                 }
-            </select>
-
+            </select>*@
+        
             <label for="article">Choisissez un article :</label>
             <select id="article" class="form-control" @bind="@_idArticle">
                 @foreach (var article in StateContainer.Articles)
@@ -126,7 +189,7 @@
     public Action<CommandeArticle?>? OnCommandeArticleSelected { get; set; }
 
     [Parameter]
-    public Guid CommandeId { get; set; }
+    public Guid CommandeIdSelected { get; set; }
 
 
     CommandeArticle commandeArticle = new CommandeArticle();
@@ -144,7 +207,9 @@
 
     public Guid OnSelectCommande = Guid.Empty;
 
-
+    List<double> calculTotal = new List<double>();
+    
+ 
 
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -178,7 +243,10 @@
             if (response.IsSuccessStatusCode)
             {
                 var data = await response.Content.ReadFromJsonAsync<T>();
-                setDataAction(data);
+                if (data != null)
+                {
+                    setDataAction(data);
+                }
             }
             else
             {
@@ -188,13 +256,14 @@
     }
 
 
+
     // Ajouter une commande d'article
     private async Task AddCommandeArticle()
     {
         var newCommandeArticle = new CommandeArticle
             {
                 Id = Guid.NewGuid(),
-                Id_Commande = _idCommande,
+                Id_Commande = CommandeIdSelected,
                 Id_Article = _idArticle,
                 Quantite = _quantite,
                 CreatedAt = DateTime.Now,
@@ -237,7 +306,7 @@
             {
                 Id = this.selected.Id,
                 Id_Article = _idArticle,
-                Id_Commande = _idCommande,
+                Id_Commande = CommandeIdSelected,
                 Quantite = _quantite,
                 CreatedAt = _createdAt,
                 UpdatedAt = DateTime.Now,
@@ -378,5 +447,9 @@
         return confirmed;
     }
 
-
+    private Double CalculatePuHtva(Article article, int Quantite)
+    {
+        double puHtva = article.PuHtva ?? 0.0; // Valeur par défaut si article.PuHtva est null
+        return puHtva * Quantite;
+    }
 }
