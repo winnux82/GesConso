@@ -10,7 +10,10 @@
 
 <PageTitle>Gestion des commandes Articles</PageTitle>
 <div class="row">
-    <div class="col-md-6">
+    @*<div class="col-md-6">*@
+
+    Commande sélectionnée @CommandeId
+
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -112,7 +115,7 @@
 
 
         </form>
-    </div>
+    @*</div>*@
 
 </div>
 
@@ -120,15 +123,14 @@
 @code {
 
     [Parameter]
-    public Action<CommandeArticle?>? OnArticleSelected { get; set; }
-    public Action<CommandeArticle?>? selectionCommande { get; set; }
+    public Action<CommandeArticle?>? OnCommandeArticleSelected { get; set; }
+
+    [Parameter]
+    public Guid CommandeId { get; set; }
 
 
     CommandeArticle commandeArticle = new CommandeArticle();
     private CommandeArticle? selected = null;
-
-    private string? _addArticle;
-    private string? _addCommande;
 
     private Guid _idCommande = Guid.Empty;
     private Guid _idArticle = Guid.Empty;
@@ -139,6 +141,8 @@
     private DateTime? _createdAt = null;
     private DateTime? _updatedAt = null;
     private DateTime? _deletedAt = null;
+
+    public Guid OnSelectCommande = Guid.Empty;
 
 
 
@@ -338,18 +342,13 @@
             }
         }
     }
-    //selection d'une commande
-    public void selection2Commande(Commande commande)
-    {
 
-        _idCommande = (Guid)commande.Id;
-
-    }
     // Selectionner une Commande d'article
     private void SelectCommandeArticle(CommandeArticle commandeArticle)
     {
         selected = commandeArticle;
-        OnArticleSelected?.Invoke(commandeArticle);
+        OnCommandeArticleSelected?.Invoke(commandeArticle);
+
 
         _idArticle = commandeArticle?.Id_Article ?? Guid.Empty;
         _idCommande = commandeArticle?.Id_Commande ?? Guid.Empty;
@@ -371,11 +370,7 @@
         return selected == commandeArticle ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
     }
 
-    //private async Task<bool> ShowConfirmationDialog(string message)
-    //{
-    //    bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", message);
-    //    return confirmed;
-    //}
+
 
     async Task<bool> ConfirmDelete()
     {
