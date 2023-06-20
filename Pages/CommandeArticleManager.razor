@@ -3,12 +3,13 @@
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JsRuntime
-@using GesConso
-@using GesConso.Entities
+@inject IToastService ToastService
+
 @*@using System*@
 
 
 <PageTitle>Gestion des commandes Articles</PageTitle>
+<BlazoredToasts/>
 <div class="row">
     @*<div class="col-md-6">*@
         <table class="table table-striped">
@@ -18,8 +19,10 @@
                 {
 
                     <th>Dénomination Article</th>
+                    <th>Prix uhTva</th>
                     <th>Quantité</th>
-                    <th>PuHtva</th>
+                    <th>Total hTva</th>
+                    <th>Total TvaC</th>
                 }
                 else
                 {
@@ -36,7 +39,7 @@
             <tbody>
             @if (CommandeIdSelected != Guid.Empty)
             {
-                var totals = new Dictionary<Guid, double>(); // Dictionnaire pour stocker les totaux par commande
+                var totals = new Dictionary<Guid, double>(); 
 
                 foreach (var commandeArticle in StateContainer.CommandeArticle)
                 {
@@ -48,7 +51,7 @@
                         var article = StateContainer.Articles.FirstOrDefault(a => a.Id == commandeArticle.Id_Article);
                         if (article != null)
                         {
-                            double calculatedValue = CalculatePuHtva(article, commandeArticle.Quantite.GetValueOrDefault());
+                            double calculatedValue = CalculateTvaC(article, commandeArticle.Quantite.GetValueOrDefault());
 
                             if (!totals.ContainsKey(CommandeIdSelected))
                             {
@@ -59,10 +62,12 @@
                                 totals[CommandeIdSelected] += calculatedValue;
                             }
 
-                            <tr @onclick="(() => SelectCommandeArticle(commandeArticle))" style="@(GetRowStyle(commandeArticle))">
+                            <tr @onclick="(() => SelectCommandeArticle(commandeArticle))" style="style: @(GetRowStyle(commandeArticle))">
                                 <td>@article.Denomination</td>
+                                <td>@article.PuHtva €</td>
                                 <td>@commandeArticle.Quantite</td>
-                                <td>@CalculatePuHtva(article, commandeArticle.Quantite.GetValueOrDefault())</td>
+                                <td>@CalculateHtva(article, commandeArticle.Quantite.GetValueOrDefault()) €</td>
+                                <td>@CalculateTvaC(article, commandeArticle.Quantite.GetValueOrDefault()) €</td>
                             </tr>
                         }
                     }
@@ -72,8 +77,8 @@
                 {
                     double total = totals[CommandeIdSelected];
                     <tr>
-                        <td colspan="2"><strong>Total:</strong></td>
-                        <td><strong>@total</strong></td>
+                        <td colspan="4"><strong>Total TVAC:</strong></td>
+                        <td><strong>@total</strong>€</td>
                     </tr>
                 }
             }
@@ -94,9 +99,6 @@
 
                 }
             }
-
-
-
 
 
             </tbody>
@@ -121,23 +123,20 @@
             <select id="article" class="form-control" @bind="@_idArticle">
                 @foreach (var article in StateContainer.Articles)
                 {
-                    <option value="@article.Id">@article.Denomination</option>
+                var isDeleted = article.DeletedAt != null;
+            // Ignorer les articles supprimés
+            if (isDeleted)
+                {
+                    continue;
+                }
+                    <option value="@article.Id">@article.Denomination - PuHtva : @article.PuHtva €</option>
                 }
             </select>
-
-
 
             <div class="form-group">
                 <label for="quantite">Quantité</label>
                 <input id="quantite" type="number" class="form-control" @bind="_quantite" min="1" />
             </div>
-
-
-
-
-
-
-
 
             <div class="buttonsGroup m-1 ml-auto" style="display: flex; gap: 5px; justify-content: flex-end;">
                 @if (selected is null)
@@ -152,7 +151,7 @@
 
                 @if (selected is not null)
                 {
-                <button type="button" class="btn btn-info" @onclick="RestoreDeletedCommandeArticle">Restaurer</button>
+                @*<button type="button" class="btn btn-info" @onclick="RestoreDeletedCommandeArticle">Restaurer</button>*@
                         <button type="button" class="btn btn-danger" @onclick="DeleteCompleteCommandeArticle">Effacer</button>
                     
                 }
@@ -187,6 +186,8 @@
     [Parameter]
     public Guid CommandeIdSelected { get; set; }
 
+    [Parameter]
+    public EventCallback<double> PuHtvaCalculated { get; set; }
 
     CommandeArticle commandeArticle = new CommandeArticle();
     private CommandeArticle? selected = null;
@@ -277,11 +278,11 @@
         {
             if (msg.IsSuccessStatusCode)
             {
-                //ToastService.ShowSuccess("Article ajouté!");
+                ToastService.ShowSuccess("Article ajouté à la commande! ");
             }
             else
             {
-                //ToastService.ShowError("Une erreur s'est produite.");
+                ToastService.ShowError("Une erreur s'est produite.");
             }
         }
 
@@ -325,6 +326,7 @@
                 {
                     StateContainer.CommandeArticle[index] = commandeArticleUpdate;
                     UnSelectCommandeArticle();
+                    ToastService.ShowSuccess("Article de la commande mis à jour!");
                 }
             }
         }
@@ -377,6 +379,7 @@
                 {
                     StateContainer.CommandeArticle[index] = commandeArticleUpdate;
                     UnSelectCommandeArticle();
+                    ToastService.ShowWarning("Article de la commande effacé");
                 }
             }
         }
@@ -413,6 +416,7 @@
                 {
                     StateContainer.CommandeArticle[index] = commandeArticleUpdate;
                     UnSelectCommandeArticle();
+                    ToastService.ShowInfo("Article de la commande restauré");
                 }
             }
         }
@@ -440,6 +444,7 @@
             {
                 StateContainer.CommandeArticle.Remove(selected);
                 UnSelectCommandeArticle();
+                ToastService.ShowWarning("Article complètement effacé de la commande");
             }
         }
     }
@@ -479,9 +484,23 @@
         return confirmed;
     }
 
-    private Double CalculatePuHtva(Article article, int Quantite)
+
+    private double CalculateHtva(Article article, int quantite)
     {
-        double puHtva = article.PuHtva ?? 0.0; // Valeur par défaut si article.PuHtva est null
-        return puHtva * Quantite;
+        double puHtva = article.PuHtva ?? 0.0; 
+        double calculatedValue = puHtva * quantite;
+        PuHtvaCalculated.InvokeAsync(calculatedValue); 
+        return calculatedValue;
     }
+    private double CalculateTvaC(Article article, int quantite)
+    {
+        double puHtva = article.PuHtva ?? 0.0;
+        double calculatedValue = puHtva * quantite;
+        double tva = calculatedValue * 0.21; 
+
+        calculatedValue += tva; 
+
+        return calculatedValue;
+    }
+
 }

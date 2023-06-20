@@ -5,23 +5,25 @@
 @inject IJSRuntime JsRuntime
 @inject IToastService ToastService
 
-
-@using Blazored.Toast.Services;
-@using GesConso.Entities
 @*@using System*@
 
 
 <PageTitle>Gestion des articles</PageTitle>
+<BlazoredToasts SuccessIcon="fa fa-thumbs-up" />
 
 <h1>Gestion des articles</h1>
+
+<button class="btn btn-info" @onclick="@NewArticle"><i class="fa fa-save"></i>Nouvel Article</button>
+
+
+@*
 <button @onclick="ShowToast">Afficher un toast</button>
-<BlazoredToasts SuccessIcon="fa fa-thumbs-up" />
 
 <button class="btn btn-info" @onclick="@(() => ToastService.ShowInfo("I'm an INFO message"))">Info Toast</button>
 <button class="btn btn-success" @onclick="@(() => ToastService.ShowSuccess("I'm a SUCCESS message with a custom title"))">Success Toast</button>
 <button class="btn btn-warning" @onclick="@(() => ToastService.ShowWarning("I'm a WARNING message"))">Warning Toast</button>
 <button class="btn btn-danger" @onclick="@(() => ToastService.ShowError("I'm an ERROR message"))">Error Toast</button>
-
+*@
 
 <div class="row">
     <div class="col-md-6">
@@ -45,7 +47,7 @@
                     var isSelected = selected == article;
                     var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
 
-                    <tr @onclick="(() => SelectArticle(article))" style="@GetRowStyle(article)">
+                    <tr @onclick="(() => SelectArticle(article))" style="style:@GetRowStyle(article)">
                         <td>@article.Id</td>
                         <td>@article.Denomination</td>
                         <td>@article.Description</td>
@@ -134,7 +136,10 @@
             <div class="buttonsGroup m-1 ml-auto" style="display: flex; gap: 5px; justify-content: flex-end;">
                 @if (selected is null)
                 {
-                    <button type="button" class="btn btn-primary" @onclick="AddArticle">Ajouter</button>
+                    <button type="button" class="btn btn-primary" @onclick="AddArticle">
+                        <i class="fa fa-save"></i> Ajouter
+                    </button>
+
                 }
                 else
                 {
@@ -179,14 +184,13 @@
 
     [Parameter]
     public Action<Article?>? OnArticleSelected { get; set; }
-    private bool isLoading = true;
 
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            isLoading = true;
+
             var requestMsg = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/article/getall");
 
             using (var msg = await HttpClient.SendAsync(requestMsg))
@@ -198,7 +202,7 @@
                     {
                         StateContainer.Articles = articles;
                         await InvokeAsync(StateHasChanged);
-                        isLoading = false; 
+
                     }
                 }
                 else
@@ -217,6 +221,12 @@
         ToastService.ShowSuccess("Opération réussie !");
     }
 
+    //TOAST TEST
+    private void NewArticle()
+    {
+        Reset();
+
+    }
 
     // Ajouter un article
     private async Task AddArticle()
@@ -415,7 +425,6 @@
                 }
                 else
                 {
-                    // Si requête échoue
                     string errorMessage = await msg.Content.ReadAsStringAsync();
                     ToastService.ShowError(errorMessage);
                 }
@@ -423,7 +432,8 @@
         }
         catch (Exception ex)
         {
-                        ToastService.ShowError("Une erreur s'est produite lors de la suppression de l'article.");
+            ToastService.ShowError("Une erreur s'est produite lors de la suppression de l'article.");
+            Console.WriteLine(ex);
         }
     }
 

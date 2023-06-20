@@ -71,23 +71,30 @@ namespace GesConso.Controllers
             return StatusCode(StatusCodes.Status200OK, null);
         }
 
-        // Effacer un commande
+        // Effacer une commande
         [HttpPost]
         [AllowAnonymous]
         public IActionResult Delete(Commande com)
         {
-            var commande = this.context.Commandes.Find(com.Id);
-
-            if (commande == null)
+            try
             {
-                return StatusCode(StatusCodes.Status404NotFound, "Commande not found.");
+                var commande = this.context.Commandes.Find(com.Id);
+
+                if (commande == null)
+                {
+                    return StatusCode(StatusCodes.Status404NotFound, "Commande not found.");
+                }
+
+                this.context.Commandes.Remove(commande);
+                this.context.SaveChanges();
+
+                return StatusCode(StatusCodes.Status200OK, null);
             }
-
-            this.context.Commandes.Remove(commande);
-            this.context.SaveChanges();
-
-            return StatusCode(StatusCodes.Status200OK, null);
-
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Impossible d'effacer cette commande, il y a des articles liés à cette commande");
+            }
 
         }
 

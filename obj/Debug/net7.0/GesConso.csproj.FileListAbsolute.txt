@@ -10,6 +10,8 @@ C:\Users\VANCHRI\source\repos\GesConso\bin\Debug\net7.0\Azure.Core.dll
 C:\Users\VANCHRI\source\repos\GesConso\bin\Debug\net7.0\Azure.Identity.dll
 C:\Users\VANCHRI\source\repos\GesConso\bin\Debug\net7.0\BlazorComponentUtilities.dll
 C:\Users\VANCHRI\source\repos\GesConso\bin\Debug\net7.0\Blazored.Toast.dll
+C:\Users\VANCHRI\source\repos\GesConso\bin\Debug\net7.0\Blazorise.dll
+C:\Users\VANCHRI\source\repos\GesConso\bin\Debug\net7.0\Blazorise.Licensing.dll
 C:\Users\VANCHRI\source\repos\GesConso\bin\Debug\net7.0\BlazorStrap.dll
 C:\Users\VANCHRI\source\repos\GesConso\bin\Debug\net7.0\Humanizer.dll
 C:\Users\VANCHRI\source\repos\GesConso\bin\Debug\net7.0\System.Net.Http.Formatting.dll
@@ -267,5 +269,3 @@ C:\Users\VANCHRI\source\repos\GesConso\obj\Debug\net7.0\refint\GesConso.dll
 C:\Users\VANCHRI\source\repos\GesConso\obj\Debug\net7.0\GesConso.pdb
 C:\Users\VANCHRI\source\repos\GesConso\obj\Debug\net7.0\GesConso.genruntimeconfig.cache
 C:\Users\VANCHRI\source\repos\GesConso\obj\Debug\net7.0\ref\GesConso.dll
-C:\Users\VANCHRI\source\repos\GesConso\bin\Debug\net7.0\Blazorise.dll
-C:\Users\VANCHRI\source\repos\GesConso\bin\Debug\net7.0\Blazorise.Licensing.dll

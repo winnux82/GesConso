@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "UHphZDYCkErLjVN14hQ5b9lLaoQBPbvDuUDZFknh1v2gk6IjdgeaLoNSoOHJ0I+TNWv/YDQy0JFkY2w7mzsUcw==",
+  "dgSpecHash": "dbD+xuqQEUtmMcpDAh33i2Ys6BnULFtaYOBQ3I0JXaW4PrL0L2ikNAg9IdCoBIh8t5h0JFQhoLX/8MiwWXMWTw==",
   "success": true,
   "projectFilePath": "C:\\Users\\VANCHRI\\source\\repos\\GesConso\\GesConso.csproj",
   "expectedPackageFiles": [
@@ -11,6 +11,7 @@
     "C:\\Users\\VANCHRI\\.nuget\\packages\\blazorise\\1.2.4\\blazorise.1.2.4.nupkg.sha512",
     "C:\\Users\\VANCHRI\\.nuget\\packages\\blazorise.licensing\\1.1.0\\blazorise.licensing.1.1.0.nupkg.sha512",
     "C:\\Users\\VANCHRI\\.nuget\\packages\\blazorstrap\\5.1.102.51923\\blazorstrap.5.1.102.51923.nupkg.sha512",
+    "C:\\Users\\VANCHRI\\.nuget\\packages\\fontawesome\\4.7.0\\fontawesome.4.7.0.nupkg.sha512",
     "C:\\Users\\VANCHRI\\.nuget\\packages\\humanizer\\2.14.1\\humanizer.2.14.1.nupkg.sha512",
     "C:\\Users\\VANCHRI\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\VANCHRI\\.nuget\\packages\\humanizer.core.af\\2.14.1\\humanizer.core.af.2.14.1.nupkg.sha512",
@@ -165,6 +166,7 @@
     "C:\\Users\\VANCHRI\\.nuget\\packages\\system.collections\\4.3.0\\system.collections.4.3.0.nupkg.sha512",
     "C:\\Users\\VANCHRI\\.nuget\\packages\\system.collections.concurrent\\4.3.0\\system.collections.concurrent.4.3.0.nupkg.sha512",
     "C:\\Users\\VANCHRI\\.nuget\\packages\\system.collections.immutable\\6.0.0\\system.collections.immutable.6.0.0.nupkg.sha512",
+    "C:\\Users\\VANCHRI\\.nuget\\packages\\system.componentmodel.annotations\\5.0.0\\system.componentmodel.annotations.5.0.0.nupkg.sha512",
     "C:\\Users\\VANCHRI\\.nuget\\packages\\system.composition\\6.0.0\\system.composition.6.0.0.nupkg.sha512",
     "C:\\Users\\VANCHRI\\.nuget\\packages\\system.composition.attributedmodel\\6.0.0\\system.composition.attributedmodel.6.0.0.nupkg.sha512",
     "C:\\Users\\VANCHRI\\.nuget\\packages\\system.composition.convention\\6.0.0\\system.composition.convention.6.0.0.nupkg.sha512",

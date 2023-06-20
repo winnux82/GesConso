@@ -92,7 +92,8 @@ namespace GesConso.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the article.");
+                Console.WriteLine(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, "Impossible d'effacer cet article, il est lié à une ou plusieurs commandes");
             }
         }
 
