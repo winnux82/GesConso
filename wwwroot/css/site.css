@@ -74,3 +74,19 @@ a, .btn-link {
     border: 1px solid #CCCCCC;
     padding: 10px;
 }
+
+
+.skeleton-animation {
+    background-color: #f2f2f2;
+    animation: skeleton-loading 1s infinite alternate;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}

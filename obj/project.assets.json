@@ -75,6 +75,40 @@
           "buildMultiTargeting/Blazored.Toast.props": {}
         }
       },
+      "Blazorise/1.2.4": {
+        "type": "package",
+        "dependencies": {
+          "Blazorise.Licensing": "1.1.0",
+          "Microsoft.AspNetCore.Components": "7.0.7",
+          "Microsoft.AspNetCore.Components.Web": "7.0.7",
+          "Microsoft.Extensions.Logging.Abstractions": "7.0.1"
+        },
+        "compile": {
+          "lib/net7.0/Blazorise.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net7.0/Blazorise.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/Blazorise.props": {}
+        },
+        "buildMultiTargeting": {
+          "buildMultiTargeting/Blazorise.props": {}
+        }
+      },
+      "Blazorise.Licensing/1.1.0": {
+        "type": "package",
+        "compile": {
+          "lib/net7.0/Blazorise.Licensing.dll": {}
+        },
+        "runtime": {
+          "lib/net7.0/Blazorise.Licensing.dll": {}
+        }
+      },
       "BlazorStrap/5.1.102.51923": {
         "type": "package",
         "dependencies": {
@@ -4215,6 +4249,76 @@
         "lib/net6.0/Blazored.Toast.dll",
         "lib/net7.0/Blazored.Toast.dll",
         "staticwebassets/Blazored.Toast.bundle.scp.css"
+      ]
+    },
+    "Blazorise/1.2.4": {
+      "sha512": "MSnc+/E/Z4O0BvRUJ4ISSpDvHEdaipsC1GRcxIaoUk62FBuMNVfIsn+1/oWL1vyuDxTPspUjWniy3EaHQRp5HQ==",
+      "type": "package",
+      "path": "blazorise/1.2.4",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Blazorise.png",
+        "LICENSE.md",
+        "blazorise.1.2.4.nupkg.sha512",
+        "blazorise.nuspec",
+        "build/Blazorise.props",
+        "build/Microsoft.AspNetCore.StaticWebAssets.props",
+        "buildMultiTargeting/Blazorise.props",
+        "buildTransitive/Blazorise.props",
+        "lib/net6.0/Blazorise.dll",
+        "lib/net6.0/Blazorise.xml",
+        "lib/net7.0/Blazorise.dll",
+        "lib/net7.0/Blazorise.xml",
+        "staticwebassets/blazorise.css",
+        "staticwebassets/blazorise.min.css",
+        "staticwebassets/breakpoint.js",
+        "staticwebassets/button.js",
+        "staticwebassets/closable.js",
+        "staticwebassets/colorPicker.js",
+        "staticwebassets/datePicker.js",
+        "staticwebassets/dragDrop.js",
+        "staticwebassets/dropdown.js",
+        "staticwebassets/fileEdit.js",
+        "staticwebassets/filePicker.js",
+        "staticwebassets/inputMask.js",
+        "staticwebassets/io.js",
+        "staticwebassets/memoEdit.js",
+        "staticwebassets/numericPicker.js",
+        "staticwebassets/observer.js",
+        "staticwebassets/popper.js",
+        "staticwebassets/table.js",
+        "staticwebassets/textEdit.js",
+        "staticwebassets/theme.js",
+        "staticwebassets/timePicker.js",
+        "staticwebassets/tooltip.js",
+        "staticwebassets/utilities.js",
+        "staticwebassets/validators/DateTimeMaskValidator.js",
+        "staticwebassets/validators/NoValidator.js",
+        "staticwebassets/validators/NumericMaskValidator.js",
+        "staticwebassets/validators/RegExMaskValidator.js",
+        "staticwebassets/vendors/Behave.js",
+        "staticwebassets/vendors/Pickr.js",
+        "staticwebassets/vendors/autoNumeric.js",
+        "staticwebassets/vendors/flatpickr.js",
+        "staticwebassets/vendors/inputmask.js",
+        "staticwebassets/vendors/jsencrypt.js",
+        "staticwebassets/vendors/sha512.js"
+      ]
+    },
+    "Blazorise.Licensing/1.1.0": {
+      "sha512": "QDHl4m8ixmq+xIsW3d0kHBpJYJPqMBzbNCFhtEsqSrmrAPMEmSVm6r9pprkgT51leeqvkPxuy22Osiql48KgDQ==",
+      "type": "package",
+      "path": "blazorise.licensing/1.1.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Blazorise.png",
+        "LICENSE.md",
+        "blazorise.licensing.1.1.0.nupkg.sha512",
+        "blazorise.licensing.nuspec",
+        "lib/net6.0/Blazorise.Licensing.dll",
+        "lib/net7.0/Blazorise.Licensing.dll"
       ]
     },
     "BlazorStrap/5.1.102.51923": {
@@ -11845,6 +11949,7 @@
     "net7.0": [
       "BlazorStrap >= 5.1.102.51923",
       "Blazored.Toast >= 4.1.0",
+      "Blazorise >= 1.2.4",
       "Microsoft.AspNet.WebApi.Client >= 5.2.9",
       "Microsoft.AspNetCore.Components.Forms >= 7.0.7",
       "Microsoft.AspNetCore.Components.WebAssembly.Authentication >= 7.0.7",
@@ -11909,6 +12014,10 @@
           "Blazored.Toast": {
             "target": "Package",
             "version": "[4.1.0, )"
+          },
+          "Blazorise": {
+            "target": "Package",
+            "version": "[1.2.4, )"
           },
           "Microsoft.AspNet.WebApi.Client": {
             "target": "Package",

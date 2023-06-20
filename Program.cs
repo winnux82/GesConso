@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Blazored.Toast;
+using Blazorise;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,7 @@ builder.Services.AddDbContext<Database>(options => options.UseSqlServer(builder.
 builder.Services.AddBlazorStrap();
 //Ajout du service Toast
 builder.Services.AddBlazoredToast();
+builder.Services.AddBlazorise();
 
 var app = builder.Build();
 

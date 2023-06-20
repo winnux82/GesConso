@@ -267,3 +267,5 @@ C:\Users\VANCHRI\source\repos\GesConso\obj\Debug\net7.0\refint\GesConso.dll
 C:\Users\VANCHRI\source\repos\GesConso\obj\Debug\net7.0\GesConso.pdb
 C:\Users\VANCHRI\source\repos\GesConso\obj\Debug\net7.0\GesConso.genruntimeconfig.cache
 C:\Users\VANCHRI\source\repos\GesConso\obj\Debug\net7.0\ref\GesConso.dll
+C:\Users\VANCHRI\source\repos\GesConso\bin\Debug\net7.0\Blazorise.dll
+C:\Users\VANCHRI\source\repos\GesConso\bin\Debug\net7.0\Blazorise.Licensing.dll

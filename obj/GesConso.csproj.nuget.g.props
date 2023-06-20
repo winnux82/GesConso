@@ -18,6 +18,7 @@
     <Import Project="$(NuGetPackageRoot)microsoft.entityframeworkcore.design\7.0.7\build\net6.0\Microsoft.EntityFrameworkCore.Design.props" Condition="Exists('$(NuGetPackageRoot)microsoft.entityframeworkcore.design\7.0.7\build\net6.0\Microsoft.EntityFrameworkCore.Design.props')" />
     <Import Project="$(NuGetPackageRoot)microsoft.aspnetcore.components.webassembly.authentication\7.0.7\buildTransitive\Microsoft.AspNetCore.Components.WebAssembly.Authentication.props" Condition="Exists('$(NuGetPackageRoot)microsoft.aspnetcore.components.webassembly.authentication\7.0.7\buildTransitive\Microsoft.AspNetCore.Components.WebAssembly.Authentication.props')" />
     <Import Project="$(NuGetPackageRoot)blazorstrap\5.1.102.51923\buildTransitive\BlazorStrap.props" Condition="Exists('$(NuGetPackageRoot)blazorstrap\5.1.102.51923\buildTransitive\BlazorStrap.props')" />
+    <Import Project="$(NuGetPackageRoot)blazorise\1.2.4\buildTransitive\Blazorise.props" Condition="Exists('$(NuGetPackageRoot)blazorise\1.2.4\buildTransitive\Blazorise.props')" />
     <Import Project="$(NuGetPackageRoot)blazored.toast\4.1.0\buildTransitive\Blazored.Toast.props" Condition="Exists('$(NuGetPackageRoot)blazored.toast\4.1.0\buildTransitive\Blazored.Toast.props')" />
   </ImportGroup>
   <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">

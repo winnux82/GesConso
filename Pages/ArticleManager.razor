@@ -3,7 +3,10 @@
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JsRuntime
+@inject IToastService ToastService
 
+
+@using Blazored.Toast.Services;
 @using GesConso.Entities
 @*@using System*@
 
@@ -11,6 +14,14 @@
 <PageTitle>Gestion des articles</PageTitle>
 
 <h1>Gestion des articles</h1>
+<button @onclick="ShowToast">Afficher un toast</button>
+<BlazoredToasts SuccessIcon="fa fa-thumbs-up" />
+
+<button class="btn btn-info" @onclick="@(() => ToastService.ShowInfo("I'm an INFO message"))">Info Toast</button>
+<button class="btn btn-success" @onclick="@(() => ToastService.ShowSuccess("I'm a SUCCESS message with a custom title"))">Success Toast</button>
+<button class="btn btn-warning" @onclick="@(() => ToastService.ShowWarning("I'm a WARNING message"))">Warning Toast</button>
+<button class="btn btn-danger" @onclick="@(() => ToastService.ShowError("I'm an ERROR message"))">Error Toast</button>
+
 
 <div class="row">
     <div class="col-md-6">
@@ -60,26 +71,28 @@
             </thead>
             <tbody>
 
-                @foreach (var article in StateContainer.Articles)
-                {
-                    // Vérifier si l'article est supprimé
-                    var isDeleted = article.DeletedAt != null;
-
-                    // Ignorer les articles supprimés
-                    if (isDeleted)
+                    @foreach (var article in StateContainer.Articles)
                     {
-                        continue;
+                        // Vérifier si l'article est supprimé
+                        var isDeleted = article.DeletedAt != null;
+
+                        // Ignorer les articles supprimés
+                        if (isDeleted)
+                        {
+                            continue;
+                        }
+
+                        var isSelected = selected == article;
+                        var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
+
+                        <tr @onclick="(() => SelectArticle(article))" style="@style">
+                            <td>@article.Denomination</td>
+                            <td>@article.Description</td>
+                            <td>@article.PuHtva</td>
+                        </tr>
                     }
 
-                    var isSelected = selected == article;
-                    var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
 
-                    <tr @onclick="(() => SelectArticle(article))" style="@style">
-                        <td>@article.Denomination</td>
-                        <td>@article.Description</td>
-                        <td>@article.PuHtva</td>
-                    </tr>
-                }
 
 
             </tbody>
@@ -165,11 +178,14 @@
 
     [Parameter]
     public Action<Article?>? OnArticleSelected { get; set; }
+    private bool isLoading = true;
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+            isLoading = true;
             var requestMsg = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/article/getall");
 
             using (var msg = await HttpClient.SendAsync(requestMsg))
@@ -181,6 +197,7 @@
                     {
                         StateContainer.Articles = articles;
                         await InvokeAsync(StateHasChanged);
+                        isLoading = false; 
                     }
                 }
                 else
@@ -190,6 +207,15 @@
             }
         }
     }
+
+
+
+    //TOAST TEST
+    private void ShowToast()
+    {
+        ToastService.ShowSuccess("Opération réussie !");
+    }
+
 
     // Ajouter un article
     private async Task AddArticle()
@@ -214,11 +240,12 @@
         {
             if (msg.IsSuccessStatusCode)
             {
-                //ToastService.ShowSuccess("Article ajouté!");
+                ToastService.ShowSuccess("Article ajouté!");
+
             }
             else
             {
-                //ToastService.ShowError("Une erreur s'est produite.");
+                ToastService.ShowError("Une erreur s'est produite.");
             }
         }
 
@@ -264,6 +291,7 @@
                 {
                     StateContainer.Articles[index] = articleUpdate;
                     UnSelectArticle();
+                    ToastService.ShowSuccess("Article mis à jour!");
                 }
             }
         }
@@ -315,6 +343,7 @@
                 {
                     StateContainer.Articles[index] = articleUpdate;
                     UnSelectArticle();
+                    ToastService.ShowWarning("Article effacé");
                 }
             }
         }

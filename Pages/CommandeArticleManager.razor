@@ -163,14 +163,9 @@
 
                 @if (selected is not null)
                 {
-                    @if (_deletedAt is null)
-                    {
-                        <button type="button" class="btn btn-danger" @onclick="DeleteCommandeArticle">Delete</button>
-                    }
-                    else
-                    {
-                        <button type="button" class="btn btn-danger" @onclick="DeleteCompleteCommandeArticle">Effacer définitivement</button>
-                    }
+ 
+                        <button type="button" class="btn btn-danger" @onclick="DeleteCompleteCommandeArticle">Effacer</button>
+                    
                 }
 
             </div>

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "aRFS+TyTpAUUB+QQXro2XUV7U/IUQRap9gE+9kSY7u1fTHUJyKwW52uhvIH5njD5x6qjQmrviIO7GC+oPneDFQ==",
+  "dgSpecHash": "UHphZDYCkErLjVN14hQ5b9lLaoQBPbvDuUDZFknh1v2gk6IjdgeaLoNSoOHJ0I+TNWv/YDQy0JFkY2w7mzsUcw==",
   "success": true,
   "projectFilePath": "C:\\Users\\VANCHRI\\source\\repos\\GesConso\\GesConso.csproj",
   "expectedPackageFiles": [
@@ -8,6 +8,8 @@
     "C:\\Users\\VANCHRI\\.nuget\\packages\\azure.identity\\1.6.0\\azure.identity.1.6.0.nupkg.sha512",
     "C:\\Users\\VANCHRI\\.nuget\\packages\\blazorcomponentutilities\\1.7.1\\blazorcomponentutilities.1.7.1.nupkg.sha512",
     "C:\\Users\\VANCHRI\\.nuget\\packages\\blazored.toast\\4.1.0\\blazored.toast.4.1.0.nupkg.sha512",
+    "C:\\Users\\VANCHRI\\.nuget\\packages\\blazorise\\1.2.4\\blazorise.1.2.4.nupkg.sha512",
+    "C:\\Users\\VANCHRI\\.nuget\\packages\\blazorise.licensing\\1.1.0\\blazorise.licensing.1.1.0.nupkg.sha512",
     "C:\\Users\\VANCHRI\\.nuget\\packages\\blazorstrap\\5.1.102.51923\\blazorstrap.5.1.102.51923.nupkg.sha512",
     "C:\\Users\\VANCHRI\\.nuget\\packages\\humanizer\\2.14.1\\humanizer.2.14.1.nupkg.sha512",
     "C:\\Users\\VANCHRI\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
