@@ -135,18 +135,7 @@
 
 
 
-            <div>
-                @if (_createdAt is not null)
-                {
-                    <p>Créé : @_createdAt</p>
-                    <p>Modifié : @_updatedAt</p>
-                }
-                @if (_deletedAt is not null)
-                {
-                    <p>Effacé : @_deletedAt</p>
 
-                }
-            </div>
 
 
 
@@ -163,7 +152,7 @@
 
                 @if (selected is not null)
                 {
- 
+                <button type="button" class="btn btn-info" @onclick="RestoreDeletedCommandeArticle">Restaurer</button>
                         <button type="button" class="btn btn-danger" @onclick="DeleteCompleteCommandeArticle">Effacer</button>
                     
                 }
@@ -173,6 +162,18 @@
 
 
         </form>
+    <div>
+        @if (_createdAt is not null)
+        {
+            <p>Créé : @_createdAt</p>
+            <p>Modifié : @_updatedAt</p>
+        }
+        @if (_deletedAt is not null)
+        {
+            <p>Effacé : @_deletedAt</p>
+
+        }
+    </div>
     @*</div>*@
 
 </div>
@@ -361,6 +362,42 @@
                 CreatedAt = _createdAt,
                 UpdatedAt = DateTime.Now,
                 DeletedAt = DateTime.Now,
+            };
+
+        Console.WriteLine(commandeArticleUpdate);
+        var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/commandearticle/update");
+        requestMsg.Content = JsonContent.Create(commandeArticleUpdate);
+
+        using (var response = await HttpClient.SendAsync(requestMsg))
+        {
+            if (response.IsSuccessStatusCode)
+            {
+                var index = StateContainer.CommandeArticle.IndexOf(selected);
+                if (index != -1)
+                {
+                    StateContainer.CommandeArticle[index] = commandeArticleUpdate;
+                    UnSelectCommandeArticle();
+                }
+            }
+        }
+    }
+    // Restaurer Commande d'Article
+    private async Task RestoreDeletedCommandeArticle()
+    {
+        if (selected is null)
+        {
+            return;
+        }
+
+        var commandeArticleUpdate = new CommandeArticle
+            {
+                Id = this.selected.Id,
+                Id_Article = _idArticle,
+                Id_Commande = _idCommande,
+                Quantite = _quantite,
+                CreatedAt = _createdAt,
+                UpdatedAt = DateTime.Now,
+                DeletedAt = null,
             };
 
         Console.WriteLine(commandeArticleUpdate);

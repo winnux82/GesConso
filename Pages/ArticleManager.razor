@@ -150,6 +150,7 @@
                     }
                     else
                     {
+                        <button type="button" class="btn btn-info" @onclick="RestoreDeletedArticle">Restaurer</button>
                         <button type="button" class="btn btn-danger" @onclick="DeleteCompleteArticle">Effacer définitivement</button>
                     }
                 }
@@ -348,7 +349,42 @@
             }
         }
     }
+    // Restaurer un Article
+    private async Task RestoreDeletedArticle()
+    {
+        if (selected is null)
+        {
+            return;
+        }
 
+        var articleUpdate = new Article
+            {
+                Id = this.selected.Id,
+                Denomination = _denomination,
+                Description = _description,
+                PuHtva = _puhtva,
+                CreatedAt = _createdAt,
+                UpdatedAt = DateTime.Now,
+                DeletedAt = null,
+            };
+
+        var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/article/update");
+        requestMsg.Content = JsonContent.Create(articleUpdate);
+
+        using (var msg = await HttpClient.SendAsync(requestMsg))
+        {
+            if (msg.IsSuccessStatusCode)
+            {
+                var index = StateContainer.Articles.IndexOf(selected);
+                if (index != -1)
+                {
+                    StateContainer.Articles[index] = articleUpdate;
+                    UnSelectArticle();
+                    ToastService.ShowInfo("Article Restauré");
+                }
+            }
+        }
+    }
     // Effacer un Article
     private async Task DeleteCompleteArticle()
     {
@@ -356,23 +392,41 @@
         {
             return;
         }
+
         bool confirmed = await ConfirmDelete();
 
         if (!confirmed)
         {
             return;
         }
-        var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/article/delete");
-        requestMsg.Content = JsonContent.Create(selected);
-        using (var msg = await HttpClient.SendAsync(requestMsg))
+
+        try
         {
-            if (msg.IsSuccessStatusCode)
+            var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/article/delete");
+            requestMsg.Content = JsonContent.Create(selected);
+
+            using (var msg = await HttpClient.SendAsync(requestMsg))
             {
-                StateContainer.Articles.Remove(selected);
-                UnSelectArticle();
+                if (msg.IsSuccessStatusCode)
+                {
+                    StateContainer.Articles.Remove(selected);
+                    UnSelectArticle();
+                    ToastService.ShowWarning("Article complètement effacé");
+                }
+                else
+                {
+                    // Si requête échoue
+                    string errorMessage = await msg.Content.ReadAsStringAsync();
+                    ToastService.ShowError(errorMessage);
+                }
             }
         }
+        catch (Exception ex)
+        {
+                        ToastService.ShowError("Une erreur s'est produite lors de la suppression de l'article.");
+        }
     }
+
 
 
     // Selectionner un article

@@ -76,20 +76,26 @@ namespace GesConso.Controllers
         [AllowAnonymous]
         public IActionResult Delete(Article art)
         {
-            var article = this.context.Articles.Find(art.Id);
-
-            if (article == null)
+            try
             {
-                return StatusCode(StatusCodes.Status404NotFound, "Agent not found.");
+                var article = this.context.Articles.Find(art.Id);
+
+                if (article == null)
+                {
+                    return StatusCode(StatusCodes.Status404NotFound, "Article not found.");
+                }
+
+                this.context.Articles.Remove(article);
+                this.context.SaveChanges();
+
+                return StatusCode(StatusCodes.Status200OK, null);
             }
-
-            this.context.Articles.Remove(article);
-            this.context.SaveChanges();
-
-            return StatusCode(StatusCodes.Status200OK, null);
-
-
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the article.");
+            }
         }
+
 
 
 
