@@ -4,7 +4,7 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JsRuntime
 @inject IToastService ToastService
-
+@using Blazorise
 @*@using System*@
 @using Microsoft.AspNetCore.Components.Forms
 
@@ -104,16 +104,20 @@
 
     </div>
     <div class="col-md-6">
-        <EditForm Model="@article">
+        @if(selected is null)
+        {
+        <EditForm Model="@article" OnValidSubmit="AddArticle">
             <DataAnnotationsValidator />
-          @*  <Microsoft.AspNetCore.Components.Forms.ValidationSummary />*@
+
+    
+            @*<Blazorise.ValidationSummary />*@
                     <fieldset>
             <legend>Ajout d'un article</legend>
             <div class="form-group">
                 <label for="denomination">Dénomination</label>
                     <div class="col-sm-10">
-                        <input id="denomination" type="text" class="form-control" placeholder="Obligatoire" @bind="_denomination" />
-                    @*<InputText id="denomination" type="text" class="form-control" placeholder="Obligatoire" @bind-Value="article.Denomination" />*@
+                        @*<input id="denomination" type="text" class="form-control" placeholder="Obligatoire" @bind="_denomination" />*@
+                    <InputText id="denomination" type="text" class="form-control" placeholder="Obligatoire" @bind-Value="article.Denomination" autofocus />
                     <ValidationMessage For="@(() => article.Denomination)" />
                     </div>
                     
@@ -121,21 +125,63 @@
             <div class="form-group">
                 <label for="description">Description</label>
                     <div class="col-sm-10">
-                        <input id="description" type="text" class="form-control" @bind="_description" />
+                        @*<input id="description" type="text" class="form-control" @bind="_description" />*@
+                        <InputText id="description" type="text" class="form-control" placeholder="" @bind-Value="article.Description" />
+                    <ValidationMessage For="@(() => article.Description)" />
                 </div>
 
             </div>
             <div class="form-group">
                 <label for="puHtva">PuHtva</label>
                     <div class="col-sm-10">
-                <input id="puHtva" type="number" class="form-control" @bind="_puhtva" /></Div>
+                @*<input id="puHtva" type="number" class="form-control" @bind="_puhtva" />*@
+                    <InputNumber id="puHtva" type="text" class="form-control" placeholder="Obligatoire" @bind-Value="article.PuHtva" />
+                    <ValidationMessage For="@(() => article.PuHtva)" />
+            </Div>
+            </div>
+
+             </fieldset>
+                <button type="submit" class="btn btn-primary mt-2" @onclick="AddArticle">Ajouter</button>
+  
+        </EditForm>
+
+        }
+        else
+        {
+        <EditForm Model="@article">
+            <DataAnnotationsValidator />
+
+                    <fieldset>
+            <legend>Ajout d'un article</legend>
+            <div class="form-group">
+                <label for="denomination">Dénomination</label>
+                    <div class="col-sm-10">
+         <InputText id="denomination" type="text" class="form-control" placeholder="Obligatoire" @bind-Value="_denomination" />
+                    <ValidationMessage For="@(() => article.Denomination)" />
+                    </div>
+                    
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                    <div class="col-sm-10">
+                        <InputText id="description" type="text" class="form-control" placeholder="" @bind-Value="_description" />
+                    <ValidationMessage For="@(() => article.Description)" />
+                </div>
+
+            </div>
+            <div class="form-group">
+                <label for="puHtva">PuHtva</label>
+                    <div class="col-sm-10">
+                        <InputNumber id="puHtva" type="text" class="form-control" placeholder="" @bind-Value="_puhtva" />
+                    <ValidationMessage For="@(() => article.PuHtva)" />
+            </Div>
             </div>
 
              </fieldset>
 
 
         </EditForm>
-
+        }
         <div>
             @if (_createdAt is not null)
             {
@@ -154,9 +200,6 @@
         <div class="buttonsGroup m-1 ml-auto" style="display: flex; gap: 5px; justify-content: flex-end;">
             @if (selected is null)
             {
-                <button type="button" class="btn btn-primary" @onclick="AddArticle">
-                    <i class="fa fa-save"></i> Ajouter
-                </button>
 
             }
             else
@@ -246,12 +289,14 @@
     // Ajouter un article
     private async Task AddArticle()
     {
+
+
         var newArticle = new Article
             {
                 Id = Guid.NewGuid(),
-                Denomination = _denomination,
-                Description = _description,
-                PuHtva = _puhtva,
+                Denomination = article.Denomination,
+                Description = article.Description,
+                PuHtva = article.PuHtva,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
 
@@ -268,6 +313,7 @@
             {
                 ToastService.ShowSuccess("Article ajouté!");
                 StateContainer.Articles?.Add(newArticle);
+                Reset();
 
             }
             else
@@ -277,7 +323,7 @@
         }
 
 
-        Reset();
+
     }
 
     // Mettre à jour un article
@@ -328,6 +374,7 @@
     // RESET
     private void Reset()
     {
+        article.Denomination = string.Empty;
         _denomination = string.Empty;
         _description = string.Empty;
         _puhtva = 0;
