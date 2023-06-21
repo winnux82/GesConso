@@ -5,30 +5,19 @@
 @inject IJSRuntime JsRuntime
 @inject IToastService ToastService
 @using Blazorise
-@*@using System*@
 @using Microsoft.AspNetCore.Components.Forms
-
+@using System.Linq;
+@using GesConso;
 
 <PageTitle>Gestion des articles</PageTitle>
 <BlazoredToasts SuccessIcon="fa fa-thumbs-up" />
 
 <h1>Gestion des articles</h1>
 
-<button class="btn btn-info" @onclick="@NewArticle"><i class="fa fa-save"></i>Nouvel Article</button>
-
-
-@*
-<button @onclick="ShowToast">Afficher un toast</button>
-
-<button class="btn btn-info" @onclick="@(() => ToastService.ShowInfo("I'm an INFO message"))">Info Toast</button>
-<button class="btn btn-success" @onclick="@(() => ToastService.ShowSuccess("I'm a SUCCESS message with a custom title"))">Success Toast</button>
-<button class="btn btn-warning" @onclick="@(() => ToastService.ShowWarning("I'm a WARNING message"))">Warning Toast</button>
-<button class="btn btn-danger" @onclick="@(() => ToastService.ShowError("I'm an ERROR message"))">Error Toast</button>
-*@
+<button class="btn btn-primary" @onclick="NewArticle"><i class="fa fa-save"></i>Nouvel Article</button>
 
 <div class="row">
     <div class="col-md-6">
-
         <div class="highlight">
             <h2>Admin</h2>
         </div>
@@ -43,7 +32,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var article in StateContainer.Articles)
+                @foreach (Article article in StateContainer.Articles)
                 {
                     var isSelected = selected == article;
                     var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
@@ -55,10 +44,9 @@
                         <td>@article.PuHtva</td>
                     </tr>
                 }
-
-
             </tbody>
         </table>
+
         <div class="highlight">
             <h2>User</h2>
         </div>
@@ -66,151 +54,85 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    @*<th>ID</th>*@
                     <th>Dénomination</th>
                     <th>Description</th>
                     <th>PuHtva</th>
                 </tr>
             </thead>
             <tbody>
-
-                    @foreach (var article in StateContainer.Articles)
+                @foreach (Article article in StateContainer.Articles)
+                {
+                    // Vérifier si l'article est supprimé
+                    var isDeleted = article.DeletedAt != null;
+                    if (isDeleted)
                     {
-                        // Vérifier si l'article est supprimé
-                        var isDeleted = article.DeletedAt != null;
-
-                        // Ignorer les articles supprimés
-                        if (isDeleted)
-                        {
-                            continue;
-                        }
-
-                        var isSelected = selected == article;
-                        var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
-
-                        <tr @onclick="(() => SelectArticle(article))" style="@style">
-                            <td>@article.Denomination</td>
-                            <td>@article.Description</td>
-                            <td>@article.PuHtva</td>
-                        </tr>
+                        continue;
                     }
 
+                    var isSelected = selected == article;
+                    var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
 
-
-
+                    <tr @onclick="(() => SelectArticle(article))" style="@style">
+                        <td>@article.Denomination</td>
+                        <td>@article.Description</td>
+                        <td>@article.PuHtva</td>
+                    </tr>
+                }
             </tbody>
         </table>
-
-
     </div>
     <div class="col-md-6">
-        @if(selected is null)
-        {
-        <EditForm Model="@article" OnValidSubmit="AddArticle">
+        <EditForm Model="@article" OnValidSubmit="@(selected is null ? (Func<Task>)AddArticle : UpdateArticle)">
+
+
             <DataAnnotationsValidator />
 
-    
-            @*<Blazorise.ValidationSummary />*@
-                    <fieldset>
-            <legend>Ajout d'un article</legend>
-            <div class="form-group">
-                <label for="denomination">Dénomination</label>
+            <fieldset>
+                <legend>@(selected is null ? "Ajout d'un article" : "Modification d'un article")</legend>
+                <div class="form-group">
+                    <label for="denomination">Dénomination</label>
                     <div class="col-sm-10">
-                        @*<input id="denomination" type="text" class="form-control" placeholder="Obligatoire" @bind="_denomination" />*@
-                    <InputText id="denomination" type="text" class="form-control" placeholder="Obligatoire" @bind-Value="article.Denomination" autofocus />
-                    <ValidationMessage For="@(() => article.Denomination)" />
+                        <InputText id="denomination" type="text" class="form-control" placeholder="Obligatoire" @bind-Value="article.Denomination" autofocus />
+                        <ValidationMessage For="@(() => article.Denomination)" />
                     </div>
-                    
-            </div>
-            <div class="form-group">
-                <label for="description">Description</label>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
                     <div class="col-sm-10">
-                        @*<input id="description" type="text" class="form-control" @bind="_description" />*@
                         <InputText id="description" type="text" class="form-control" placeholder="" @bind-Value="article.Description" />
-                    <ValidationMessage For="@(() => article.Description)" />
-                </div>
-
-            </div>
-            <div class="form-group">
-                <label for="puHtva">PuHtva</label>
-                    <div class="col-sm-10">
-                @*<input id="puHtva" type="number" class="form-control" @bind="_puhtva" />*@
-                    <InputNumber id="puHtva" type="text" class="form-control" placeholder="Obligatoire" @bind-Value="article.PuHtva" />
-                    <ValidationMessage For="@(() => article.PuHtva)" />
-            </Div>
-            </div>
-
-             </fieldset>
-                <button type="submit" class="btn btn-primary mt-2" @onclick="AddArticle">Ajouter</button>
-  
-        </EditForm>
-
-        }
-        else
-        {
-        <EditForm Model="@article">
-            <DataAnnotationsValidator />
-
-                    <fieldset>
-            <legend>Ajout d'un article</legend>
-            <div class="form-group">
-                <label for="denomination">Dénomination</label>
-                    <div class="col-sm-10">
-         <InputText id="denomination" type="text" class="form-control" placeholder="Obligatoire" @bind-Value="_denomination" />
-                    <ValidationMessage For="@(() => article.Denomination)" />
+                        <ValidationMessage For="@(() => article.Description)" />
                     </div>
-                    
-            </div>
-            <div class="form-group">
-                <label for="description">Description</label>
-                    <div class="col-sm-10">
-                        <InputText id="description" type="text" class="form-control" placeholder="" @bind-Value="_description" />
-                    <ValidationMessage For="@(() => article.Description)" />
                 </div>
-
-            </div>
-            <div class="form-group">
-                <label for="puHtva">PuHtva</label>
+                <div class="form-group">
+                    <label for="puHtva">PuHtva</label>
                     <div class="col-sm-10">
-                        <InputNumber id="puHtva" type="text" class="form-control" placeholder="" @bind-Value="_puhtva" />
-                    <ValidationMessage For="@(() => article.PuHtva)" />
-            </Div>
-            </div>
-
-             </fieldset>
-
-
+                        <InputNumber id="puHtva" type="text" class="form-control" placeholder="@((selected is null) ? "Obligatoire" : "")" @bind-Value="article.PuHtva" />
+                        <ValidationMessage For="@(() => article.PuHtva)" />
+                    </div>
+                </div>
+            </fieldset>
+            <button type="submit" class="btn btn-primary mt-2">@((selected is null) ? "Ajouter" : "Update")</button>
         </EditForm>
-        }
-        <div>
-            @if (_createdAt is not null)
-            {
-                <p>Créé : @_createdAt</p>
-                <p>Modifié : @_updatedAt</p>
-            }
-            @if (_deletedAt is not null)
-            {
-                <p>Effacé : @_deletedAt</p>
 
+
+        <div>
+            @if (article.CreatedAt is not null)
+            {
+                <p>Créé : @article.CreatedAt</p>
+                <p>Modifié : @article.UpdatedAt</p>
+            }
+            @if (article.DeletedAt is not null)
+            {
+                <p>Effacé : @article.DeletedAt</p>
             }
         </div>
-
-
-
         <div class="buttonsGroup m-1 ml-auto" style="display: flex; gap: 5px; justify-content: flex-end;">
-            @if (selected is null)
-            {
 
-            }
-            else
-            {
-                <button type="button" class="btn btn-danger" @onclick="UpdateArticle">Sauver</button>
-            }
             <button type="button" class="btn btn-secondary" @onclick="Reset">Reset</button>
 
             @if (selected is not null)
             {
-                @if (_deletedAt is null)
+                @if (article.DeletedAt is null)
                 {
                     <button type="button" class="btn btn-danger" @onclick="DeleteArticle">Delete</button>
                 }
@@ -222,11 +144,8 @@
             }
 
         </div>
-
     </div>
-
 </div>
-
 
 @code {
     Article article = new Article();
@@ -239,58 +158,73 @@
     private DateTime? _updatedAt = null;
     private DateTime? _deletedAt = null;
 
-
     [Parameter]
-    public Action<Article?>? OnArticleSelected { get; set; }
+    public Action? OnArticleSelected { get; set; }
 
+    private Action? OnArticleUpdated;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
-        if (firstRender)
+        this.OnArticleUpdated = async () =>
         {
+            await InvokeAsync(StateHasChanged);
+        };
+        this.OnArticleSelected = async () =>
+        {
+            await InvokeAsync(StateHasChanged);
+        };
 
-            var requestMsg = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/article/getall");
+        StateContainer.OnArticleUpdated += this.OnArticleUpdated;
+        StateContainer.OnArticleSelected += this.OnArticleSelected;
+        await GetArticles();
+    }
 
-            using (var msg = await HttpClient.SendAsync(requestMsg))
+    //protected override async Task OnAfterRenderAsync(bool firstRender)
+    //{
+    //    // if (firstRender)
+    //    //{
+    //    //    this.OnArticleUpdated = async () =>
+    //    //    {
+    //    //        await InvokeAsync(StateHasChanged);
+    //    //    };
+    //    //    this.OnArticleSelected = async () =>
+    //    //    {
+    //    //        await InvokeAsync(StateHasChanged);
+    //    //    };
+
+    //    //    StateContainer.OnArticleUpdated += this.OnArticleUpdated;
+    //    //    StateContainer.OnArticleSelected += this.OnArticleSelected;
+    //    //    await GetArticles();
+    //    // }
+    //}
+
+    public async Task GetArticles()
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/article/getall");
+
+        using (var response = await HttpClient.SendAsync(request))
+        {
+            if (response.IsSuccessStatusCode)
             {
-                if (msg.IsSuccessStatusCode)
-                {
-                    var articles = await msg.Content.ReadFromJsonAsync<List<Article>>();
-                    if (articles != null)
-                    {
-                        StateContainer.Articles = articles;
-                        await InvokeAsync(StateHasChanged);
+                var articles = await response.Content.ReadFromJsonAsync<List<Article>>();
 
-                    }
-                }
-                else
+                if (articles != null)
                 {
-                    // Gérer l'échec de la requête
+                    StateContainer.Articles = articles;
+                    await InvokeAsync(StateHasChanged);
                 }
             }
         }
     }
 
-
-
-    //TOAST TEST
-    private void ShowToast()
-    {
-        ToastService.ShowSuccess("Opération réussie !");
-    }
-
-    //TOAST TEST
     private void NewArticle()
     {
         Reset();
-
     }
 
     // Ajouter un article
     private async Task AddArticle()
     {
-
-
         var newArticle = new Article
             {
                 Id = Guid.NewGuid(),
@@ -299,14 +233,12 @@
                 PuHtva = article.PuHtva,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
-
             };
 
         var content = JsonContent.Create(newArticle);
 
         var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/article/add");
         requestMsg.Content = content;
-
         using (var msg = await HttpClient.SendAsync(requestMsg))
         {
             if (msg.IsSuccessStatusCode)
@@ -314,16 +246,12 @@
                 ToastService.ShowSuccess("Article ajouté!");
                 StateContainer.Articles?.Add(newArticle);
                 Reset();
-
             }
             else
             {
                 ToastService.ShowError("Une erreur s'est produite.");
             }
         }
-
-
-
     }
 
     // Mettre à jour un article
@@ -337,19 +265,13 @@
         var articleUpdate = new Article
             {
                 Id = this.selected.Id,
-                Denomination = _denomination,
-                Description = _description,
-                PuHtva = _puhtva,
-                CreatedAt = _createdAt,
+                Denomination = article.Denomination,
+                Description = article.Description,
+                PuHtva = article.PuHtva,
+                CreatedAt = article.CreatedAt,
                 UpdatedAt = DateTime.Now,
-                DeletedAt = _deletedAt,
+                DeletedAt = article.DeletedAt,
             };
-
-        Console.WriteLine("Article Update:");
-        Console.WriteLine($"ID: {articleUpdate.Id}");
-        Console.WriteLine($"Denomination: {articleUpdate.Denomination}");
-        Console.WriteLine($"Description: {articleUpdate.Description}");
-        Console.WriteLine($"PuHtva: {articleUpdate.PuHtva}");
 
         var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/article/update");
         requestMsg.Content = JsonContent.Create(articleUpdate);
@@ -369,23 +291,19 @@
         }
     }
 
-
-
     // RESET
     private void Reset()
     {
         article.Denomination = string.Empty;
-        _denomination = string.Empty;
-        _description = string.Empty;
-        _puhtva = 0;
-        _createdAt = null;
-        _updatedAt = null;
-        _deletedAt = null;
+        article.Description = string.Empty;
+        article.PuHtva = 0;
+        article.CreatedAt = null;
+        article.UpdatedAt = null;
+        article.DeletedAt = null;
         selected = null;
-
     }
 
-    // Delete Article 
+    // Delete Article
     private async Task DeleteArticle()
     {
         if (selected is null)
@@ -395,13 +313,15 @@
 
         var articleUpdate = new Article
             {
+
                 Id = this.selected.Id,
-                Denomination = _denomination,
-                Description = _description,
-                PuHtva = _puhtva,
-                CreatedAt = _createdAt,
+                Denomination = article.Denomination,
+                Description = article.Description,
+                PuHtva = article.PuHtva,
+                CreatedAt = article.CreatedAt,
                 UpdatedAt = DateTime.Now,
                 DeletedAt = DateTime.Now,
+
             };
 
         var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/article/update");
@@ -421,6 +341,7 @@
             }
         }
     }
+
     // Restaurer un Article
     private async Task RestoreDeletedArticle()
     {
@@ -431,13 +352,15 @@
 
         var articleUpdate = new Article
             {
+
                 Id = this.selected.Id,
-                Denomination = _denomination,
-                Description = _description,
-                PuHtva = _puhtva,
-                CreatedAt = _createdAt,
+                Denomination = article.Denomination,
+                Description = article.Description,
+                PuHtva = article.PuHtva,
+                CreatedAt = article.CreatedAt,
                 UpdatedAt = DateTime.Now,
                 DeletedAt = null,
+
             };
 
         var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/article/update");
@@ -457,6 +380,7 @@
             }
         }
     }
+
     // Effacer un Article
     private async Task DeleteCompleteArticle()
     {
@@ -499,20 +423,22 @@
         }
     }
 
-
-
     // Selectionner un article
-    private void SelectArticle(Article article)
+    private void SelectArticle(Article art)
     {
-        selected = article;
-        OnArticleSelected?.Invoke(article);
 
-        _denomination = article?.Denomination ?? string.Empty;
-        _description = article?.Description ?? string.Empty;
-        _puhtva = article?.PuHtva;
-        _createdAt = article?.CreatedAt;
-        _updatedAt = article?.UpdatedAt;
-        _deletedAt = article?.DeletedAt;
+        StateContainer.SelectedArticle = article;
+        selected = art;
+        article = art;
+        InvokeAsync(StateHasChanged);
+        //OnArticleSelected?.Invoke(article);
+
+        //_denomination = article?.Denomination ?? string.Empty;
+        //_description = article?.Description ?? string.Empty;
+        //_puhtva = article?.PuHtva;
+        //_createdAt = article?.CreatedAt;
+        //_updatedAt = article?.UpdatedAt;
+        //_deletedAt = article?.DeletedAt;
     }
 
     private void UnSelectArticle()
@@ -520,22 +446,20 @@
         selected = null;
         Reset();
     }
+
     private string GetRowStyle(Article article)
     {
         return selected == article ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
     }
-
-    //private async Task<bool> ShowConfirmationDialog(string message)
-    //{
-    //    bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", message);
-    //    return confirmed;
-    //}
 
     async Task<bool> ConfirmDelete()
     {
         bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Êtes-vous sûr de vouloir supprimer définitivement cet article ??");
         return confirmed;
     }
-
-
+    //public void Dispose()
+    //{
+    //    StateContainer.OnArticlesUpdated -= this.OnArticlesUpdated;
+    //    StateContainer.OnArticleSelected -= this.OnArticleSelected;
+    //}
 }
