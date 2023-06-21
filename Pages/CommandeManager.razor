@@ -11,14 +11,14 @@
 <BlazoredToasts SuccessIcon="fa fa-thumbs-up" />
 
 <h1>Gestion des commandes</h1>
-_PuHtvaValue : @_PuHtvaValue
+
 <div class="row">
     <div class="col-md-6">
 
-@*        <div class="highlight">
-            <h2>Admin</h2>
+        @*        <div class="highlight">
+        <h2>Admin</h2>
         </div>*@
-        
+
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -57,16 +57,16 @@ _PuHtvaValue : @_PuHtvaValue
         </table>
 
         <form>
-            @if (_idCommande is not null)
+            @if (commande.Id is not null)
             {
-                @if (_idDate is not null)
+                @if (commande.Id_Date is not null)
                 {
-                    <h3>Détails Commande : @_idDate?.ToString("yyyyMMdd")</h3>
+                    <h3>Détails Commande : @commande.Id_Date?.ToString("yyyyMMdd")</h3>
                 }
                 <h4>Ajout d'un article</h4>
                 @if (selected is not null)
                 {
-                    <CommandeArticleManager CommandeIdSelected="@(_idCommande.Value)" />
+                    <CommandeArticleManager CommandeIdSelected="@(commande.Id.Value)" />
                 }
 
 
@@ -85,22 +85,22 @@ _PuHtvaValue : @_PuHtvaValue
 
             <div class="form-group">
                 <label for="prixHtva">prixHtva</label>
-                <input id="prixHtva" type="text" class="form-control" @bind="_prixHtva" />
+                <input id="prixHtva" type="text" class="form-control" @bind="commande.PrixHtva" />
             </div>
             <div class="form-group">
                 <label for="date">Date et heure de la Commande</label>
-                <input id="date" type="datetime-local" class="form-control" @bind="@_dateCommande" />
+                <input id="date" type="datetime-local" class="form-control" @bind="@commande.DateCommande" />
             </div>
 
-            @if (_createdAt is not null)
+            @if (commande.CreatedAt is not null)
             {
-                <p>Créé : @(_createdAt ?? DateTime.MinValue)</p>
-                <p>Modifié : @(_updatedAt ?? DateTime.MinValue)</p>
+                <p>Créé : @(commande.CreatedAt ?? DateTime.MinValue)</p>
+                <p>Modifié : @(commande.UpdatedAt ?? DateTime.MinValue)</p>
 
             }
-            @if (_deletedAt is not null)
+            @if (commande.DeletedAt is not null)
             {
-                <p>Effacé : @_deletedAt</p>
+                <p>Effacé : @commande.DeletedAt</p>
 
             }
             <div class="buttonsGroup m-1 ml-auto" style="display: flex; gap: 5px; justify-content: flex-end;">
@@ -116,7 +116,7 @@ _PuHtvaValue : @_PuHtvaValue
 
                 @if (selected is not null)
                 {
-                    @if (_deletedAt is null)
+                    @if (commande.DeletedAt is null)
                     {
                         <button type="button" class="btn btn-danger" @onclick="DeleteCommande">Delete</button>
                     }
@@ -138,14 +138,14 @@ _PuHtvaValue : @_PuHtvaValue
     Commande commande = new Commande();
     private Commande? selected = null;
 
-    private Guid? _idCommande = null;
-    private DateTime? _idDate = null;
-    private DateTime? _dateCommande = null;
-    private double? _prixHtva = null;
+    //private Guid? _idCommande = null;
+    //private DateTime? _idDate = null;
+    //private DateTime? _dateCommande = null;
+    //private double? _prixHtva = null;
 
-    private DateTime? _createdAt = null;
-    private DateTime? _updatedAt = null;
-    private DateTime? _deletedAt = null;
+    //private DateTime? _createdAt = null;
+    //private DateTime? _updatedAt = null;
+    //private DateTime? _deletedAt = null;
 
     private double _PuHtvaValue { get; set; }
 
@@ -157,52 +157,88 @@ _PuHtvaValue : @_PuHtvaValue
 
 
     [Parameter]
-    public Action<Commande?>? OnCommandeSelected { get; set; }
+    public Action? OnCommandeSelected { get; set; }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private Action? OnCommandeUpdated;
+
+    protected override async Task OnInitializedAsync()
     {
-        if (firstRender)
+        this.OnCommandeUpdated = async () =>
         {
-            var requestMsg = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/commande/getall");
+            await InvokeAsync(StateHasChanged);
+        };
+        this.OnCommandeSelected = async () =>
+        {
+            await InvokeAsync(StateHasChanged);
+        };
 
-            using (var msg = await HttpClient.SendAsync(requestMsg))
+        StateContainer.OnArticleUpdated += this.OnCommandeUpdated;
+        StateContainer.OnArticleSelected += this.OnCommandeSelected;
+        await GetCommandes();
+    }
+
+    public async Task GetCommandes()
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/commande/getall");
+
+        using (var response = await HttpClient.SendAsync(request))
+        {
+            if (response.IsSuccessStatusCode)
             {
-                if (msg.IsSuccessStatusCode)
-                {
-                    var commandes = await msg.Content.ReadFromJsonAsync<List<Commande>>();
-                    if (commandes != null)
-                    {
-                        StateContainer.Commandes = commandes;
-                        await InvokeAsync(StateHasChanged);
-                    }
-                }
-                else
-                {
-                    // Gérer l'échec de la requête
-                }
-            }
+                var commandes = await response.Content.ReadFromJsonAsync<List<Commande>>();
 
-
-            var requestArticles = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/article/getall");
-
-            using (var responseArticles = await HttpClient.SendAsync(requestArticles))
-            {
-                if (responseArticles.IsSuccessStatusCode)
+                if (commandes != null)
                 {
-                    var articles = await responseArticles.Content.ReadFromJsonAsync<List<Article>>();
-                    if (articles != null)
-                    {
-                        StateContainer.Articles = articles;
-                        await InvokeAsync(StateHasChanged);
-                    }
-                }
-                else
-                {
-                    // Gérer l'échec de la requête pour les articles
+                    StateContainer.Commandes = commandes;
+                    await InvokeAsync(StateHasChanged);
                 }
             }
         }
     }
+    //protected override async Task OnAfterRenderAsync(bool firstRender)
+    //{
+    //    if (firstRender)
+    //    {
+    //        var requestMsg = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/commande/getall");
+
+    //        using (var msg = await HttpClient.SendAsync(requestMsg))
+    //        {
+    //            if (msg.IsSuccessStatusCode)
+    //            {
+    //                var commandes = await msg.Content.ReadFromJsonAsync<List<Commande>>();
+    //                if (commandes != null)
+    //                {
+    //                    StateContainer.Commandes = commandes;
+    //                    await InvokeAsync(StateHasChanged);
+    //                }
+    //            }
+    //            else
+    //            {
+    //                // Gérer l'échec de la requête
+    //            }
+    //        }
+
+
+    //        var requestArticles = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/article/getall");
+
+    //        using (var responseArticles = await HttpClient.SendAsync(requestArticles))
+    //        {
+    //            if (responseArticles.IsSuccessStatusCode)
+    //            {
+    //                var articles = await responseArticles.Content.ReadFromJsonAsync<List<Article>>();
+    //                if (articles != null)
+    //                {
+    //                    StateContainer.Articles = articles;
+    //                    await InvokeAsync(StateHasChanged);
+    //                }
+    //            }
+    //            else
+    //            {
+    //                // Gérer l'échec de la requête pour les articles
+    //            }
+    //        }
+    //    }
+    //}
 
     // Ajouter un commande
     private async Task AddCommande()
@@ -211,12 +247,12 @@ _PuHtvaValue : @_PuHtvaValue
             {
                 Id = Guid.NewGuid(),
                 Id_Date = DateTime.Now,
-                DateCommande = _dateCommande,
-                    PrixHtva = _prixHtva,
+                DateCommande = commande.DateCommande,
+                PrixHtva = commande.PrixHtva,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
 
-    };
+            };
 
         var content = JsonContent.Create(newCommande);
 
@@ -228,7 +264,7 @@ _PuHtvaValue : @_PuHtvaValue
             if (msg.IsSuccessStatusCode)
             {
                 ToastService.ShowSuccess("Commande ajoutée!");
-        StateContainer.Commandes?.Add(newCommande);
+                StateContainer.Commandes?.Add(newCommande);
             }
             else
             {
@@ -251,12 +287,12 @@ _PuHtvaValue : @_PuHtvaValue
         var commandeUpdate = new Commande
             {
                 Id = this.selected.Id,
-                Id_Date = _idDate,
-                DateCommande = _dateCommande,
-                PrixHtva = _prixHtva,
-                CreatedAt = _createdAt,
+                Id_Date = commande.Id_Date,
+                DateCommande = commande.DateCommande,
+                PrixHtva = commande.PrixHtva,
+                CreatedAt = commande.CreatedAt,
                 UpdatedAt = DateTime.Now,
-                DeletedAt = _deletedAt,
+                DeletedAt = commande.DeletedAt,
             };
 
 
@@ -283,17 +319,17 @@ _PuHtvaValue : @_PuHtvaValue
     // RESET
     private void Reset()
     {
-        _idDate = null;
-        _dateCommande = null;
-        _prixHtva = 0;
-        _createdAt = null;
-        _updatedAt = null;
-        _deletedAt = null;
+        commande.Id_Date= null;
+        commande.DateCommande = null;
+        commande.PrixHtva = 0;
+        commande.CreatedAt = null;
+        commande.UpdatedAt = null;
+        commande.DeletedAt = null;
         selected = null;
 
     }
 
-    // Delete Commande 
+    // Delete Commande
     private async Task DeleteCommande()
     {
         if (selected is null)
@@ -305,10 +341,10 @@ _PuHtvaValue : @_PuHtvaValue
             {
 
                 Id = this.selected.Id,
-                Id_Date = _idDate,
-                DateCommande = _dateCommande,
-                PrixHtva = _prixHtva,
-                CreatedAt = _createdAt,
+                Id_Date = commande.Id_Date,
+                DateCommande = commande.DateCommande,
+                PrixHtva = commande.PrixHtva,
+                CreatedAt = commande.CreatedAt,
                 UpdatedAt = DateTime.Now,
                 DeletedAt = DateTime.Now,
             };
@@ -342,10 +378,10 @@ _PuHtvaValue : @_PuHtvaValue
             {
 
                 Id = this.selected.Id,
-                Id_Date = _idDate,
-                DateCommande = _dateCommande,
-                PrixHtva = _prixHtva,
-                CreatedAt = _createdAt,
+                Id_Date = commande.Id_Date,
+                DateCommande = commande.DateCommande,
+                PrixHtva = commande.PrixHtva,
+                CreatedAt = commande.CreatedAt,
                 UpdatedAt = DateTime.Now,
                 DeletedAt = null,
             };
@@ -400,17 +436,22 @@ _PuHtvaValue : @_PuHtvaValue
 
 
     // Selectionner une commande
-    private void SelectCommande(Commande commande)
+    private void SelectCommande(Commande comm)
     {
-        selected = commande;
-        OnCommandeSelected?.Invoke(commande);
-        _idCommande = commande?.Id;
-        _idDate = commande?.Id_Date;
-        _dateCommande = commande?.DateCommande;
-        _prixHtva = commande?.PrixHtva;
-        _createdAt = commande?.CreatedAt;
-        _updatedAt = commande?.UpdatedAt;
-        _deletedAt = commande?.DeletedAt;
+
+        StateContainer.SelectedCommande = comm;
+        selected = comm;
+        commande = comm;
+        InvokeAsync(StateHasChanged);
+        //selected = commande;
+        //OnCommandeSelected?.Invoke(commande);
+        //_idCommande = commande?.Id;
+        //_idDate = commande?.Id_Date;
+        //_dateCommande = commande?.DateCommande;
+        //_prixHtva = commande?.PrixHtva;
+        //_createdAt = commande?.CreatedAt;
+        //_updatedAt = commande?.UpdatedAt;
+        //_deletedAt = commande?.DeletedAt;
     }
 
     private void UnSelectCommande()

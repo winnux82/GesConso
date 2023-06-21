@@ -83,40 +83,5 @@ namespace GesConso
         public void NotifyCommandeArticlesUpdated() => OnCommandeArticlesUpdated?.Invoke();
 
 
-        //public void AddArticle(Article article)
-        //{
-        //    articles.Add(article);
-        //    NotifyArticlesUpdated();
-        //}
-
-        //public void RemoveArticle(Article article)
-        //{
-        //    articles.Remove(article);
-        //    NotifyArticlesUpdated();
-        //}
-
-        //public void AddCommande(Commande commande)
-        //{
-        //    commandes.Add(commande);
-        //    NotifyCommandesUpdated();
-        //}
-
-        //public void RemoveCommande(Commande commande)
-        //{
-        //    commandes.Remove(commande);
-        //    NotifyCommandesUpdated();
-        //}
-
-        //public void AddCommandeArticle(CommandeArticle commandeArticle)
-        //{
-        //    commandeArticles.Add(commandeArticle);
-        //    NotifyCommandeArticlesUpdated();
-        //}
-
-        //public void RemoveCommandeArticle(CommandeArticle commandeArticle)
-        //{
-        //    commandeArticles.Remove(commandeArticle);
-        //    NotifyCommandeArticlesUpdated();
-        //}
     }
 }

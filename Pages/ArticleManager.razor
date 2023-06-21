@@ -4,10 +4,10 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JsRuntime
 @inject IToastService ToastService
-@using Blazorise
+@*@using Blazorise
 @using Microsoft.AspNetCore.Components.Forms
 @using System.Linq;
-@using GesConso;
+@using GesConso;*@
 
 <PageTitle>Gestion des articles</PageTitle>
 <BlazoredToasts SuccessIcon="fa fa-thumbs-up" />
@@ -150,13 +150,6 @@
 @code {
     Article article = new Article();
     private Article? selected = null;
-
-    private string _denomination = string.Empty;
-    private string _description = string.Empty;
-    private double? _puhtva = null;
-    private DateTime? _createdAt = null;
-    private DateTime? _updatedAt = null;
-    private DateTime? _deletedAt = null;
 
     [Parameter]
     public Action? OnArticleSelected { get; set; }
@@ -427,7 +420,7 @@
     private void SelectArticle(Article art)
     {
 
-        StateContainer.SelectedArticle = article;
+        StateContainer.SelectedArticle = art;
         selected = art;
         article = art;
         InvokeAsync(StateHasChanged);
