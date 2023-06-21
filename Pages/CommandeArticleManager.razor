@@ -9,12 +9,12 @@
 
 
 <PageTitle>Gestion des commandes Articles</PageTitle>
-<BlazoredToasts/>
+<BlazoredToasts />
 <div class="row">
     @*<div class="col-md-6">*@
-        <table class="table table-striped">
-            <thead>
-                <tr>
+    <table class="table table-striped">
+        <thead>
+            <tr>
                 @if (CommandeIdSelected != Guid.Empty)
                 {
 
@@ -26,20 +26,20 @@
                 }
                 else
                 {
-                    
-                <th>ID_Commande</th>
+
+                    <th>ID_Commande</th>
                     <th>ID_Article</th>
                     <th>Quantité</th>
-                
-            }
- 
-                    
-                </tr>
-            </thead>
-            <tbody>
+
+                }
+
+
+            </tr>
+        </thead>
+        <tbody>
             @if (CommandeIdSelected != Guid.Empty)
             {
-                var totals = new Dictionary<Guid, double>(); 
+                var totals = new Dictionary<Guid, double>();
 
                 foreach (var commandeArticle in StateContainer.CommandeArticles)
                 {
@@ -89,80 +89,80 @@
                 {
                     // Vérifier si la commande correspond à CommandeId
 
-                        var isSelected = selected == commandeArticle;
-                        var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
-                        <tr @onclick="(() => SelectCommandeArticle(commandeArticle))" style="@(GetRowStyle(commandeArticle))">
-                            <td>@commandeArticle.Id_Commande</td>
-                            <td>@commandeArticle.Id_Article</td>
-                            <td>@commandeArticle.Quantite</td>
-                        </tr>
+                    var isSelected = selected == commandeArticle;
+                    var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
+                    <tr @onclick="(() => SelectCommandeArticle(commandeArticle))" style="@(GetRowStyle(commandeArticle))">
+                        <td>@commandeArticle.Id_Commande</td>
+                        <td>@commandeArticle.Id_Article</td>
+                        <td>@commandeArticle.Quantite</td>
+                    </tr>
 
                 }
             }
 
 
-            </tbody>
-        </table>
+        </tbody>
+    </table>
 
 
-@*    </div>
+    @*    </div>
     <div class="col-md-6">*@
-        <form>
-            @if (CommandeIdSelected == Guid.Empty)
-            {
-                <label for="commande">Choisissez une commande :</label>
+    <form>
+        @if (CommandeIdSelected == Guid.Empty)
+        {
+            <label for="commande">Choisissez une commande :</label>
 
-                <select id="commande" class="form-control" @bind="@_idCommande">
-                    @foreach (var commande in StateContainer.Commandes)
-                    {
-                        <option value="@commande.Id">@commande.Id</option>
-                    }
-                </select>
-            }
-
-        
-            <label for="article">Choisissez un article :</label>
-            <select id="article" class="form-control" @bind="@_idArticle">
-                @foreach (var article in StateContainer.Articles)
+            <select id="commande" class="form-control" @bind="@_idCommande">
+                @foreach (var commande in StateContainer.Commandes)
                 {
+                    <option value="@commande.Id">@commande.Id</option>
+                }
+            </select>
+        }
+
+
+        <label for="article">Choisissez un article :</label>
+        <select id="article" class="form-control" @bind="@_idArticle">
+            @foreach (var article in StateContainer.Articles)
+            {
                 var isDeleted = article.DeletedAt != null;
-            // Ignorer les articles supprimés
-            if (isDeleted)
+                // Ignorer les articles supprimés
+                if (isDeleted)
                 {
                     continue;
                 }
-                    <option value="@article.Id">@article.Denomination - PuHtva : @article.PuHtva €</option>
-                }
-            </select>
+                <option value="@article.Id">@article.Denomination - PuHtva : @article.PuHtva €</option>
+            }
+        </select>
 
-            <div class="form-group">
-                <label for="quantite">Quantité</label>
-                <input id="quantite" type="number" class="form-control" @bind="_quantite" min="1" />
-            </div>
+        <div class="form-group">
+            <label for="quantite">Quantité</label>
+            <input id="quantite" type="number" class="form-control" @bind="_quantite" min="1" />
+        </div>
 
-            <div class="buttonsGroup m-1 ml-auto" style="display: flex; gap: 5px; justify-content: flex-end;">
-                @if (selected is null)
-                {
-                    <button type="button" class="btn btn-primary" @onclick="AddCommandeArticle">Ajouter</button>
-                }
-                else
-                {
-                    <button type="button" class="btn btn-danger" @onclick="UpdateCommandeArticle">Sauver</button>
-                }
-                <button type="button" class="btn btn-secondary" @onclick="Reset">Reset</button>
+        <div class="buttonsGroup m-1 ml-auto" style="display: flex; gap: 5px; justify-content: flex-end;">
+            @if (selected is null)
+            {
+                <button type="button" class="btn btn-primary" @onclick="AddCommandeArticle">Ajouter</button>
+            }
+            else
+            {
+                <button type="button" class="btn btn-danger" @onclick="UpdateCommandeArticle">Sauver</button>
+            }
+            <button type="button" class="btn btn-secondary" @onclick="Reset">Reset</button>
 
-                @if (selected is not null)
-                {
+            @if (selected is not null)
+            {
                 @*<button type="button" class="btn btn-info" @onclick="RestoreDeletedCommandeArticle">Restaurer</button>*@
-                        <button type="button" class="btn btn-danger" @onclick="DeleteCompleteCommandeArticle">Effacer</button>
-                    
-                }
+                <button type="button" class="btn btn-danger" @onclick="DeleteCompleteCommandeArticle">Effacer</button>
 
-            </div>
+            }
+
+        </div>
 
 
 
-        </form>
+    </form>
     <div>
         @if (_createdAt is not null)
         {
@@ -207,8 +207,8 @@
     public Guid OnSelectCommande = Guid.Empty;
 
     List<double> calculTotal = new List<double>();
-    
- 
+
+
 
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -268,7 +268,7 @@
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
 
-    };
+            };
 
         Console.WriteLine(newCommandeArticle);
         var content = JsonContent.Create(newCommandeArticle);
@@ -489,18 +489,18 @@
 
     private double CalculateHtva(Article article, int quantite)
     {
-        double puHtva = article.PuHtva ?? 0.0; 
+        double puHtva = article.PuHtva ?? 0.0;
         double calculatedValue = puHtva * quantite;
-        PuHtvaCalculated.InvokeAsync(calculatedValue); 
+        PuHtvaCalculated.InvokeAsync(calculatedValue);
         return calculatedValue;
     }
     private double CalculateTvaC(Article article, int quantite)
     {
         double puHtva = article.PuHtva ?? 0.0;
         double calculatedValue = puHtva * quantite;
-        double tva = calculatedValue * 0.21; 
+        double tva = calculatedValue * 0.21;
 
-        calculatedValue += tva; 
+        calculatedValue += tva;
 
         return calculatedValue;
     }

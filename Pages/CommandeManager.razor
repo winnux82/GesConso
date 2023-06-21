@@ -8,9 +8,12 @@
 
 
 <PageTitle>Gestion des commandes</PageTitle>
-<BlazoredToasts SuccessIcon="fa fa-thumbs-up" />
+<BlazoredToasts/>
 
 <h1>Gestion des commandes</h1>
+
+<button class="btn btn-primary" @onclick="NewCommande"><i class="fa fa-save"></i>Nouvel Commande</button>
+
 
 <div class="row">
     <div class="col-md-6">
@@ -56,7 +59,10 @@
             </tbody>
         </table>
 
-        <form>
+        <EditForm Model="@commande" OnValidSubmit="@(selected is null ? (Func<Task>)AddCommande : UpdateCommande)">
+            
+            <DataAnnotationsValidator />
+
             @if (commande.Id is not null)
             {
                 @if (commande.Id_Date is not null)
@@ -73,7 +79,8 @@
 
 
             }
-        </form>
+            <button type="submit" class="btn btn-primary mt-2">@((selected is null) ? "Ajouter" : "Update")</button>
+        </EditForm>
 
 
 
@@ -241,6 +248,12 @@
     //}
 
     // Ajouter un commande
+
+    private void NewCommande()
+    {
+        Reset();
+    }
+
     private async Task AddCommande()
     {
         var newCommande = new Commande

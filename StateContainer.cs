@@ -37,7 +37,7 @@ namespace GesConso
             set
             {
                 commandeArticles = value;
-                NotifyCommandeArticlesUpdated();
+                NotifyCommandeArticleUpdated();
             }
         }
 
@@ -73,14 +73,14 @@ namespace GesConso
 
         public event Action? OnArticleUpdated;
         public event Action? OnCommandesUpdated;
-        public event Action? OnCommandeArticlesUpdated;
+        public event Action? OnCommandeArticleUpdated;
         public event Action? OnArticleSelected;
         public event Action? OnCommandeSelected;
         public event Action? OnCommandeArticleSelected;
 
         public void NotifyArticlesUpdated() => OnArticleUpdated?.Invoke();
         public void NotifyCommandesUpdated() => OnCommandesUpdated?.Invoke();
-        public void NotifyCommandeArticlesUpdated() => OnCommandeArticlesUpdated?.Invoke();
+        public void NotifyCommandeArticleUpdated() => OnCommandeArticleUpdated?.Invoke();
 
 
     }
