@@ -6,6 +6,7 @@
 @inject IToastService ToastService
 
 @*@using System*@
+@using Microsoft.AspNetCore.Components.Forms
 
 
 <PageTitle>Gestion des articles</PageTitle>
@@ -47,7 +48,7 @@
                     var isSelected = selected == article;
                     var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
 
-                    <tr @onclick="(() => SelectArticle(article))" style="style:@GetRowStyle(article)">
+                    <tr @onclick="(() => SelectArticle(article))" style="@GetRowStyle(article)">
                         <td>@article.Id</td>
                         <td>@article.Denomination</td>
                         <td>@article.Description</td>
@@ -103,68 +104,82 @@
 
     </div>
     <div class="col-md-6">
-        <form>
+        <EditForm Model="@article">
+            <DataAnnotationsValidator />
+          @*  <Microsoft.AspNetCore.Components.Forms.ValidationSummary />*@
+                    <fieldset>
+            <legend>Ajout d'un article</legend>
             <div class="form-group">
                 <label for="denomination">Dénomination</label>
-                <input id="denomination" type="text" class="form-control" @bind="_denomination" />
+                    <div class="col-sm-10">
+                        <input id="denomination" type="text" class="form-control" placeholder="Obligatoire" @bind="_denomination" />
+                    @*<InputText id="denomination" type="text" class="form-control" placeholder="Obligatoire" @bind-Value="article.Denomination" />*@
+                    <ValidationMessage For="@(() => article.Denomination)" />
+                    </div>
+                    
             </div>
             <div class="form-group">
                 <label for="description">Description</label>
-                <input id="description" type="text" class="form-control" @bind="_description" />
+                    <div class="col-sm-10">
+                        <input id="description" type="text" class="form-control" @bind="_description" />
+                </div>
+
             </div>
             <div class="form-group">
                 <label for="puHtva">PuHtva</label>
-                <input id="puHtva" type="number" class="form-control" @bind="_puhtva" />
+                    <div class="col-sm-10">
+                <input id="puHtva" type="number" class="form-control" @bind="_puhtva" /></Div>
             </div>
 
+             </fieldset>
 
-            <div>
-                @if (_createdAt is not null)
+
+        </EditForm>
+
+        <div>
+            @if (_createdAt is not null)
+            {
+                <p>Créé : @_createdAt</p>
+                <p>Modifié : @_updatedAt</p>
+            }
+            @if (_deletedAt is not null)
+            {
+                <p>Effacé : @_deletedAt</p>
+
+            }
+        </div>
+
+
+
+        <div class="buttonsGroup m-1 ml-auto" style="display: flex; gap: 5px; justify-content: flex-end;">
+            @if (selected is null)
+            {
+                <button type="button" class="btn btn-primary" @onclick="AddArticle">
+                    <i class="fa fa-save"></i> Ajouter
+                </button>
+
+            }
+            else
+            {
+                <button type="button" class="btn btn-danger" @onclick="UpdateArticle">Sauver</button>
+            }
+            <button type="button" class="btn btn-secondary" @onclick="Reset">Reset</button>
+
+            @if (selected is not null)
+            {
+                @if (_deletedAt is null)
                 {
-                    <p>Créé : @_createdAt</p>
-                    <p>Modifié : @_updatedAt</p>
-                }
-                @if (_deletedAt is not null)
-                {
-                    <p>Effacé : @_deletedAt</p>
-
-                }
-            </div>
-
-
-
-            <div class="buttonsGroup m-1 ml-auto" style="display: flex; gap: 5px; justify-content: flex-end;">
-                @if (selected is null)
-                {
-                    <button type="button" class="btn btn-primary" @onclick="AddArticle">
-                        <i class="fa fa-save"></i> Ajouter
-                    </button>
-
+                    <button type="button" class="btn btn-danger" @onclick="DeleteArticle">Delete</button>
                 }
                 else
                 {
-                    <button type="button" class="btn btn-danger" @onclick="UpdateArticle">Sauver</button>
+                    <button type="button" class="btn btn-info" @onclick="RestoreDeletedArticle">Restaurer</button>
+                    <button type="button" class="btn btn-danger" @onclick="DeleteCompleteArticle">Effacer définitivement</button>
                 }
-                <button type="button" class="btn btn-secondary" @onclick="Reset">Reset</button>
+            }
 
-                @if (selected is not null)
-                {
-                    @if (_deletedAt is null)
-                    {
-                        <button type="button" class="btn btn-danger" @onclick="DeleteArticle">Delete</button>
-                    }
-                    else
-                    {
-                        <button type="button" class="btn btn-info" @onclick="RestoreDeletedArticle">Restaurer</button>
-                        <button type="button" class="btn btn-danger" @onclick="DeleteCompleteArticle">Effacer définitivement</button>
-                    }
-                }
+        </div>
 
-            </div>
-
-
-
-        </form>
     </div>
 
 </div>
@@ -240,7 +255,7 @@
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
 
-    };
+            };
 
         var content = JsonContent.Create(newArticle);
 
@@ -252,6 +267,7 @@
             if (msg.IsSuccessStatusCode)
             {
                 ToastService.ShowSuccess("Article ajouté!");
+                StateContainer.Articles?.Add(newArticle);
 
             }
             else
@@ -260,7 +276,6 @@
             }
         }
 
-        StateContainer.Articles?.Add(newArticle);
 
         Reset();
     }

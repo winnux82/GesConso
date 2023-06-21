@@ -228,6 +228,7 @@ _PuHtvaValue : @_PuHtvaValue
             if (msg.IsSuccessStatusCode)
             {
                 ToastService.ShowSuccess("Commande ajoutée!");
+        StateContainer.Commandes?.Add(newCommande);
             }
             else
             {
@@ -235,7 +236,6 @@ _PuHtvaValue : @_PuHtvaValue
             }
         }
 
-        StateContainer.Commandes?.Add(newCommande);
 
         Reset();
     }

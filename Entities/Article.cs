@@ -9,12 +9,16 @@ namespace GesConso.Entities
         [Column("Id_Article")]
         public Guid? Id { get; set; }
 
+        [Required(ErrorMessage = "The Denomination field is required.")]
+        [MinLength(2, ErrorMessage = "Le champ dénomination doit avoir au moins 2 caractères.")]
+        //[RegularExpression("\\d+", ErrorMessage = "doit être décimal")]
         [Column("Denomination")]
         public string? Denomination {get; set;}
 
         [Column("Description")]
         public string? Description { get; set; }
 
+        [Range(0, double.MaxValue, ErrorMessage = "The PuHtva field must be a positive number.")]
         [Column("PuHtva")]
         public double? PuHtva { get; set; }
 

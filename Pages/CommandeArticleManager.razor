@@ -62,7 +62,7 @@
                                 totals[CommandeIdSelected] += calculatedValue;
                             }
 
-                            <tr @onclick="(() => SelectCommandeArticle(commandeArticle))" style="style: @(GetRowStyle(commandeArticle))">
+                            <tr @onclick="(() => SelectCommandeArticle(commandeArticle))" style="@(GetRowStyle(commandeArticle))">
                                 <td>@article.Denomination</td>
                                 <td>@article.PuHtva €</td>
                                 <td>@commandeArticle.Quantite</td>
@@ -78,7 +78,7 @@
                     double total = totals[CommandeIdSelected];
                     <tr>
                         <td colspan="4"><strong>Total TVAC:</strong></td>
-                        <td><strong>@total</strong>€</td>
+                        <td><strong>@total</strong> €</td>
                     </tr>
                 }
             }
@@ -108,16 +108,18 @@
 @*    </div>
     <div class="col-md-6">*@
         <form>
+            @if (CommandeIdSelected == Guid.Empty)
+            {
+                <label for="commande">Choisissez une commande :</label>
 
-@*            <label for="commande">Choisissez une commande :</label>
-*@
+                <select id="commande" class="form-control" @bind="@_idCommande">
+                    @foreach (var commande in StateContainer.Commandes)
+                    {
+                        <option value="@commande.Id">@commande.Id</option>
+                    }
+                </select>
+            }
 
-@*            <select id="commande" class="form-control" @bind="@_idCommande">
-                @foreach (var commande in StateContainer.Commandes)
-                {
-                    <option value="@commande.Id">@commande.Id</option>
-                }
-            </select>*@
         
             <label for="article">Choisissez un article :</label>
             <select id="article" class="form-control" @bind="@_idArticle">
@@ -279,6 +281,7 @@
             if (msg.IsSuccessStatusCode)
             {
                 ToastService.ShowSuccess("Article ajouté à la commande! ");
+                StateContainer.CommandeArticle?.Add(newCommandeArticle);
             }
             else
             {
@@ -286,7 +289,6 @@
             }
         }
 
-        StateContainer.CommandeArticle?.Add(newCommandeArticle);
 
         Reset();
     }
