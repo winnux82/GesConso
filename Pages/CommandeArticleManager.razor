@@ -41,7 +41,7 @@
             {
                 var totals = new Dictionary<Guid, double>(); 
 
-                foreach (var commandeArticle in StateContainer.CommandeArticle)
+                foreach (var commandeArticle in StateContainer.CommandeArticles)
                 {
                     if (commandeArticle.Id_Commande == CommandeIdSelected)
                     {
@@ -85,7 +85,7 @@
 
             else
             {
-                @foreach (var commandeArticle in StateContainer.CommandeArticle)
+                @foreach (var commandeArticle in StateContainer.CommandeArticles)
                 {
                     // Vérifier si la commande correspond à CommandeId
 
@@ -227,7 +227,7 @@
 
         await LoadDataAsync<List<CommandeArticle>>("api/commandearticle/getall", commandeArticles =>
         {
-            StateContainer.CommandeArticle = commandeArticles;
+            StateContainer.CommandeArticles = commandeArticles;
         });
 
         await InvokeAsync(StateHasChanged);
@@ -281,7 +281,7 @@
             if (msg.IsSuccessStatusCode)
             {
                 ToastService.ShowSuccess("Article ajouté à la commande! ");
-                StateContainer.CommandeArticle?.Add(newCommandeArticle);
+                StateContainer.CommandeArticles?.Add(newCommandeArticle);
             }
             else
             {
@@ -323,10 +323,10 @@
         {
             if (msg.IsSuccessStatusCode)
             {
-                var index = StateContainer.CommandeArticle.IndexOf(selected);
+                var index = StateContainer.CommandeArticles.IndexOf(selected);
                 if (index != -1)
                 {
-                    StateContainer.CommandeArticle[index] = commandeArticleUpdate;
+                    StateContainer.CommandeArticles[index] = commandeArticleUpdate;
                     UnSelectCommandeArticle();
                     ToastService.ShowSuccess("Article de la commande mis à jour!");
                 }
@@ -376,10 +376,10 @@
         {
             if (response.IsSuccessStatusCode)
             {
-                var index = StateContainer.CommandeArticle.IndexOf(selected);
+                var index = StateContainer.CommandeArticles.IndexOf(selected);
                 if (index != -1)
                 {
-                    StateContainer.CommandeArticle[index] = commandeArticleUpdate;
+                    StateContainer.CommandeArticles[index] = commandeArticleUpdate;
                     UnSelectCommandeArticle();
                     ToastService.ShowWarning("Article de la commande effacé");
                 }
@@ -413,10 +413,10 @@
         {
             if (response.IsSuccessStatusCode)
             {
-                var index = StateContainer.CommandeArticle.IndexOf(selected);
+                var index = StateContainer.CommandeArticles.IndexOf(selected);
                 if (index != -1)
                 {
-                    StateContainer.CommandeArticle[index] = commandeArticleUpdate;
+                    StateContainer.CommandeArticles[index] = commandeArticleUpdate;
                     UnSelectCommandeArticle();
                     ToastService.ShowInfo("Article de la commande restauré");
                 }
@@ -444,7 +444,7 @@
         {
             if (msg.IsSuccessStatusCode)
             {
-                StateContainer.CommandeArticle.Remove(selected);
+                StateContainer.CommandeArticles.Remove(selected);
                 UnSelectCommandeArticle();
                 ToastService.ShowWarning("Article complètement effacé de la commande");
             }
