@@ -18,6 +18,9 @@ namespace GesConso.Entities
         [Column("PrixHtva")]
         public double? PrixHtva { get; set; }
 
+        [Column("PrixTvaC")]
+        public double? PrixTvaC { get; set; }
+
         [Column("CreatedAt")]
         public DateTime? CreatedAt { get; set; }
 

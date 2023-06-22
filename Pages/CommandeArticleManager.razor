@@ -40,6 +40,7 @@
             @if (CommandeIdSelected != Guid.Empty)
             {
                 var totals = new Dictionary<Guid, double>();
+                double totalHtva = 0;
 
                 foreach (CommandeArticle commandeArticle in StateContainer.CommandeArticles)
                 {
@@ -47,13 +48,11 @@
                     {
                         var isSelected = selected == commandeArticle;
                         var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
-
                         var article = StateContainer.Articles.FirstOrDefault(a => a.Id == commandeArticle.Id_Article);
                         if (article != null)
                         {
                             double calculatedValue = CalculateTvaC(article, commandeArticle.Quantite.GetValueOrDefault());
-                            
-
+                            double htvaValue = CalculateHtva(article, commandeArticle.Quantite.GetValueOrDefault());
 
                             if (!totals.ContainsKey(CommandeIdSelected))
                             {
@@ -64,12 +63,14 @@
                                 totals[CommandeIdSelected] += calculatedValue;
                             }
 
+                            totalHtva += htvaValue;
+
                             <tr @onclick="(() => SelectCommandeArticle(commandeArticle))" style="@(GetRowStyle(commandeArticle))">
                                 <td>@article.Denomination</td>
                                 <td>@article.PuHtva €</td>
                                 <td>@commandeArticle.Quantite</td>
-                                <td>@CalculateHtva(article, commandeArticle.Quantite.GetValueOrDefault()) €</td>
-                                <td>@CalculateTvaC(article, commandeArticle.Quantite.GetValueOrDefault()) €</td>
+                                <td>@htvaValue €</td>
+                                <td>@calculatedValue €</td>
                             </tr>
                         }
                     }
@@ -79,11 +80,14 @@
                 {
                     double total = totals[CommandeIdSelected];
                     <tr>
-                        <td colspan="4"><strong>Total TVAC:</strong></td>
+                        <td colspan="3"><strong>Total:</strong></td>
+                        <td><strong>@totalHtva</strong> €</td>
                         <td><strong>@total</strong> €</td>
                     </tr>
+
                 }
             }
+
 
             else
             {
@@ -173,12 +177,6 @@
 
 
 
-
-
-
-
-
-
     
 
             @if (commandeArticle.CreatedAt is not null)
@@ -210,16 +208,6 @@
 
     [Parameter]
     public EventCallback<double> PuHtvaCalculated { get; set; }
-
-
-
-    //private Guid _idCommande = Guid.Empty;
-    //private Guid _idArticle = Guid.Empty;
-    //private int _quantite = 1;
-    //private DateTime? _createdAt = null;
-    //private DateTime? _updatedAt = null;
-    //private DateTime? _deletedAt = null;
-
 
     public Guid OnSelectCommande = Guid.Empty;
     List<double> calculTotal = new List<double>();
@@ -332,7 +320,7 @@
             {
                 ToastService.ShowSuccess("Article ajouté à la commande! ");
                 StateContainer.CommandeArticles?.Add(newCommandeArticle);
-                
+
             }
             else
             {
@@ -495,6 +483,8 @@
                 StateContainer.CommandeArticles.Remove(selected);
                 UnSelectCommandeArticle();
                 ToastService.ShowWarning("Article complètement effacé de la commande");
+
+
             }
                 await InvokeAsync(StateHasChanged);
         }
@@ -508,16 +498,6 @@
         selected = commArticle;
         commandeArticle = commArticle;
         InvokeAsync(StateHasChanged);
-        //selected = commandeArticle;
-        //OnCommandeArticleSelected?.Invoke(commandeArticle);
-
-
-        //_idArticle = commandeArticle?.Id_Article ?? Guid.Empty;
-        //_idCommande = commandeArticle?.Id_Commande ?? Guid.Empty;
-        //_quantite = commandeArticle?.Quantite ?? int.MinValue;
-        //_createdAt = commandeArticle?.CreatedAt;
-        //_updatedAt = commandeArticle?.UpdatedAt;
-        //_deletedAt = commandeArticle?.DeletedAt;
     }
 
 

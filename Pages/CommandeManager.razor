@@ -25,6 +25,7 @@
                     <th>ID_Date</th>
                     <th>Date Commande</th>
                     <th>Prix Htva</th>
+                    <th>Prix TvaC</th>
                     <th>Date Delete</th>
                     
                 </tr>
@@ -48,6 +49,7 @@
                         <td>@commande.Id_Date</td>
                         <td>@commande.DateCommande</td>
                         <td>@commande.PrixHtva €</td>
+                        <td>@commande.PrixTvaC €</td>
                         <td>@commande.DeletedAt</td>
 
                     </tr>
@@ -84,6 +86,10 @@
                     <div class="form-group">
                         <label for="prixHtva">prixHtva</label>
                         <input id="prixHtva" type="text" class="form-control" @bind="commande.PrixHtva" />
+                    </div>
+                    <div class="form-group">
+                        <label for="prixTvaC">prixTvaC</label>
+                        <input id="prixTvaC" type="text" class="form-control" @bind="commande.PrixTvaC" />
                     </div>
                     <div class="form-group">
                         <label for="date">Date et heure de la Commande</label>
@@ -150,6 +156,10 @@
     [Parameter]
     public double _PuHtvaValue { get; set; }
 
+
+    private double PrixTotal { get; set; }
+
+
     protected override async Task OnInitializedAsync()
     {
         this.OnCommandeUpdated = async () =>
@@ -197,6 +207,7 @@
                 Id_Date = DateTime.Now,
                 DateCommande = commande.DateCommande,
                 PrixHtva = commande.PrixHtva,
+                PrixTvaC = commande.PrixTvaC,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
 
@@ -236,6 +247,7 @@
                 Id_Date = commande.Id_Date,
                 DateCommande = commande.DateCommande,
                 PrixHtva = commande.PrixHtva,
+                PrixTvaC = commande.PrixTvaC,
                 CreatedAt = commande.CreatedAt,
                 UpdatedAt = DateTime.Now,
                 DeletedAt = commande.DeletedAt,
@@ -280,6 +292,7 @@
                 Id_Date = commande.Id_Date,
                 DateCommande = commande.DateCommande,
                 PrixHtva = commande.PrixHtva,
+                PrixTvaC = commande.PrixTvaC,
                 CreatedAt = commande.CreatedAt,
                 UpdatedAt = DateTime.Now,
                 DeletedAt = DateTime.Now,
@@ -318,6 +331,7 @@
                 Id_Date = commande.Id_Date,
                 DateCommande = commande.DateCommande,
                 PrixHtva = commande.PrixHtva,
+                PrixTvaC = commande.PrixTvaC,
                 CreatedAt = commande.CreatedAt,
                 UpdatedAt = DateTime.Now,
                 DeletedAt = null,
