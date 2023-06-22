@@ -41,7 +41,7 @@
             {
                 var totals = new Dictionary<Guid, double>();
 
-                foreach (var commandeArticle in StateContainer.CommandeArticles)
+                foreach (CommandeArticle commandeArticle in StateContainer.CommandeArticles)
                 {
                     if (commandeArticle.Id_Commande == CommandeIdSelected)
                     {
@@ -85,7 +85,7 @@
 
             else
             {
-                @foreach (var commandeArticle in StateContainer.CommandeArticles)
+                @foreach (CommandeArticle commandeArticle in StateContainer.CommandeArticles)
                 {
                     // Vérifier si la commande correspond à CommandeId
 
@@ -112,7 +112,7 @@
         {
             <label for="commande">Choisissez une commande :</label>
 
-            <select id="commande" class="form-control" @bind="@_idCommande">
+            <select id="commande" class="form-control" @bind="@commandeArticle.Id_Commande">
                 @foreach (var commande in StateContainer.Commandes)
                 {
                     <option value="@commande.Id">@commande.Id</option>
@@ -124,7 +124,7 @@
         <div class="row">
             <div class="col-md-6">
                 <label for="article">Choisissez un article :</label>
-                <select id="article" class="form-control" @bind="@_idArticle">
+                <select id="article" class="form-control" @bind="@commandeArticle.Id_Article">
                     @foreach (var article in StateContainer.Articles)
                     {
                         var isDeleted = article.DeletedAt != null;
@@ -141,7 +141,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="quantite">Quantité</label>
-                    <input id="quantite" type="number" class="form-control" @bind="_quantite" min="1" />
+                    <input id="quantite" type="number" class="form-control" @bind="commandeArticle.Quantite" min="1" />
                 </div>
             </div>
         </div>
@@ -171,14 +171,14 @@
 
     </form>
     <div>
-        @if (_createdAt is not null)
+        @if (commandeArticle.CreatedAt is not null)
         {
-            <p>Créé : @_createdAt</p>
-            <p>Modifié : @_updatedAt</p>
+            <p>Créé : @commandeArticle.CreatedAt</p>
+            <p>Modifié : @commandeArticle.UpdatedAt</p>
         }
-        @if (_deletedAt is not null)
+        @if (commandeArticle.DeletedAt is not null)
         {
-            <p>Effacé : @_deletedAt</p>
+            <p>Effacé : @commandeArticle.DeletedAt</p>
 
         }
     </div>
@@ -189,8 +189,14 @@
 
 @code {
 
+    CommandeArticle commandeArticle = new CommandeArticle();
+    private CommandeArticle? selected = null;
+
     [Parameter]
-    public Action<CommandeArticle?>? OnCommandeArticleSelected { get; set; }
+    public Action? OnCommandeArticleSelected { get; set; }
+
+    private Action? OnCommandeArticleUpdated;
+
 
     [Parameter]
     public Guid CommandeIdSelected { get; set; }
@@ -198,24 +204,35 @@
     [Parameter]
     public EventCallback<double> PuHtvaCalculated { get; set; }
 
-    CommandeArticle commandeArticle = new CommandeArticle();
-    private CommandeArticle? selected = null;
-
-    private Guid _idCommande = Guid.Empty;
-    private Guid _idArticle = Guid.Empty;
-
-    private int _quantite = 1;
 
 
-    private DateTime? _createdAt = null;
-    private DateTime? _updatedAt = null;
-    private DateTime? _deletedAt = null;
+    //private Guid _idCommande = Guid.Empty;
+    //private Guid _idArticle = Guid.Empty;
+    //private int _quantite = 1;
+    //private DateTime? _createdAt = null;
+    //private DateTime? _updatedAt = null;
+    //private DateTime? _deletedAt = null;
+
 
     public Guid OnSelectCommande = Guid.Empty;
-
     List<double> calculTotal = new List<double>();
 
 
+    protected override async Task OnInitializedAsync()
+    {
+        this.OnCommandeArticleUpdated = async () =>
+        {
+            await InvokeAsync(StateHasChanged);
+        };
+        this.OnCommandeArticleSelected = async () =>
+        {
+            await InvokeAsync(StateHasChanged);
+        };
+
+        StateContainer.OnCommandeArticleUpdated += this.OnCommandeArticleUpdated;
+        StateContainer.OnCommandeArticleSelected += this.OnCommandeArticleSelected;
+        await GetCommandeArticle();
+    }
 
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -240,6 +257,8 @@
         await InvokeAsync(StateHasChanged);
     }
 
+
+
     private async Task LoadDataAsync<T>(string requestUri, Action<T> setDataAction)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}{requestUri}");
@@ -261,7 +280,24 @@
         }
     }
 
+    public async Task GetCommandeArticle()
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/commandearticle/getall");
 
+        using (var response = await HttpClient.SendAsync(request))
+        {
+            if (response.IsSuccessStatusCode)
+            {
+                var comArticles = await response.Content.ReadFromJsonAsync<List<CommandeArticle>>();
+
+                if (comArticles != null)
+                {
+                    StateContainer.CommandeArticles = comArticles;
+                    await InvokeAsync(StateHasChanged);
+                }
+            }
+        }
+    }
 
     // Ajouter une commande d'article
     private async Task AddCommandeArticle()
@@ -270,8 +306,8 @@
             {
                 Id = Guid.NewGuid(),
                 Id_Commande = CommandeIdSelected,
-                Id_Article = _idArticle,
-                Quantite = _quantite,
+                Id_Article = commandeArticle.Id_Article,
+                Quantite = commandeArticle.Quantite,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
 
@@ -311,12 +347,12 @@
         var commandeArticleUpdate = new CommandeArticle
             {
                 Id = this.selected.Id,
-                Id_Article = _idArticle,
+                Id_Article = commandeArticle.Id_Article,
                 Id_Commande = CommandeIdSelected,
-                Quantite = _quantite,
-                CreatedAt = _createdAt,
+                Quantite = commandeArticle.Quantite,
+                CreatedAt = commandeArticle.CreatedAt,
                 UpdatedAt = DateTime.Now,
-                DeletedAt = _deletedAt,
+                DeletedAt = commandeArticle.DeletedAt,
             };
 
         Console.WriteLine("Commande Article Update:");
@@ -346,12 +382,7 @@
     // RESET
     private void Reset()
     {
-        _idArticle = Guid.Empty;
-        _idCommande = Guid.Empty;
-        _quantite = 1;
-        _createdAt = null;
-        _updatedAt = null;
-        _deletedAt = null;
+        commandeArticle = new CommandeArticle();
         selected = null;
 
     }
@@ -367,10 +398,10 @@
         var commandeArticleUpdate = new CommandeArticle
             {
                 Id = this.selected.Id,
-                Id_Article = _idArticle,
-                Id_Commande = _idCommande,
-                Quantite = _quantite,
-                CreatedAt = _createdAt,
+                Id_Article = commandeArticle.Id_Article,
+                Id_Commande = commandeArticle.Id_Commande,
+                Quantite = commandeArticle.Quantite,
+                CreatedAt = commandeArticle.CreatedAt,
                 UpdatedAt = DateTime.Now,
                 DeletedAt = DateTime.Now,
             };
@@ -404,10 +435,10 @@
         var commandeArticleUpdate = new CommandeArticle
             {
                 Id = this.selected.Id,
-                Id_Article = _idArticle,
-                Id_Commande = _idCommande,
-                Quantite = _quantite,
-                CreatedAt = _createdAt,
+                Id_Article = commandeArticle.Id_Article,
+                Id_Commande = commandeArticle.Id_Commande,
+                Quantite = commandeArticle.Quantite,
+                CreatedAt = commandeArticle.CreatedAt,
                 UpdatedAt = DateTime.Now,
                 DeletedAt = null,
             };
@@ -459,18 +490,23 @@
     }
 
     // Selectionner une Commande d'article
-    private void SelectCommandeArticle(CommandeArticle commandeArticle)
+    private void SelectCommandeArticle(CommandeArticle commArticle)
     {
-        selected = commandeArticle;
-        OnCommandeArticleSelected?.Invoke(commandeArticle);
+
+        StateContainer.SelectedCommandeArticle = commArticle;
+        selected = commArticle;
+        commandeArticle = commArticle;
+        InvokeAsync(StateHasChanged);
+        //selected = commandeArticle;
+        //OnCommandeArticleSelected?.Invoke(commandeArticle);
 
 
-        _idArticle = commandeArticle?.Id_Article ?? Guid.Empty;
-        _idCommande = commandeArticle?.Id_Commande ?? Guid.Empty;
-        _quantite = commandeArticle?.Quantite ?? int.MinValue;
-        _createdAt = commandeArticle?.CreatedAt;
-        _updatedAt = commandeArticle?.UpdatedAt;
-        _deletedAt = commandeArticle?.DeletedAt;
+        //_idArticle = commandeArticle?.Id_Article ?? Guid.Empty;
+        //_idCommande = commandeArticle?.Id_Commande ?? Guid.Empty;
+        //_quantite = commandeArticle?.Quantite ?? int.MinValue;
+        //_createdAt = commandeArticle?.CreatedAt;
+        //_updatedAt = commandeArticle?.UpdatedAt;
+        //_deletedAt = commandeArticle?.DeletedAt;
     }
 
 

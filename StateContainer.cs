@@ -72,14 +72,14 @@ namespace GesConso
         }
 
         public event Action? OnArticleUpdated;
-        public event Action? OnCommandesUpdated;
+        public event Action? OnCommandeUpdated;
         public event Action? OnCommandeArticleUpdated;
         public event Action? OnArticleSelected;
         public event Action? OnCommandeSelected;
         public event Action? OnCommandeArticleSelected;
 
         public void NotifyArticlesUpdated() => OnArticleUpdated?.Invoke();
-        public void NotifyCommandesUpdated() => OnCommandesUpdated?.Invoke();
+        public void NotifyCommandesUpdated() => OnCommandeUpdated?.Invoke();
         public void NotifyCommandeArticleUpdated() => OnCommandeArticleUpdated?.Invoke();
 
 

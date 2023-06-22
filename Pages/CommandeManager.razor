@@ -32,7 +32,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var commande in StateContainer.Commandes)
+                @foreach (Commande commande in StateContainer.Commandes)
                 {
                     @*var isSelected = selected == commande;*@
                     var isSelected = selected?.Equals(commande) ?? false;
@@ -185,8 +185,8 @@
             await InvokeAsync(StateHasChanged);
         };
 
-        StateContainer.OnArticleUpdated += this.OnCommandeUpdated;
-        StateContainer.OnArticleSelected += this.OnCommandeSelected;
+        StateContainer.OnCommandeUpdated += this.OnCommandeUpdated;
+        StateContainer.OnCommandeSelected += this.OnCommandeSelected;
         await GetCommandes();
     }
 
@@ -462,15 +462,7 @@
         selected = comm;
         commande = comm;
         InvokeAsync(StateHasChanged);
-        //selected = commande;
-        //OnCommandeSelected?.Invoke(commande);
-        //_idCommande = commande?.Id;
-        //_idDate = commande?.Id_Date;
-        //_dateCommande = commande?.DateCommande;
-        //_prixHtva = commande?.PrixHtva;
-        //_createdAt = commande?.CreatedAt;
-        //_updatedAt = commande?.UpdatedAt;
-        //_deletedAt = commande?.DeletedAt;
+
     }
 
     private void UnSelectCommande()

@@ -4,10 +4,8 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JsRuntime
 @inject IToastService ToastService
-@using Blazorise
+
 @*@using Microsoft.AspNetCore.Components.Forms*@
-@using System.Linq;
-@using GesConso;
 
 <PageTitle>Gestion des articles</PageTitle>
 <BlazoredToasts SuccessIcon="fa fa-thumbs-up" />
@@ -301,12 +299,7 @@
     // RESET
     private void Reset()
     {
-        article.Denomination = string.Empty;
-        article.Description = string.Empty;
-        article.PuHtva = 0;
-        article.CreatedAt = null;
-        article.UpdatedAt = null;
-        article.DeletedAt = null;
+        article = new Article();
         selected = null;
     }
 
