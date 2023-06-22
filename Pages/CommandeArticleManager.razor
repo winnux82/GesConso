@@ -52,6 +52,8 @@
                         if (article != null)
                         {
                             double calculatedValue = CalculateTvaC(article, commandeArticle.Quantite.GetValueOrDefault());
+                            
+
 
                             if (!totals.ContainsKey(CommandeIdSelected))
                             {
@@ -121,53 +123,52 @@
         }
 
 
-        <div class="row">
-            <div class="col-md-8">
-                <label for="article">Choisissez un article :</label>
-                <InputSelect id="article" class="form-control" @bind-Value="@commandeArticle.Id_Article">
-                    @foreach (var article in StateContainer.Articles)
-                    {
-                        var isDeleted = article.DeletedAt != null;
-                        // Ignorer les articles supprimés
-                        if (isDeleted)
+            <div class="row">
+                <div class="col-md-8">
+                    <label for="article">Choisissez un article :</label>
+                    <select id="article" class="form-control" @bind="@commandeArticle.Id_Article">
+                        @foreach (var article in StateContainer.Articles)
                         {
-                            continue;
+                            var isDeleted = article.DeletedAt != null;
+                            // Ignorer les articles supprimés
+                            if (isDeleted)
+                            {
+                                continue;
+                            }
+                            <option value="@article.Id">@article.Denomination - PuHtva : @article.PuHtva €</option>
                         }
-                        <option value="@article.Id">@article.Denomination - PuHtva : @article.PuHtva €</option>
-                    }
-                </InputSelect>
-            </div>
-
-            <div class="col-md-2">
-                <div class="form-group">
-                    <label for="quantite">Quantité</label>
-                    <InputNumber id="quantite" type="number" class="form-control" @bind-Value="commandeArticle.Quantite" min="1" />
+                    </select>
                 </div>
+
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="quantite">Quantité</label>
+                        <input id="quantite" type="number" class="form-control" @bind="commandeArticle.Quantite" min="1" />
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    
+                        @if (selected is null)
+                        {
+                            <button type="button" class="btn btn-warning" @onclick="AddCommandeArticle"><i class="oi oi-cart"></i></button>
+                        }
+                        else
+                        {
+                        <button type="button" class="btn btn-info" @onclick="UpdateCommandeArticle"><i class="oi oi-check"></i></button>
+                        }
+                        @*<button type="button" class="btn btn-secondary" @onclick="Reset">Reset</button>*@
+                    
+                </div>
+            <div class="col-md-1">
+                
+                    @if (selected is not null)
+                    {
+                        @*<button type="button" class="btn btn-info" @onclick="RestoreDeletedCommandeArticle">Restaurer</button>*@
+                        <button type="button" class="btn btn-danger" @onclick="DeleteCompleteCommandeArticle"><i class="oi oi-trash"></i></button>
+                    }
+               
             </div>
-
-            <div class="col-md-1 buttonsGroup m-3 ml-auto" style="display: flex; gap: 5px; justify-content: flex-end;">
-
-                @if (selected is null)
-                {
-                    <button type="button" class="btn btn-warning" @onclick="AddCommandeArticle"><i class="oi oi-cart"></i></button>
-                }
-                else
-                {
-                    <button type="button" class="btn btn-info" @onclick="UpdateCommandeArticle"><i class="oi oi-check"></i></button>
-                }
-                @*<button type="button" class="btn btn-secondary" @onclick="Reset">Reset</button>*@
-
             </div>
-            <div class="col-md-1 buttonsGroup m-1 ml-auto" style="display: flex; gap: 5px; justify-content: flex-end;">
-
-                @if (selected is not null)
-                {
-                    @*<button type="button" class="btn btn-info" @onclick="RestoreDeletedCommandeArticle">Restaurer</button>*@
-                    <button type="button" class="btn btn-danger" @onclick="DeleteCompleteCommandeArticle"><i class="oi oi-trash"></i></button>
-                }
-
-            </div>
-        </div>
     </form>
 
 
@@ -178,20 +179,20 @@
 
 
 
+    
 
+            @if (commandeArticle.CreatedAt is not null)
+            {
+                <p>Créé : @commandeArticle.CreatedAt</p>
+                <p>Modifié : @commandeArticle.UpdatedAt</p>
+            }
+            @if (commandeArticle.DeletedAt is not null)
+            {
+                <p>Effacé : @commandeArticle.DeletedAt</p>
 
-    @if (commandeArticle.CreatedAt is not null)
-    {
-        <p>Créé : @commandeArticle.CreatedAt</p>
-        <p>Modifié : @commandeArticle.UpdatedAt</p>
-    }
-    @if (commandeArticle.DeletedAt is not null)
-    {
-        <p>Effacé : @commandeArticle.DeletedAt</p>
+            }
 
-    }
-
-</div>
+    </div>
 
 @code {
 
@@ -331,6 +332,7 @@
             {
                 ToastService.ShowSuccess("Article ajouté à la commande! ");
                 StateContainer.CommandeArticles?.Add(newCommandeArticle);
+                
             }
             else
             {
@@ -427,6 +429,7 @@
                     UnSelectCommandeArticle();
                     ToastService.ShowWarning("Article de la commande effacé");
                 }
+                await InvokeAsync(StateHasChanged);
             }
         }
     }
@@ -465,6 +468,7 @@
                     ToastService.ShowInfo("Article de la commande restauré");
                 }
             }
+            await InvokeAsync(StateHasChanged);
         }
     }
 
@@ -492,6 +496,7 @@
                 UnSelectCommandeArticle();
                 ToastService.ShowWarning("Article complètement effacé de la commande");
             }
+                await InvokeAsync(StateHasChanged);
         }
     }
 

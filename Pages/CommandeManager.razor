@@ -22,8 +22,11 @@
                 <tr>
                     @*<th>ID</th>*@
                     <th>ID_Date</th>
+                    <th>ID_Date</th>
                     <th>Date Commande</th>
                     <th>Prix Htva</th>
+                    <th>Date Delete</th>
+                    
                 </tr>
             </thead>
             <tbody>
@@ -32,39 +35,30 @@
                     var isSelected = StateContainer.SelectedCommande?.Equals(commande) ?? false;
                     var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
 
-                    if (_commandeVisibility==true)
-                    {
-                        <tr @onclick="(() => SelectCommande(commande))" style="@style">
-                            <td>
-                                @if (commande.Id_Date != null)
-                                {
-                                    @(((DateTime)commande.Id_Date).ToString("yyyyMMdd"))
-                                }
-                            </td>
-                            <td>@commande.DateCommande</td>
-                            <td>@commande.PrixHtva €</td>
-                        </tr>
-                    }
-                    else
-                    {
-                        <tr @onclick="(() => SelectCommande(commande))">
-                            <td>
-                                @if (commande.Id_Date != null)
-                                {
-                                    @(((DateTime)commande.Id_Date).ToString("yyyyMMdd"))
-                                }
-                            </td>
-                            <td>@commande.DateCommande</td>
-                            <td>@commande.PrixHtva €</td>
-                        </tr>
-                    }
+
+
+                    <tr @onclick="(() => SelectCommande(commande))">
+                        <td>
+                            @if (commande.Id_Date != null)
+                            {
+                                @(((DateTime)commande.Id_Date).ToString("yyyyMMdd"))
+                            }
+                        </td>
+
+                        <td>@commande.Id_Date</td>
+                        <td>@commande.DateCommande</td>
+                        <td>@commande.PrixHtva €</td>
+                        <td>@commande.DeletedAt</td>
+
+                    </tr>
+
                 }
 
             </tbody>
         </table>
     </div>
     <div class="col-md-12">
-        <EditForm Model="@commande" OnValidSubmit="@(StateContainer.SelectedCommande is null ? (Func<Task>)AddCommande : UpdateCommande)">
+        <EditForm Model="@commande" OnValidSubmit="@(selected is null ? (Func<Task>)AddCommande : UpdateCommande)">
             <DataAnnotationsValidator />
             @if (commande.Id is not null)
             {
@@ -76,9 +70,10 @@
                                 <h3>Détails Commande : @commande.Id_Date?.ToString("yyyyMMdd")</h3>
                             }
                             <h4>Ajout d'un article</h4>
-                            @if (_commandeVisibility ==true)
+                            @if (_commandeVisibility == true)
                             {
-                                @*<CommandeArticleManager CommandeIdSelected="@(commande.Id.Value)" />*@
+                                <CommandeArticleManager CommandeIdSelected="@(commande.Id.Value)" />
+
                             }
                         </div>
                     </div>
@@ -142,15 +137,18 @@
 @code {
     Commande commande = new Commande();
     private Commande? selected = null;
-    private double _PuHtvaValue { get; set; }
+    
     private bool _commandeVisibility = false;
-    private void HandlePuHtvaCalculated(double calculatedValue)
+    public void HandlePuHtvaCalculated(double calculatedValue)
     {
         _PuHtvaValue = calculatedValue;
     }
     [Parameter]
     public Action? OnCommandeSelected { get; set; }
     private Action? OnCommandeUpdated;
+
+    [Parameter]
+    public double _PuHtvaValue { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -186,56 +184,9 @@
             }
         }
     }
-    //protected override async Task OnAfterRenderAsync(bool firstRender)
-    //{
-    //    if (firstRender)
-    //    {
-    //        var requestMsg = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/commande/getall");
-
-    //        using (var msg = await HttpClient.SendAsync(requestMsg))
-    //        {
-    //            if (msg.IsSuccessStatusCode)
-    //            {
-    //                var commandes = await msg.Content.ReadFromJsonAsync<List<Commande>>();
-    //                if (commandes != null)
-    //                {
-    //                    StateContainer.Commandes = commandes;
-    //                    await InvokeAsync(StateHasChanged);
-    //                }
-    //            }
-    //            else
-    //            {
-    //                // Gérer l'échec de la requête
-    //            }
-    //        }
-
-
-    //        var requestArticles = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/article/getall");
-
-    //        using (var responseArticles = await HttpClient.SendAsync(requestArticles))
-    //        {
-    //            if (responseArticles.IsSuccessStatusCode)
-    //            {
-    //                var articles = await responseArticles.Content.ReadFromJsonAsync<List<Article>>();
-    //                if (articles != null)
-    //                {
-    //                    StateContainer.Articles = articles;
-    //                    await InvokeAsync(StateHasChanged);
-    //                }
-    //            }
-    //            else
-    //            {
-    //                // Gérer l'échec de la requête pour les articles
-    //            }
-    //        }
-    //    }
-    //}
-
-    // Ajouter un commande
-
-    private void NewCommande()
+    private async Task NewCommande()
     {
-        Reset();
+        await Reset();
     }
 
     private async Task AddCommande()
@@ -268,12 +219,10 @@
                 ToastService.ShowError("Une erreur s'est produite.");
             }
         }
-
-
-        Reset();
+        await Reset();
     }
 
-    // Mettre à jour un commande
+    // Mettre à jour une commande
     private async Task UpdateCommande()
     {
         if (selected is null)
@@ -304,27 +253,17 @@
                 if (index != -1)
                 {
                     StateContainer.Commandes[index] = commandeUpdate;
-                    UnSelectCommande();
-                    ToastService.ShowSuccess("Commande mise à jour!");
+
+                    StateContainer.NotifyCommandesUpdated();
+
                 }
+                ToastService.ShowSuccess("Commande mise à jour!");
+                await Reset();
             }
         }
     }
 
 
-
-    // RESET
-    private void Reset()
-    {
-        commande.Id_Date = null;
-        commande.DateCommande = null;
-        commande.PrixHtva = 0;
-        commande.CreatedAt = null;
-        commande.UpdatedAt = null;
-        commande.DeletedAt = null;
-        selected = null;
-
-    }
 
     // Delete Commande
     private async Task DeleteCommande()
@@ -353,13 +292,14 @@
         {
             if (msg.IsSuccessStatusCode)
             {
-                var index = StateContainer.Commandes.IndexOf(selected);
-                if (index != -1)
-                {
-                    StateContainer.Commandes[index] = commandeUpdate;
-                    UnSelectCommande();
-                    ToastService.ShowWarning("Commande effacée");
-                }
+                //var index = StateContainer.Commandes.IndexOf(selected);
+                //if (index != -1)
+                //{
+                //    StateContainer.Commandes[index] = commandeUpdate;
+                //}
+                ToastService.ShowWarning("Commande effacée");
+                await Reset();
+
             }
         }
     }
@@ -390,13 +330,14 @@
         {
             if (msg.IsSuccessStatusCode)
             {
-                var index = StateContainer.Commandes.IndexOf(selected);
-                if (index != -1)
-                {
-                    StateContainer.Commandes[index] = commandeUpdate;
-                    UnSelectCommande();
-                    ToastService.ShowInfo("Commande restaurée");
-                }
+                //var index = StateContainer.Commandes.IndexOf(selected);
+                //if (index != -1)
+                //{
+                //    StateContainer.Commandes[index] = commandeUpdate;
+                //    UnSelectCommande();
+                //}
+                ToastService.ShowInfo("Commande restaurée");
+                await Reset();
             }
         }
     }
@@ -422,6 +363,7 @@
                 StateContainer.Commandes.Remove(selected);
                 UnSelectCommande();
                 ToastService.ShowWarning("Commande complètement effacée");
+                await Reset();
             }
             else
             {
@@ -430,35 +372,36 @@
             }
         }
     }
+    // RESET
+    private async Task Reset()
+    {
 
-
+        UnSelectCommande();
+        await InvokeAsync(StateHasChanged);
+        await GetCommandes();
+    }
     // Selectionner une commande
     private void SelectCommande(Commande comm)
     {
-
         StateContainer.SelectedCommande = comm;
-        //selected = comm;
+        selected = comm;
         commande = comm;
         _commandeVisibility = true;
-        InvokeAsync(StateHasChanged);
-
     }
 
     private void UnSelectCommande()
     {
+        StateContainer.SelectedCommande = null;
         selected = null;
-        Reset();
+        commande = new Commande();
+        _commandeVisibility = false;
+
+        
     }
     private string GetRowStyle(Commande commande)
     {
         return selected == commande ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
     }
-
-    //private async Task<bool> ShowConfirmationDialog(string message)
-    //{
-    //    bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", message);
-    //    return confirmed;
-    //}
 
     async Task<bool> ConfirmDelete()
     {
