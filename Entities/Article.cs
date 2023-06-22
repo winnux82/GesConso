@@ -13,7 +13,7 @@ namespace GesConso.Entities
         [MinLength(2, ErrorMessage = "Le champ dénomination doit avoir au moins 2 caractères.")]
         //[RegularExpression("\\d+", ErrorMessage = "doit être décimal")]
         [Column("Denomination")]
-        public string? Denomination {get; set;}
+        public string? Denomination { get; set; }
 
         [Column("Description")]
         public string? Description { get; set; }

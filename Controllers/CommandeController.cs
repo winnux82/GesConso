@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using GesConso.Entities;
 using Microsoft.AspNetCore.Authorization;
-using GesConso.Entities;
-using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GesConso.Controllers
 {
@@ -64,7 +62,7 @@ namespace GesConso.Controllers
             commande.CreatedAt = updatedCommande.CreatedAt;
             commande.UpdatedAt = updatedCommande.UpdatedAt;
             commande.DeletedAt = updatedCommande.DeletedAt;
- 
+
 
             this.context.Commandes.Update(commande);
             this.context.SaveChanges();

@@ -10,7 +10,7 @@ namespace GesConso.Entities
         public Guid? Id { get; set; }
 
         [Column("Id_Date")]
-        public DateTime? Id_Date {get; set;}
+        public DateTime? Id_Date { get; set; }
 
         [Column("DateCommande")]
         public DateTime? DateCommande { get; set; }

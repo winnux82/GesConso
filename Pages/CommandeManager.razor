@@ -8,7 +8,7 @@
 
 
 <PageTitle>Gestion des commandes</PageTitle>
-<BlazoredToasts/>
+<BlazoredToasts />
 
 <h1>Gestion des commandes</h1>
 
@@ -16,12 +16,7 @@
 
 
 <div class="row">
-    <div class="col-md-6">
-
-        @*        <div class="highlight">
-        <h2>Admin</h2>
-        </div>*@
-
+    <div class="col-md-4">
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -34,144 +29,127 @@
             <tbody>
                 @foreach (Commande commande in StateContainer.Commandes)
                 {
-                    @*var isSelected = selected == commande;*@
-                    var isSelected = selected?.Equals(commande) ?? false;
-
+                    var isSelected = StateContainer.SelectedCommande?.Equals(commande) ?? false;
                     var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
 
-                    <tr @onclick="(() => SelectCommande(commande))" style="style: @GetRowStyle(commande)">
-                        @*<td>@commande.Id</td>*@
-                        <td>
-                            @if (commande.Id_Date != null)
-                            {
-                                @(((DateTime)commande.Id_Date).ToString("yyyyMMdd"))
-                            }
-                        </td>
-
-
-                        <td>@commande.DateCommande</td>
-                        <td>@commande.PrixHtva €</td>
-
-                    </tr>
-                }
-
-
-            </tbody>
-        </table>
-
-        <EditForm Model="@commande" OnValidSubmit="@(selected is null ? (Func<Task>)AddCommande : UpdateCommande)">
-            
-            <DataAnnotationsValidator />
-
-            @if (commande.Id is not null)
-            {
-                @if (commande.Id_Date is not null)
-                {
-                    <h3>Détails Commande : @commande.Id_Date?.ToString("yyyyMMdd")</h3>
-                }
-                <h4>Ajout d'un article</h4>
-                @if (selected is not null)
-                {
-                    <CommandeArticleManager CommandeIdSelected="@(commande.Id.Value)" />
-                }
-
-
-
-
-            }
-            <button type="submit" class="btn btn-primary mt-2">
-                <i class="oi oi-check"></i>
-                @((selected is null) ? "Ajouter" : "Update")
-                </button>
-        </EditForm>
-
-
-
-
-    </div>
-    <div class="col-md-6">
-        <div>
-
-
-            <div class="form-group">
-                <label for="prixHtva">prixHtva</label>
-                <input id="prixHtva" type="text" class="form-control" @bind="commande.PrixHtva" />
-            </div>
-            <div class="form-group">
-                <label for="date">Date et heure de la Commande</label>
-                <input id="date" type="datetime-local" class="form-control" @bind="@commande.DateCommande" />
-                @*<InputDate id="date" class="form-control" @bind-Value="@commande.DateCommande" />*@
-
-                        
-            </div>
-
-            @if (commande.CreatedAt is not null)
-            {
-                <p>Créé : @(commande.CreatedAt ?? DateTime.MinValue)</p>
-                <p>Modifié : @(commande.UpdatedAt ?? DateTime.MinValue)</p>
-
-            }
-            @if (commande.DeletedAt is not null)
-            {
-                <p>Effacé : @commande.DeletedAt</p>
-
-            }
-            <div class="buttonsGroup m-1 ml-auto" style="display: flex; gap: 5px; justify-content: flex-end;">
-                @if (selected is null)
-                {
-                    <button type="button" class="btn btn-primary" @onclick="AddCommande"><i class="oi oi-plus"></i> Ajouter</button>
-                }
-                else
-                {
-                    <button type="button" class="btn btn-danger" @onclick="UpdateCommande">Sauver</button>
-                }
-                <button type="button" class="btn btn-secondary" @onclick="Reset">Reset</button>
-
-                @if (selected is not null)
-                {
-                    @if (commande.DeletedAt is null)
+                    if (_commandeVisibility==true)
                     {
-                        <button type="button" class="btn btn-danger" @onclick="DeleteCommande">Delete</button>
+                        <tr @onclick="(() => SelectCommande(commande))" style="@style">
+                            <td>
+                                @if (commande.Id_Date != null)
+                                {
+                                    @(((DateTime)commande.Id_Date).ToString("yyyyMMdd"))
+                                }
+                            </td>
+                            <td>@commande.DateCommande</td>
+                            <td>@commande.PrixHtva €</td>
+                        </tr>
                     }
                     else
                     {
-                        <button type="button" class="btn btn-info" @onclick="RestoreDeletedCommande">Restaurer</button>
-                        <button type="button" class="btn btn-danger" @onclick="DeleteCompleteCommande">Effacer définitivement</button>
+                        <tr @onclick="(() => SelectCommande(commande))">
+                            <td>
+                                @if (commande.Id_Date != null)
+                                {
+                                    @(((DateTime)commande.Id_Date).ToString("yyyyMMdd"))
+                                }
+                            </td>
+                            <td>@commande.DateCommande</td>
+                            <td>@commande.PrixHtva €</td>
+                        </tr>
                     }
                 }
 
-            </div>
-        </div>
+            </tbody>
+        </table>
     </div>
+    <div class="col-md-12">
+        <EditForm Model="@commande" OnValidSubmit="@(StateContainer.SelectedCommande is null ? (Func<Task>)AddCommande : UpdateCommande)">
+            <DataAnnotationsValidator />
+            @if (commande.Id is not null)
+            {
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="ml-5" style="margin-left: 40px;">
+                            @if (commande.Id_Date is not null)
+                            {
+                                <h3>Détails Commande : @commande.Id_Date?.ToString("yyyyMMdd")</h3>
+                            }
+                            <h4>Ajout d'un article</h4>
+                            @if (_commandeVisibility ==true)
+                            {
+                                @*<CommandeArticleManager CommandeIdSelected="@(commande.Id.Value)" />*@
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+            <div>
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <label for="prixHtva">prixHtva</label>
+                        <input id="prixHtva" type="text" class="form-control" @bind="commande.PrixHtva" />
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Date et heure de la Commande</label>
+                        <input id="date" type="datetime-local" class="form-control" @bind="@commande.DateCommande" />
+                        @*<InputDate id="date" class="form-control" @bind-Value="@commande.DateCommande" />*@
+                    </div>
+                </div>
+                @if (commande.CreatedAt is not null)
+                {
+                    <p>Créé : @(commande.CreatedAt ?? DateTime.MinValue)</p>
+                    <p>Modifié : @(commande.UpdatedAt ?? DateTime.MinValue)</p>
+                }
+                @if (commande.DeletedAt is not null)
+                {
+                    <p>Effacé : @commande.DeletedAt</p>
+                }
+                <div class="buttonsGroup mt-3 " style="display: flex; gap: 5px; justify-content: flex-end;">
+                    @*                @if (selected is null)
+                    {
+                    <button type="button" class="btn btn-primary" @onclick="AddCommande"><i class="oi oi-plus"></i> Ajouter</button>
+                    }
+                    else
+                    {
+                    <button type="button" class="btn btn-danger" @onclick="UpdateCommande">Sauver</button>
+                    }*@
+                    <button type="button" class="btn btn-secondary" @onclick="Reset">Reset</button>
+                    @if (selected is not null)
+                    {
+                        @if (commande.DeletedAt is null)
+                        {
+                            <button type="button" class="btn btn-danger" @onclick="DeleteCommande">Delete</button>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-info" @onclick="RestoreDeletedCommande">Restaurer</button>
+                            <button type="button" class="btn btn-danger" @onclick="DeleteCompleteCommande">Effacer définitivement</button>
+                        }
+                    }
 
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">
+                <i class="oi oi-check"></i>
+                @((selected is null) ? "Ajouter" : "Update")
+            </button>
+        </EditForm>
+    </div>
+    @*<div class="col-md-6">*@
 </div>
-
 
 @code {
     Commande commande = new Commande();
     private Commande? selected = null;
-
-    //private Guid? _idCommande = null;
-    //private DateTime? _idDate = null;
-    //private DateTime? _dateCommande = null;
-    //private double? _prixHtva = null;
-
-    //private DateTime? _createdAt = null;
-    //private DateTime? _updatedAt = null;
-    //private DateTime? _deletedAt = null;
-
     private double _PuHtvaValue { get; set; }
-
+    private bool _commandeVisibility = false;
     private void HandlePuHtvaCalculated(double calculatedValue)
     {
         _PuHtvaValue = calculatedValue;
     }
-
-
-
     [Parameter]
     public Action? OnCommandeSelected { get; set; }
-
     private Action? OnCommandeUpdated;
 
     protected override async Task OnInitializedAsync()
@@ -338,7 +316,7 @@
     // RESET
     private void Reset()
     {
-        commande.Id_Date= null;
+        commande.Id_Date = null;
         commande.DateCommande = null;
         commande.PrixHtva = 0;
         commande.CreatedAt = null;
@@ -459,8 +437,9 @@
     {
 
         StateContainer.SelectedCommande = comm;
-        selected = comm;
+        //selected = comm;
         commande = comm;
+        _commandeVisibility = true;
         InvokeAsync(StateHasChanged);
 
     }
@@ -486,6 +465,19 @@
         bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Êtes-vous sûr de vouloir supprimer définitivement cet commande ??");
         return confirmed;
     }
+    //@functions {
+    //    string GetRowStyle(Commande commande, bool isSelected)
+    //    {
+    //        if (isSelected)
+    //        {
+    //            return "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;";
+    //        }
+    //        else
+    //        {
+    //            return string.Empty;
+    //        }
+    //    }
+    //}
 
 
 }

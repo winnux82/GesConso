@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using GesConso.Entities;
 using Microsoft.AspNetCore.Authorization;
-using GesConso.Entities;
-using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GesConso.Controllers
 {
@@ -64,7 +62,7 @@ namespace GesConso.Controllers
             article.CreatedAt = updatedArticle.CreatedAt;
             article.UpdatedAt = updatedArticle.UpdatedAt;
             article.DeletedAt = updatedArticle.DeletedAt;
- 
+
 
             this.context.Articles.Update(article);
             this.context.SaveChanges();
