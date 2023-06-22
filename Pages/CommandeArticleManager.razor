@@ -121,24 +121,31 @@
         }
 
 
-        <label for="article">Choisissez un article :</label>
-        <select id="article" class="form-control" @bind="@_idArticle">
-            @foreach (var article in StateContainer.Articles)
-            {
-                var isDeleted = article.DeletedAt != null;
-                // Ignorer les articles supprimés
-                if (isDeleted)
-                {
-                    continue;
-                }
-                <option value="@article.Id">@article.Denomination - PuHtva : @article.PuHtva €</option>
-            }
-        </select>
+        <div class="row">
+            <div class="col-md-6">
+                <label for="article">Choisissez un article :</label>
+                <select id="article" class="form-control" @bind="@_idArticle">
+                    @foreach (var article in StateContainer.Articles)
+                    {
+                        var isDeleted = article.DeletedAt != null;
+                        // Ignorer les articles supprimés
+                        if (isDeleted)
+                        {
+                            continue;
+                        }
+                        <option value="@article.Id">@article.Denomination - PuHtva : @article.PuHtva €</option>
+                    }
+                </select>
+            </div>
 
-        <div class="form-group">
-            <label for="quantite">Quantité</label>
-            <input id="quantite" type="number" class="form-control" @bind="_quantite" min="1" />
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="quantite">Quantité</label>
+                    <input id="quantite" type="number" class="form-control" @bind="_quantite" min="1" />
+                </div>
+            </div>
         </div>
+
 
         <div class="buttonsGroup m-1 ml-auto" style="display: flex; gap: 5px; justify-content: flex-end;">
             @if (selected is null)

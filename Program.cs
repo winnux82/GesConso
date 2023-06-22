@@ -1,11 +1,16 @@
 using GesConso;
 using GesConso.Data;
-using BlazorStrap;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Blazored.Toast;
 using Blazorise;
+using BlazorStrap;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +25,7 @@ builder.Services.AddBlazorStrap();
 //Ajout du service Toast
 builder.Services.AddBlazoredToast();
 builder.Services.AddBlazorise();
+
 
 var app = builder.Build();
 

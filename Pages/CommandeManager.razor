@@ -12,7 +12,7 @@
 
 <h1>Gestion des commandes</h1>
 
-<button class="btn btn-primary" @onclick="NewCommande"><i class="fa fa-save"></i>Nouvel Commande</button>
+<button class="btn btn-primary" @onclick="NewCommande"><i class="oi oi-plus"></i> Nouvelle Commande</button>
 
 
 <div class="row">
@@ -79,7 +79,10 @@
 
 
             }
-            <button type="submit" class="btn btn-primary mt-2">@((selected is null) ? "Ajouter" : "Update")</button>
+            <button type="submit" class="btn btn-primary mt-2">
+                <i class="oi oi-check"></i>
+                @((selected is null) ? "Ajouter" : "Update")
+                </button>
         </EditForm>
 
 
@@ -97,6 +100,9 @@
             <div class="form-group">
                 <label for="date">Date et heure de la Commande</label>
                 <input id="date" type="datetime-local" class="form-control" @bind="@commande.DateCommande" />
+                @*<InputDate id="date" class="form-control" @bind-Value="@commande.DateCommande" />*@
+
+                        
             </div>
 
             @if (commande.CreatedAt is not null)
@@ -113,7 +119,7 @@
             <div class="buttonsGroup m-1 ml-auto" style="display: flex; gap: 5px; justify-content: flex-end;">
                 @if (selected is null)
                 {
-                    <button type="button" class="btn btn-primary" @onclick="AddCommande">Ajouter</button>
+                    <button type="button" class="btn btn-primary" @onclick="AddCommande"><i class="oi oi-plus"></i> Ajouter</button>
                 }
                 else
                 {
