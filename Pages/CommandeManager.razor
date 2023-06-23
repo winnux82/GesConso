@@ -20,7 +20,7 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    @*<th>ID</th>*@
+                    <th>ID</th>
                     <th>Commande</th>
                     @*<th>ID_Date</th>*@
                     <th>Date de la Commande</th>
@@ -39,6 +39,7 @@
 
 
                     <tr @onclick="(() => SelectCommande(commande))">
+                        <td>@commande.Id</td>
                         <td>
                             @if (commande.Id_Date != null)
                             {
@@ -83,14 +84,14 @@
             }
             <div>
                 <div class="col-sm-2">
-                    <div class="form-group">
+@*                    <div class="form-group">
                         <label for="prixHtva">prixHtva</label>
                         <input id="prixHtva" type="text" class="form-control" @bind="commande.PrixHtva" />
                     </div>
                     <div class="form-group">
                         <label for="prixTvaC">prixTvaC</label>
                         <input id="prixTvaC" type="text" class="form-control" @bind="commande.PrixTvaC" />
-                    </div>
+                    </div>*@
                     <div class="form-group">
                         <label for="date">Date et heure de la Commande</label>
                         <input id="date" type="datetime-local" class="form-control" @bind="@commande.DateCommande" />
@@ -102,10 +103,10 @@
                     <p>Créé : @(commande.CreatedAt ?? DateTime.MinValue)</p>
                     <p>Modifié : @(commande.UpdatedAt ?? DateTime.MinValue)</p>
                 }
-                @if (commande.DeletedAt is not null)
+@*                @if (commande.DeletedAt is not null)
                 {
                     <p>Effacé : @commande.DeletedAt</p>
-                }
+                }*@
                 <div class="buttonsGroup mt-3 " style="display: flex; gap: 5px; justify-content: flex-end;">
                     @*                @if (selected is null)
                     {

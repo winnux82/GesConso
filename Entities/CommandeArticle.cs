@@ -13,9 +13,11 @@ namespace GesConso.Entities
         [Column("Id_Commande")]
         public Guid? Id_Commande { get; set; }
 
+        [Required(ErrorMessage = "Le champ Article est requis.")]
         [Column("Id_Article")]
         public Guid? Id_Article { get; set; }
 
+        [Required(ErrorMessage = "Le champ quantité est requis.")]
         [Column("Quantite")]
         public int? Quantite { get; set; }
 

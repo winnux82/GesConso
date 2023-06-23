@@ -23,6 +23,25 @@ namespace GesConso.Controllers
             var commandes = this.context.Commandes.ToList();
             return StatusCode(StatusCodes.Status200OK, commandes);
         }
+        // Récupérer une commande par son ID
+
+        [HttpGet("get/{id}")]
+        [AllowAnonymous]
+        public IActionResult Get(Guid id)
+        {
+            var commande = this.context.Commandes.Find(id);
+
+            if (commande == null)
+            {
+                Console.WriteLine("Commande not found.");
+                return NotFound("Commande not found.");
+            }
+
+            Console.WriteLine(commande); // Afficher la commande dans la console du serveur
+
+            return StatusCode(StatusCodes.Status200OK, commande);
+        }
+
 
         // Ajout d'une commande
         [HttpPost]
@@ -59,6 +78,7 @@ namespace GesConso.Controllers
             commande.Id_Date = updatedCommande.Id_Date;
             commande.DateCommande = updatedCommande.DateCommande;
             commande.PrixHtva = updatedCommande.PrixHtva;
+            commande.PrixTvaC = updatedCommande.PrixTvaC;
             commande.CreatedAt = updatedCommande.CreatedAt;
             commande.UpdatedAt = updatedCommande.UpdatedAt;
             commande.DeletedAt = updatedCommande.DeletedAt;
