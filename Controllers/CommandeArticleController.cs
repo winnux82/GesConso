@@ -30,8 +30,9 @@ namespace GesConso.Controllers
         public IActionResult Add([FromBody] CommandeArticle commandeArticle)
         {
             Console.WriteLine(commandeArticle);
-            if (commandeArticle != null)
+            if (commandeArticle.Id_Article != null && commandeArticle.Id_Commande != null)
             {
+
                 this.context.CommandeArticle.Add(commandeArticle);
                 this.context.SaveChanges();
 

@@ -35,7 +35,7 @@
             @if (CommandeIdSelected != Guid.Empty)
             {
                 var totals = new Dictionary<Guid, double>();
-                double totalHtva = 0;
+         
                 foreach (CommandeArticle commandeArticle in StateContainer.CommandeArticles)
                 {
                     if (commandeArticle.Id_Commande == CommandeIdSelected)
@@ -61,14 +61,12 @@
                                 totals[CommandeIdSelected] += calculatedValue;
                             }
 
-                            totalHtva += htvaValue;
-
                             <tr @onclick="(() => SelectCommandeArticle(commandeArticle))" style="@(GetRowStyle(commandeArticle))">
                                 <td>@article.Denomination</td>
                                 <td>@article.PuHtva €</td>
 
                                 <td>
-                                                             <InputNumber id="quantite" class="form-control" @bind-Value="commandeArticle.Quantite" min="1" />
+                                    <InputNumber id="quantite" class="form-control" @bind-Value="commandeArticle.Quantite" min="1" />
                                 </td>
 
                                 <td>@htvaValue €</td>
@@ -101,13 +99,11 @@
                 if (totals.ContainsKey(CommandeIdSelected))
                 {
                     double total = totals[CommandeIdSelected];
-                    roundedTotalHtva = Math.Round(totalHtva, 2);
-                    roundedTotal = Math.Round(total, 2);
-
+          
                     <tr>
                         <td colspan="3"><strong>Total:</strong></td>
-                        <td><strong>@roundedTotalHtva</strong> €</td>
-                        <td><strong>@roundedTotal</strong> €</td>
+                        <td><strong>@htva</strong> €</td>
+                        <td><strong>@tvac</strong> €</td>
                         <td></td>
                         <td></td>
                     </tr>
@@ -141,26 +137,30 @@
         <DataAnnotationsValidator />
         @if (CommandeIdSelected == Guid.Empty)
         {
-            <label for="commande">Choisissez une commande :</label>
+            <div class="row">
+                <div class="col-md-8">
+                    <label for="commande">Choisissez une commande :</label>
+                    @{
+                        //Ajout du premier ID par défaut dans la liste
+                        //if(commandeArticle.Id_Commande is null)
+                        //{
+                        //    commandeArticle.Id_Commande = StateContainer.Commandes.FirstOrDefault()?.Id;
 
-@*            <select id="commande" class="form-control" @bind="@commandeArticle.Id_Commande">
-                @foreach (var commande in StateContainer.Commandes)
-                {
-                    <option value="@commande.Id">@commande.Id</option>
-                }
-            </select>*@
-
-            <InputSelect id="Id_commande" class="form-control" @bind-Value="@commandeArticle.Id_Commande">
-                @foreach (var commande in StateContainer.Commandes)
-                {
-                    var isDeleted = commande.DeletedAt != null;
-                    if (isDeleted)
-                    {
-                        continue;
+                        //}
                     }
-                    <option value="@commande.Id">@commande.Id_Date?.ToString("yyyyMMdd")</option>
-                }
-            </InputSelect>
+                    <InputSelect id="Id_Commande" class="form-control" @bind-Value="@commandeArticle.Id_Commande">
+                        @foreach (var commande in StateContainer.Commandes)
+                        {
+                            var isDeleted = commande.DeletedAt != null;
+                            if (isDeleted)
+                            {
+                                continue;
+                            }
+                            <option value="@commande.Id">@commande.Id_Date?.ToString("yyyyMMdd hh-mm")</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
         }
 
 
@@ -168,7 +168,10 @@
             <div class="col-md-8">
                 <label for="Id_Article">Choisissez un article :</label>
 
+
+
                 @{
+                    //Ajout du premier ID par défaut dans la liste
                     commandeArticle.Id_Article = StateContainer.Articles.FirstOrDefault()?.Id;
                 }
                 <InputSelect id="Id_Article" class="form-control" @bind-Value="@commandeArticle.Id_Article">
@@ -215,14 +218,14 @@
         </div>
     </EditForm>
 
-@*    @if (commandeArticle.CreatedAt is not null)
+    @*    @if (commandeArticle.CreatedAt is not null)
     {
-        <p>Créé : @commandeArticle.CreatedAt</p>
-        <p>Modifié : @commandeArticle.UpdatedAt</p>
+    <p>Créé : @commandeArticle.CreatedAt</p>
+    <p>Modifié : @commandeArticle.UpdatedAt</p>
     }
     @if (commandeArticle.DeletedAt is not null)
     {
-        <p>Effacé : @commandeArticle.DeletedAt</p>
+    <p>Effacé : @commandeArticle.DeletedAt</p>
 
     }*@
 
@@ -251,12 +254,14 @@
     public Guid OnSelectCommande = Guid.Empty;
     List<double> calculTotal = new List<double>();
 
-    private double roundedTotalHtva = 0;
-    private double roundedTotal =0;
+    private double htva = 0;
+    private double tvac = 0;
 
 
     protected override async Task OnInitializedAsync()
     {
+        ComputeTva();
+
         this.OnCommandeArticleUpdated = async () =>
         {
             await InvokeAsync(StateHasChanged);
@@ -294,7 +299,22 @@
         await InvokeAsync(StateHasChanged);
     }
 
+    private void ComputeTva()
+    {
+        this.tvac = 0.0;
+        this.htva = 0.0;
 
+        foreach(var e in StateContainer.CommandeArticles)
+        {
+            var article = StateContainer.Articles.First(x => x.Id == e.Id_Article);
+            htva += (double)(e.Quantite * article.PuHtva);
+        }
+
+        tvac += htva + htva * 0.21;
+
+        commandeImported.PrixHtva = htva;
+        commandeImported.PrixTvaC = tvac;
+    }
 
     private async Task LoadDataAsync<T>(string requestUri, Action<T> setDataAction)
     {
@@ -342,8 +362,8 @@
         var newCommandeArticle = new CommandeArticle
             {
                 Id = Guid.NewGuid(),
-                Id_Commande = CommandeIdSelected,
-                //Id_Commande = CommandeIdSelected != Guid.Empty ? CommandeIdSelected : commandeArticle.Id_Commande,
+                //Id_Commande = CommandeIdSelected,
+                Id_Commande = CommandeIdSelected != Guid.Empty ? CommandeIdSelected : commandeArticle.Id_Commande,
                 Id_Article = commandeArticle.Id_Article,
                 Quantite = commandeArticle.Quantite,
                 CreatedAt = DateTime.Now,
@@ -352,27 +372,37 @@
             };
 
         Console.WriteLine(newCommandeArticle);
-        var content = JsonContent.Create(newCommandeArticle);
+        //if ((commandeArticle.Id_Article != null && CommandeIdSelected != Guid.Empty) || commandeArticle.Id_Commande != null)
 
-        var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/commandearticle/add");
-        requestMsg.Content = content;
-
-        using (var msg = await HttpClient.SendAsync(requestMsg))
+        if (newCommandeArticle.Id_Article != null && newCommandeArticle.Id_Commande != null)
         {
-            if (msg.IsSuccessStatusCode)
-            {
-                ToastService.ShowSuccess("Article ajouté à la commande! ");
-                StateContainer.CommandeArticles?.Add(newCommandeArticle);
 
-                await UpdateCommandeImportPrices();
-                await UpdateCommande();
-                UnSelectCommandeArticle();
+            var content = JsonContent.Create(newCommandeArticle);
 
-            }
-            else
+            var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/commandearticle/add");
+            requestMsg.Content = content;
+            using (var msg = await HttpClient.SendAsync(requestMsg))
             {
-                ToastService.ShowError("Une erreur s'est produite.");
+                if (msg.IsSuccessStatusCode)
+                {
+                    ToastService.ShowSuccess("Article ajouté à la commande! ");
+                    StateContainer.CommandeArticles?.Add(newCommandeArticle);
+
+                    await UpdateCommande();
+                    UnSelectCommandeArticle();
+
+                }
+                else
+                {
+                    ToastService.ShowError("Une erreur s'est produite.");
+                }
             }
+
+        }
+        else
+        {
+            ToastService.ShowError("Id_Article || Id_Commande NULL.");
+
         }
 
 
@@ -413,7 +443,8 @@
             {
                 StateContainer.CommandeArticles[index] = commandeArticleUpdate;
                 ToastService.ShowSuccess("Article de la commande mis à jour!");
-                await Task.WhenAll(UpdateCommandeImportPrices(), UpdateCommande());
+             
+                await UpdateCommande();
 
                 //await UpdateCommandeImportPrices();
                 //await UpdateCommande();
@@ -532,7 +563,7 @@
                 {
                     StateContainer.CommandeArticles.Remove(selected);
                     ToastService.ShowWarning("Article complètement effacé de la commande");
-                    await UpdateCommandeImportPrices();
+
                     UnSelectCommandeArticle();
                     await UpdateCommande();
 
@@ -609,16 +640,10 @@
         }
     }
 
-    private async Task UpdateCommandeImportPrices()
-    {
-        commandeImported.PrixHtva = Math.Round(roundedTotalHtva, 2);
-        commandeImported.PrixTvaC = Math.Round(roundedTotal, 2);
-
-    }
-
     // Mettre à jour une commande
     private async Task UpdateCommande()
     {
+        ComputeTva();
 
         var commandeUpdate = new Commande
             {
@@ -632,7 +657,6 @@
                 DeletedAt = commandeImported.DeletedAt,
             };
 
-
         var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/commande/update");
         requestMsg.Content = JsonContent.Create(commandeUpdate);
 
@@ -641,11 +665,11 @@
             if (msg.IsSuccessStatusCode)
             {
                 var index = StateContainer.Commandes.IndexOf(commandeImported);
-                    StateContainer.Commandes[index] = commandeUpdate;
-                    StateContainer.NotifyCommandesUpdated();
+                StateContainer.Commandes[index] = commandeUpdate;
+                StateContainer.NotifyCommandesUpdated();
 
                 ToastService.ShowSuccess("Commande mise à jour!");
-                
+
             }
         }
     }
