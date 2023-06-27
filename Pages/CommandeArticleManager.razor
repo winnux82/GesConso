@@ -143,23 +143,38 @@
         {
             <label for="commande">Choisissez une commande :</label>
 
-            <select id="commande" class="form-control" @bind="@commandeArticle.Id_Commande">
+@*            <select id="commande" class="form-control" @bind="@commandeArticle.Id_Commande">
                 @foreach (var commande in StateContainer.Commandes)
                 {
                     <option value="@commande.Id">@commande.Id</option>
                 }
-            </select>
+            </select>*@
+
+            <InputSelect id="Id_commande" class="form-control" @bind-Value="@commandeArticle.Id_Commande">
+                @foreach (var commande in StateContainer.Commandes)
+                {
+                    var isDeleted = commande.DeletedAt != null;
+                    if (isDeleted)
+                    {
+                        continue;
+                    }
+                    <option value="@commande.Id">@commande.Id_Date?.ToString("yyyyMMdd")</option>
+                }
+            </InputSelect>
         }
 
 
         <div class="row">
             <div class="col-md-8">
                 <label for="Id_Article">Choisissez un article :</label>
+
+                @{
+                    commandeArticle.Id_Article = StateContainer.Articles.FirstOrDefault()?.Id;
+                }
                 <InputSelect id="Id_Article" class="form-control" @bind-Value="@commandeArticle.Id_Article">
                     @foreach (var article in StateContainer.Articles)
                     {
                         var isDeleted = article.DeletedAt != null;
-                        // Ignorer les articles supprimés
                         if (isDeleted)
                         {
                             continue;
@@ -328,6 +343,7 @@
             {
                 Id = Guid.NewGuid(),
                 Id_Commande = CommandeIdSelected,
+                //Id_Commande = CommandeIdSelected != Guid.Empty ? CommandeIdSelected : commandeArticle.Id_Commande,
                 Id_Article = commandeArticle.Id_Article,
                 Quantite = commandeArticle.Quantite,
                 CreatedAt = DateTime.Now,

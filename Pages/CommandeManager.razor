@@ -12,8 +12,8 @@
 
 <h1>Gestion des commandes</h1>
 
-<button class="btn btn-primary" @onclick="NewCommande"><i class="oi oi-plus"></i> Nouvelle Commande</button>
-
+@*<button class="btn btn-primary" @onclick="NewCommande"><i class="oi oi-plus"></i> Nouvelle Commande</button>
+*@
 
 <div class="row">
     <div class="col-md-4">
@@ -134,7 +134,7 @@
             </div>
             <button type="submit" class="btn btn-primary mt-2">
                 <i class="oi oi-check"></i>
-                @((selected is null) ? "Ajouter" : "Update")
+                @((selected is null) ? "Nouvelle commande" : "Update")
             </button>
         </EditForm>
     </div>

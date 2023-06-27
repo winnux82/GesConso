@@ -29,6 +29,7 @@ namespace GesConso.Controllers
         [AllowAnonymous]
         public IActionResult Add([FromBody] CommandeArticle commandeArticle)
         {
+            Console.WriteLine(commandeArticle);
             if (commandeArticle != null)
             {
                 this.context.CommandeArticle.Add(commandeArticle);
