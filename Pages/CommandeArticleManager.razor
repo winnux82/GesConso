@@ -102,8 +102,8 @@
           
                     <tr>
                         <td colspan="3"><strong>Total:</strong></td>
-                        <td><strong>@htva</strong> €</td>
-                        <td><strong>@tvac</strong> €</td>
+                        <td><strong>@Math.Round(htva, 2)</strong> €</td>
+                        <td><strong>@Math.Round(tvac, 2)</strong> €</td>
                         <td></td>
                         <td></td>
                     </tr>
@@ -170,10 +170,11 @@
 
 
 
-                @{
+@*                @{
                     //Ajout du premier ID par défaut dans la liste
                     commandeArticle.Id_Article = StateContainer.Articles.FirstOrDefault()?.Id;
-                }
+                }*@
+
                 <InputSelect id="Id_Article" class="form-control" @bind-Value="@commandeArticle.Id_Article">
                     @foreach (var article in StateContainer.Articles)
                     {
@@ -307,13 +308,14 @@
         foreach(var e in StateContainer.CommandeArticles)
         {
             var article = StateContainer.Articles.First(x => x.Id == e.Id_Article);
-            htva += (double)(e.Quantite * article.PuHtva);
+            htva += (double)(e.Quantite ?? 0) * (article.PuHtva ?? 0);
+
         }
 
         tvac += htva + htva * 0.21;
 
-        commandeImported.PrixHtva = htva;
-        commandeImported.PrixTvaC = tvac;
+        commandeImported.PrixHtva = Math.Round(htva, 2);
+        commandeImported.PrixTvaC = Math.Round(tvac, 2);
     }
 
     private async Task LoadDataAsync<T>(string requestUri, Action<T> setDataAction)
@@ -364,12 +366,16 @@
                 Id = Guid.NewGuid(),
                 //Id_Commande = CommandeIdSelected,
                 Id_Commande = CommandeIdSelected != Guid.Empty ? CommandeIdSelected : commandeArticle.Id_Commande,
+
+
                 Id_Article = commandeArticle.Id_Article,
                 Quantite = commandeArticle.Quantite,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
 
             };
+
+
 
         Console.WriteLine(newCommandeArticle);
         //if ((commandeArticle.Id_Article != null && CommandeIdSelected != Guid.Empty) || commandeArticle.Id_Commande != null)

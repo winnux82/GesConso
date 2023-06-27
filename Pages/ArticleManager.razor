@@ -12,10 +12,10 @@
 
 <h1>Gestion des articles</h1>
 
-<button class="btn btn-primary" @onclick="NewArticle">
+@*<button class="btn btn-primary" @onclick="NewArticle">
     <i class="oi oi-plus"></i>
     Nouvel Article
-</button>
+</button>*@
 
 
 @*<Button Color="Color.Danger" >
@@ -23,6 +23,15 @@
 </Button>*@
 <div class="row">
     <div class="col-md-6">
+            @if (isLoading)
+    {
+            <div class="skeleton-loader">
+                <div class="loader"></div>
+                <div>Loading...</div>
+            </div>
+    }
+    else
+    {
         <div class="highlight">
             <h2>Admin</h2>
         </div>
@@ -55,7 +64,7 @@
         <div class="highlight">
             <h2>User</h2>
         </div>
-
+        }
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -184,6 +193,9 @@
         await GetArticles();
     }
 
+    private bool isLoading = true;
+
+
     //protected override async Task OnAfterRenderAsync(bool firstRender)
     //{
     //    // if (firstRender)
@@ -205,6 +217,8 @@
 
     public async Task GetArticles()
     {
+        isLoading = true; // Activer le loader
+
         var request = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/article/getall");
 
         using (var response = await HttpClient.SendAsync(request))
@@ -220,7 +234,10 @@
                 }
             }
         }
+
+        isLoading = false; // Désactiver le loader
     }
+
 
     private void NewArticle()
     {
