@@ -28,12 +28,8 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tbWFuZGVBcnRpY2xlTWFuYWdlci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/VANCHRI/source/repos/GesConso/Pages/CommandeDetailsManager.razor]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tbWFuZGVEZXRhaWxzTWFuYWdlci5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/VANCHRI/source/repos/GesConso/Pages/CommandeId.razor]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tbWFuZGVJZC5yYXpvcg==
+[C:/Users/VANCHRI/source/repos/GesConso/Pages/CommandeDetails.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tbWFuZGVEZXRhaWxzLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/VANCHRI/source/repos/GesConso/Pages/CommandeManager.razor]

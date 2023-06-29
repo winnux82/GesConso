@@ -6,6 +6,7 @@ namespace GesConso.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [AllowAnonymous]
     public class CommandeController : ControllerBase
     {
         private readonly Database context;
@@ -17,7 +18,7 @@ namespace GesConso.Controllers
 
         // GetAll
         [HttpGet]
-        [AllowAnonymous]
+        
         public IActionResult GetAll()
         {
             var commandes = this.context.Commandes.ToList();
@@ -25,7 +26,6 @@ namespace GesConso.Controllers
         }
         // Récupérer une commande par son ID
         [HttpGet("get/{id}")]
-        [AllowAnonymous]
         public IActionResult Get(Guid id)
         {
             var commande = this.context.Commandes.Find(id);
@@ -38,13 +38,14 @@ namespace GesConso.Controllers
 
             Console.WriteLine(commande); // Afficher la commande dans la console du serveur
 
-            return StatusCode(StatusCodes.Status200OK, commande);
+            return Ok(commande);
         }
+
 
 
         // Ajout d'une commande
         [HttpPost]
-        [AllowAnonymous]
+        
         public IActionResult Add([FromBody] Commande commande)
         {
             if (commande != null)
@@ -64,7 +65,7 @@ namespace GesConso.Controllers
 
         // Modification d'une commande
         [HttpPost]
-        [AllowAnonymous]
+        
         public IActionResult Update(Commande updatedCommande)
         {
             var commande = context.Commandes.Find(updatedCommande.Id);
