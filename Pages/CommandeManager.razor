@@ -38,7 +38,7 @@
 
 
 
-                    <tr @onclick="(() => SelectCommande(commande))">
+                    <tr @onclick="(() => SelectCommande(commande))" style="@style">
                         <td>@commande.Id</td>
                         <td>
                             @if (commande.Id_Date != null)

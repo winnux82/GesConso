@@ -3,6 +3,7 @@ using Blazorise;
 using BlazorStrap;
 using GesConso;
 using GesConso.Data;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Syncfusion.Blazor;
 
@@ -33,6 +34,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 
+
+
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
@@ -41,5 +44,13 @@ app.UseRouting();
 app.MapControllers();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+
+
+app.MapRazorPages(); // Ajoutez cette ligne si elle n'est pas déjà présente
+
+
+app.MapFallbackToPage("/commandedetails/{id}", "/commandeid/{id}");
+
+
 
 app.Run();
