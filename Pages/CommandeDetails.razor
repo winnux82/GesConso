@@ -5,19 +5,15 @@
 @inject IJSRuntime JsRuntime
 @inject IToastService ToastService
 
-
 <PageTitle>Détails de la commande</PageTitle>
 <BlazoredToasts />
-
 
 <h1>Détails de la commande</h1>
 
 @if (StateContainer.SelectedCommande is not null)
 {
-    
     <p>ID : @StateContainer.SelectedCommande.Id</p>
-
-    <p>ID_Date: @(((StateContainer.SelectedCommande.Id_Date.HasValue) ? ((DateTime)StateContainer.SelectedCommande.Id_Date).ToString("yyyyMMdd") : ""))</p>
+    <p>ID_Date: @((StateContainer.SelectedCommande.Id_Date.HasValue ? ((DateTime)StateContainer.SelectedCommande.Id_Date).ToString("yyyyMMdd") : ""))</p>
 
     <div class="row">
         <div class="col-sm-2">
@@ -30,49 +26,31 @@
         </div>
     </div>
 
-    @*<p>Date de la commande : @StateContainer.SelectedCommande.DateCommande</p>*@
-@*
-    <Addons>
-        <Addon AddonType="AddonType.Start">
-            <AddonLabel>Prix Htva :</AddonLabel>
-        </Addon>
-        <Addon AddonType="AddonType.Body">
-
-            <TextEdit @bind-Text="StateContainer.SelectedCommande.PrixHtva.ToString()" />
-
-
-        </Addon>
-    </Addons>
-*@
-
     <p>Prix Htva : @StateContainer.SelectedCommande.PrixHtva €</p>
     <p>Prix TvaC : @StateContainer.SelectedCommande.PrixTvaC €</p>
-
     <p>Date de création : @StateContainer.SelectedCommande.CreatedAt</p>
     <p>Date de modification : @StateContainer.SelectedCommande.UpdatedAt</p>
     <p>Date d'effacement : @StateContainer.SelectedCommande.DeletedAt</p>
 
-    <button type="button" class="btn btn-info" @onclick="UpdateCommande"><i class="oi oi-check"></i>Update</button>
+    <button type="button" class="btn btn-info m-2" @onclick="UpdateCommande"><i class="oi oi-check"></i> Update</button>
 
     @if (StateContainer.SelectedCommande.DeletedAt is null)
     {
-        <button type="button" class="btn btn-danger" @onclick="DeleteCommande"><i class="oi oi-trash"></i>Delete</button>
+        <button type="button" class="btn btn-danger m-2" @onclick="DeleteCommande"><i class="oi oi-trash"></i> Delete</button>
     }
     else
     {
-        <button type="button" class="btn btn-info" @onclick="RestoreDeletedCommande"><i class="oi oi-action-undo"></i>Restaurer</button>
-        
+        <button type="button" class="btn btn-info m-2" @onclick="RestoreDeletedCommande"><i class="oi oi-action-undo"></i> Restaurer</button>
     }
 
-    <CommandeArticleManager CommandeIdSelected="@(StateContainer.SelectedCommande.Id.HasValue ? StateContainer.SelectedCommande.Id.Value : default)" />
-
+    <CommandeArticleManager CommandeIdSelected="@(StateContainer.SelectedCommande.Id ?? default)" />
 }
 else
 {
     <p>Commande introuvable.</p>
 }
 
-<button class="btn btn-primary" @onclick="GoBack"><i class="oi oi-action-undo"></i>Retour</button>
+<button class="btn btn-primary m-2" @onclick="GoBack"><i class="oi oi-action-undo"></i> Retour</button>
 
 @code {
     [Parameter]
@@ -81,159 +59,138 @@ else
     public Action? OnCommandeSelected { get; set; }
     private Action? OnCommandeUpdated;
 
-
     protected override async Task OnInitializedAsync()
     {
-        this.OnCommandeUpdated = async () =>
+        OnCommandeUpdated = async () =>
         {
             await InvokeAsync(StateHasChanged);
         };
-        this.OnCommandeSelected = async () =>
+        OnCommandeSelected = async () =>
         {
             await InvokeAsync(StateHasChanged);
         };
-        StateContainer.OnCommandeUpdated += this.OnCommandeUpdated;
-        StateContainer.OnCommandeSelected += this.OnCommandeSelected;
+        StateContainer.OnCommandeUpdated += OnCommandeUpdated;
+        StateContainer.OnCommandeSelected += OnCommandeSelected;
         await GetCommandeById(Id);
     }
 
     public async Task GetCommandeById(string? id)
     {
-
         var request = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/commande/get?id={id}");
 
-        using (var response = await HttpClient.SendAsync(request))
-        {
-            if (response.IsSuccessStatusCode)
-            {
-                try
-                {
-                    var commande = await response.Content.ReadFromJsonAsync<Commande>();
+        using var response = await HttpClient.SendAsync(request);
 
-                    if (commande != null)
-                    {
-                        StateContainer.SelectedCommande = commande;
-                        await InvokeAsync(StateHasChanged);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Commande not found.");
-                    }
-                }
-                catch (Exception ex)
+        if (response.IsSuccessStatusCode)
+        {
+            try
+            {
+                var commande = await response.Content.ReadFromJsonAsync<Commande>();
+
+                if (commande != null)
                 {
-                    Console.WriteLine("Error deserializing response content: " + ex.Message);
+                    StateContainer.SelectedCommande = commande;
+                    await InvokeAsync(StateHasChanged);
+                }
+                else
+                {
+                    Console.WriteLine("Commande not found.");
                 }
             }
-            else
+            catch (Exception ex)
             {
-                Console.WriteLine("Error retrieving commande. Status code: " + response.StatusCode);
+                Console.WriteLine("Error deserializing response content: " + ex.Message);
             }
         }
-
+        else
+        {
+            Console.WriteLine("Error retrieving commande. Status code: " + response.StatusCode);
+        }
     }
-    // Mettre à jour une commande
+
     private async Task UpdateCommande()
     {
         var commandeUpdate = new Commande
-            {
-
-                Id = StateContainer?.SelectedCommande?.Id,
-                Id_Date = StateContainer?.SelectedCommande?.Id_Date,
-                DateCommande = StateContainer?.SelectedCommande?.DateCommande,
-                PrixHtva = StateContainer?.SelectedCommande?.PrixHtva,
-                PrixTvaC = StateContainer?.SelectedCommande?.PrixTvaC,
-                CreatedAt = StateContainer?.SelectedCommande?.CreatedAt,
-                UpdatedAt = DateTime.Now,
-                DeletedAt = StateContainer?.SelectedCommande?.DeletedAt,
-
-            };
-
+        {
+            Id = StateContainer.SelectedCommande?.Id,
+            Id_Date = StateContainer.SelectedCommande?.Id_Date,
+            DateCommande = StateContainer.SelectedCommande?.DateCommande,
+            PrixHtva = StateContainer.SelectedCommande?.PrixHtva,
+            PrixTvaC = StateContainer.SelectedCommande?.PrixTvaC,
+            CreatedAt = StateContainer.SelectedCommande?.CreatedAt,
+            UpdatedAt = DateTime.Now,
+            DeletedAt = StateContainer.SelectedCommande?.DeletedAt,
+        };
 
         var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/commande/update");
         requestMsg.Content = JsonContent.Create(commandeUpdate);
-        using (var msg = await HttpClient.SendAsync(requestMsg))
+
+        using var msg = await HttpClient.SendAsync(requestMsg);
+
+        if (msg.IsSuccessStatusCode)
         {
-            if (msg.IsSuccessStatusCode)
-            {
-
-                StateContainer?.NotifyCommandesUpdated();
-
-            }
-            ToastService.ShowSuccess("Commande mise à jour!");
-            InvokeAsync(StateHasChanged);
-
-
-            }
+            StateContainer.NotifyCommandesUpdated();
         }
-    
-    // Delete Commande
+
+        ToastService.ShowSuccess("Commande mise à jour!");
+        await InvokeAsync(StateHasChanged);
+    }
+
     private async Task DeleteCommande()
     {
-
-
         var commandeUpdate = new Commande
-            {
-
-                Id = StateContainer?.SelectedCommande?.Id,
-                Id_Date = StateContainer?.SelectedCommande?.Id_Date,
-                DateCommande = StateContainer?.SelectedCommande?.DateCommande,
-                PrixHtva = StateContainer?.SelectedCommande?.PrixHtva,
-                PrixTvaC = StateContainer?.SelectedCommande?.PrixTvaC,
-                CreatedAt = StateContainer?.SelectedCommande?.CreatedAt,
-                UpdatedAt = DateTime.Now,
-                DeletedAt = DateTime.Now,
-            };
+        {
+            Id = StateContainer.SelectedCommande?.Id,
+            Id_Date = StateContainer.SelectedCommande?.Id_Date,
+            DateCommande = StateContainer.SelectedCommande?.DateCommande,
+            PrixHtva = StateContainer.SelectedCommande?.PrixHtva,
+            PrixTvaC = StateContainer.SelectedCommande?.PrixTvaC,
+            CreatedAt = StateContainer.SelectedCommande?.CreatedAt,
+            UpdatedAt = DateTime.Now,
+            DeletedAt = DateTime.Now,
+        };
 
         var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/commande/update");
         requestMsg.Content = JsonContent.Create(commandeUpdate);
 
-        using (var msg = await HttpClient.SendAsync(requestMsg))
-        {
-            if (msg.IsSuccessStatusCode)
-            {
-                ToastService.ShowWarning("Commande effacée");
-                
+        using var msg = await HttpClient.SendAsync(requestMsg);
 
-            }
-            NavigationManager.NavigateTo("/commande");
+        if (msg.IsSuccessStatusCode)
+        {
+            ToastService.ShowWarning("Commande effacée");
         }
+
+        NavigationManager.NavigateTo("/commande");
     }
-    // Delete Commande
+
     private async Task RestoreDeletedCommande()
     {
-
         var commandeUpdate = new Commande
-            {
-
-                Id = StateContainer?.SelectedCommande?.Id,
-                Id_Date = StateContainer?.SelectedCommande?.Id_Date,
-                DateCommande = StateContainer?.SelectedCommande?.DateCommande,
-                PrixHtva = StateContainer?.SelectedCommande?.PrixHtva,
-                PrixTvaC = StateContainer?.SelectedCommande?.PrixTvaC,
-                CreatedAt = StateContainer?.SelectedCommande?.CreatedAt,
-                UpdatedAt = DateTime.Now,
-                DeletedAt = null,
-            };
+        {
+            Id = StateContainer.SelectedCommande?.Id,
+            Id_Date = StateContainer.SelectedCommande?.Id_Date,
+            DateCommande = StateContainer.SelectedCommande?.DateCommande,
+            PrixHtva = StateContainer.SelectedCommande?.PrixHtva,
+            PrixTvaC = StateContainer.SelectedCommande?.PrixTvaC,
+            CreatedAt = StateContainer.SelectedCommande?.CreatedAt,
+            UpdatedAt = DateTime.Now,
+            DeletedAt = null,
+        };
 
         var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/commande/update");
         requestMsg.Content = JsonContent.Create(commandeUpdate);
 
-        using (var msg = await HttpClient.SendAsync(requestMsg))
+        using var msg = await HttpClient.SendAsync(requestMsg);
+
+        if (msg.IsSuccessStatusCode)
         {
-            if (msg.IsSuccessStatusCode)
-            {
-                ToastService.ShowInfo("Commande restaurée");
-                await InvokeAsync(StateHasChanged);
-            }
+            ToastService.ShowInfo("Commande restaurée");
+            await InvokeAsync(StateHasChanged);
         }
     }
+
     private async Task Reset()
     {
-
-
         await InvokeAsync(StateHasChanged);
-
     }
 
     private void GoBack()

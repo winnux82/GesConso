@@ -81,7 +81,5 @@ namespace GesConso
         public void NotifyArticlesUpdated() => OnArticleUpdated?.Invoke();
         public void NotifyCommandesUpdated() => OnCommandeUpdated?.Invoke();
         public void NotifyCommandeArticleUpdated() => OnCommandeArticleUpdated?.Invoke();
-
-
     }
 }

@@ -4,11 +4,10 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JsRuntime
 @inject IToastService ToastService
-@*@using System*@
+
 <PageTitle>Gestion des commandes Articles</PageTitle>
 <BlazoredToasts />
 <div class="row">
-    @*<div class="col-md-6">*@
     <table class="table table-striped">
         <thead>
             <tr>
@@ -39,13 +38,13 @@
                 GetCommandeFromId(CommandeIdSelected);
 
                 var totals = new Dictionary<Guid, double>();
-         
+
                 foreach (CommandeArticle commandeArticle in StateContainer.CommandeArticles)
                 {
                     if (commandeArticle.Id_Commande == CommandeIdSelected)
                     {
 
-                        
+
                         var isSelected = selected == commandeArticle;
                         var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
                         var article = StateContainer.Articles.FirstOrDefault(a => a.Id == commandeArticle.Id_Article);
@@ -101,7 +100,7 @@
                 if (totals.ContainsKey(CommandeIdSelected))
                 {
                     double total = totals[CommandeIdSelected];
-          
+
                     <tr>
                         <td colspan="3"><strong>Total:</strong></td>
                         <td><strong>@Math.Round(htva, 2)</strong> €</td>
@@ -193,11 +192,7 @@
                 </div>
             </div>
             <div class="col-md-1">
-
-
-                    <button type="submit" class="btn btn-warning" @onclick="AddCommandeArticle"><i class="oi oi-cart"></i>Commander</button>
-
-
+                <button type="submit" class="btn btn-warning m-2" @onclick="AddCommandeArticle"><i class="oi oi-cart"></i>Commander</button>
             </div>
 
         </div>
@@ -209,8 +204,6 @@
 
     CommandeArticle commandeArticle = new CommandeArticle();
     Commande commandeImported = new Commande();
-
-
 
     private Guid? _newIdArticle { get; set; }
     private int? _newQuantite { get; set; }
@@ -272,11 +265,6 @@
             StateContainer.Articles = articles;
         });
 
-        //await LoadDataAsync<List<CommandeArticle>>($"api/commandearticle/getall?commandId={this.CommandeIdSelected}", commandeArticles =>
-        //{
-        //    StateContainer.CommandeArticles = commandeArticles;
-        //});
-
         await InvokeAsync(StateHasChanged);
     }
 
@@ -285,7 +273,7 @@
         this.tvac = 0.0;
         this.htva = 0.0;
 
-        foreach(var e in StateContainer.CommandeArticles)
+        foreach (var e in StateContainer.CommandeArticles)
         {
             var article = StateContainer.Articles.First(x => x.Id == e.Id_Article);
             htva += (double)(e.Quantite ?? 0) * (article.PuHtva ?? 0);
@@ -347,7 +335,6 @@
         var newCommandeArticle = new CommandeArticle
             {
                 Id = Guid.NewGuid(),
-                //Id_Commande = CommandeIdSelected,
                 Id_Commande = CommandeIdSelected != Guid.Empty ? CommandeIdSelected : commandeArticle.Id_Commande,
                 Id_Article = _newIdArticle,
                 Quantite = _newQuantite,
@@ -355,12 +342,6 @@
                 UpdatedAt = DateTime.Now,
 
             };
-
-
-
-        Console.WriteLine(newCommandeArticle);
-        //if ((commandeArticle.Id_Article != null && CommandeIdSelected != Guid.Empty) || commandeArticle.Id_Commande != null)
-
         if (newCommandeArticle.Id_Article != null && newCommandeArticle.Id_Commande != null)
         {
 
@@ -388,10 +369,7 @@
         else
         {
             ToastService.ShowError("Id_Article || Id_Commande NULL.");
-
         }
-
-
         Reset();
     }
 
@@ -430,9 +408,6 @@
                 StateContainer.CommandeArticles[index] = commandeArticleUpdate;
                 ToastService.ShowSuccess($"Article de la commande {commandeArticleUpdate.Id_Commande} mis à jour!");
                 await UpdateCommande();
-
-                //await UpdateCommandeImportPrices();
-                //await UpdateCommande();
                 UnSelectCommandeArticle();
             }
         }
@@ -444,7 +419,6 @@
     {
         commandeArticle = new CommandeArticle();
         selected = null;
-
     }
 
     // Delete Commande d'Article
@@ -454,7 +428,6 @@
         {
             return;
         }
-
         var commandeArticleUpdate = new CommandeArticle
             {
                 Id = this.selected.Id,
@@ -551,9 +524,6 @@
 
                     UnSelectCommandeArticle();
                     await UpdateCommande();
-
-
-
                 }
                 await InvokeAsync(StateHasChanged);
             }
@@ -571,8 +541,6 @@
         InvokeAsync(StateHasChanged);
     }
 
-
-
     private void UnSelectCommandeArticle()
     {
         selected = null;
@@ -582,8 +550,6 @@
     {
         return selected == commandeArticle ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
     }
-
-
 
     async Task<bool> ConfirmDelete()
     {
@@ -598,9 +564,6 @@
         double calculatedValue = puHtva * quantite;
         PuHtvaCalculated.InvokeAsync(calculatedValue);
         return Math.Round(calculatedValue, 2);
-
-
-
     }
 
     private double CalculateTvaC(Article article, int quantite)
@@ -653,8 +616,6 @@
                 StateContainer.NotifyCommandeArticleUpdated();
                 StateContainer.NotifyCommandesUpdated();
                 ToastService.ShowSuccess("Commande mise à jour!");
-                
-
             }
         }
     }
