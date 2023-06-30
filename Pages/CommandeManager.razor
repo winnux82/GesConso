@@ -138,13 +138,16 @@ else
 
         StateContainer.OnCommandeUpdated += this.OnCommandeUpdated;
         StateContainer.OnCommandeSelected += this.OnCommandeSelected;
+        isLoading = true; // Activer le loader
         await GetCommandes();
+        await GetArticles();
+        isLoading = false; // Désactiver le loader
     }
 
     public async Task GetCommandes()
 
     {
-        isLoading = true; // Activer le loader
+        
         var request = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/commande/getall");
 
         using (var response = await HttpClient.SendAsync(request))
@@ -160,8 +163,32 @@ else
                 }
             }
         }
-        isLoading = false; // Désactiver le loader
+        
     }
+
+    public async Task GetArticles()
+    {
+    
+
+        var request = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/article/getall");
+
+        using (var response = await HttpClient.SendAsync(request))
+        {
+            if (response.IsSuccessStatusCode)
+            {
+                var articles = await response.Content.ReadFromJsonAsync<List<Article>>();
+
+                if (articles != null)
+                {
+                    StateContainer.Articles = articles;
+                    await InvokeAsync(StateHasChanged);
+                }
+            }
+        }
+
+       
+    }
+
     private async Task NewCommande()
     {
         await Reset();

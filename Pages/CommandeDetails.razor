@@ -5,6 +5,7 @@
 @inject IJSRuntime JsRuntime
 @inject IToastService ToastService
 
+
 <PageTitle>Détails de la commande</PageTitle>
 <BlazoredToasts />
 
@@ -96,7 +97,7 @@ else
         await GetCommandeById(Id);
     }
 
-    private async Task GetCommandeById(string? id)
+    public async Task GetCommandeById(string? id)
     {
 
         var request = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/commande/get?id={id}");
