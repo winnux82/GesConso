@@ -25,7 +25,7 @@ namespace GesConso.Controllers
             return StatusCode(StatusCodes.Status200OK, commandes);
         }
         // Récupérer une commande par son ID
-        [HttpGet("get/{id}")]
+        [HttpGet]
         public IActionResult Get(Guid id)
         {
             var commande = this.context.Commandes.Find(id);

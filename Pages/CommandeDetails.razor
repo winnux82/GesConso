@@ -81,7 +81,7 @@ else
     private async Task GetCommandeById(string id)
     {
         isLoading = true; // Activer le loader
-        var request = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/commande/get/{id}");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/commande/get?id={id}");
 
         using (var response = await HttpClient.SendAsync(request))
         {

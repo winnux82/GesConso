@@ -261,8 +261,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ComputeTva();
-
         this.OnCommandeArticleUpdated = async () =>
         {
             await InvokeAsync(StateHasChanged);
@@ -274,9 +272,13 @@
 
         StateContainer.OnCommandeArticleUpdated += this.OnCommandeArticleUpdated;
         StateContainer.OnCommandeArticleSelected += this.OnCommandeArticleSelected;
-        await GetCommandeArticle();
     }
 
+    protected override async Task OnParametersSetAsync()
+    {
+        await GetCommandeArticle();
+        ComputeTva();
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -292,10 +294,10 @@
             StateContainer.Articles = articles;
         });
 
-        await LoadDataAsync<List<CommandeArticle>>("api/commandearticle/getall", commandeArticles =>
-        {
-            StateContainer.CommandeArticles = commandeArticles;
-        });
+        //await LoadDataAsync<List<CommandeArticle>>($"api/commandearticle/getall?commandId={this.CommandeIdSelected}", commandeArticles =>
+        //{
+        //    StateContainer.CommandeArticles = commandeArticles;
+        //});
 
         await InvokeAsync(StateHasChanged);
     }
@@ -327,6 +329,7 @@
             if (response.IsSuccessStatusCode)
             {
                 var data = await response.Content.ReadFromJsonAsync<T>();
+
                 if (data != null)
                 {
                     setDataAction(data);
@@ -341,14 +344,14 @@
 
     public async Task GetCommandeArticle()
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/commandearticle/getall");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/commandearticle/getall?commandId={this.CommandeIdSelected}");
 
         using (var response = await HttpClient.SendAsync(request))
         {
             if (response.IsSuccessStatusCode)
             {
                 var comArticles = await response.Content.ReadFromJsonAsync<List<CommandeArticle>>();
-
+            
                 if (comArticles != null)
                 {
                     StateContainer.CommandeArticles = comArticles;
@@ -366,8 +369,6 @@
                 Id = Guid.NewGuid(),
                 //Id_Commande = CommandeIdSelected,
                 Id_Commande = CommandeIdSelected != Guid.Empty ? CommandeIdSelected : commandeArticle.Id_Commande,
-
-
                 Id_Article = commandeArticle.Id_Article,
                 Quantite = commandeArticle.Quantite,
                 CreatedAt = DateTime.Now,
@@ -434,7 +435,7 @@
                 DeletedAt = commandeArticle.DeletedAt,
             };
 
-        Console.WriteLine("Commande Article Update:");
+        Console.WriteLine("Commande Article Update:", commandeArticleUpdate);
         Console.WriteLine($"ID: {commandeArticleUpdate.Id_Commande}");
 
         var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/commandearticle/update");
@@ -448,8 +449,7 @@
             if (index != -1)
             {
                 StateContainer.CommandeArticles[index] = commandeArticleUpdate;
-                ToastService.ShowSuccess("Article de la commande mis à jour!");
-             
+                ToastService.ShowSuccess($"Article de la commande {commandeArticleUpdate.Id_Commande} mis à jour!");
                 await UpdateCommande();
 
                 //await UpdateCommandeImportPrices();

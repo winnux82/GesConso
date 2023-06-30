@@ -18,9 +18,9 @@ namespace GesConso.Controllers
         // GetAll
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult GetAll()
+        public IActionResult GetAll(Guid commandId)
         {
-            var commandeArticles = this.context.CommandeArticle.ToList();
+            var commandeArticles = this.context.CommandeArticle.Where(x => x.Id_Commande == commandId).ToList();
             return StatusCode(StatusCodes.Status200OK, commandeArticles);
         }
 
@@ -58,7 +58,7 @@ namespace GesConso.Controllers
                 return NotFound("Commande not found.");
             }
 
-
+            commandeArticle.Quantite = updatedCommandeArticle.Quantite;
             commandeArticle.CreatedAt = updatedCommandeArticle.CreatedAt;
             commandeArticle.UpdatedAt = updatedCommandeArticle.UpdatedAt;
             commandeArticle.DeletedAt = updatedCommandeArticle.DeletedAt;
