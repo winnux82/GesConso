@@ -7,6 +7,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Syncfusion.Blazor;
 
+
+using Blazorise.Bootstrap;
+using Blazorise.Icons.FontAwesome;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -21,7 +26,13 @@ builder.Services.AddBlazorStrap();
 builder.Services.AddBlazoredToast();
 builder.Services.AddBlazorise();
 builder.Services.AddSyncfusionBlazor();
-
+builder.Services
+    .AddBlazorise(options =>
+    {
+        options.Immediate = true;
+    })
+    .AddBootstrapProviders()
+    .AddFontAwesomeIcons();
 
 var app = builder.Build();
 

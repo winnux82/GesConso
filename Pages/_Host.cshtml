@@ -11,6 +11,9 @@
     <base href="~/" />
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
 
+    <!-- inside of head section -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+
     <link href="css/site.css" rel="stylesheet" />
     <link href="GesConso.styles.css" rel="stylesheet" />
     <link rel="icon" type="image/png" href="favicon.png"/>
@@ -23,10 +26,12 @@
     <link href="_content/Blazored.Toast/blazored-toast.min.css" rel="stylesheet" />
     <script src="_content/Blazored.Toast/blazored-toast.min.js"></script>
 
+
+
 </head>
 <body>
     <component type="typeof(App)" render-mode="ServerPrerendered" />
-
+    <div id="app"></div>
     <div id="blazor-error-ui">
         <environment include="Staging,Production">
             An error has occurred. This application may no longer respond until reloaded.
@@ -41,5 +46,9 @@
     <script src="_framework/blazor.server.js"></script>
     <script src="_content/BlazorStrap/popper.min.js"></script>
     <script src="_content/BlazorStrap/blazorstrap.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js" integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2" crossorigin="anonymous"></script>
+
 </body>
 </html>

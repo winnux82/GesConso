@@ -100,6 +100,27 @@
           "buildMultiTargeting/Blazorise.props": {}
         }
       },
+      "Blazorise.Bootstrap/1.2.4": {
+        "type": "package",
+        "dependencies": {
+          "Blazorise": "1.2.4",
+          "Microsoft.AspNetCore.Components": "7.0.7",
+          "Microsoft.AspNetCore.Components.Web": "7.0.7",
+          "Microsoft.Extensions.Logging.Abstractions": "7.0.1"
+        },
+        "compile": {
+          "lib/net7.0/Blazorise.Bootstrap.dll": {}
+        },
+        "runtime": {
+          "lib/net7.0/Blazorise.Bootstrap.dll": {}
+        },
+        "build": {
+          "buildTransitive/Blazorise.Bootstrap.props": {}
+        },
+        "buildMultiTargeting": {
+          "buildMultiTargeting/Blazorise.Bootstrap.props": {}
+        }
+      },
       "Blazorise.Icons.FontAwesome/1.2.4": {
         "type": "package",
         "dependencies": {
@@ -4397,6 +4418,29 @@
         "staticwebassets/vendors/inputmask.js",
         "staticwebassets/vendors/jsencrypt.js",
         "staticwebassets/vendors/sha512.js"
+      ]
+    },
+    "Blazorise.Bootstrap/1.2.4": {
+      "sha512": "CCVeff1RHcyPPKBdkpFbkcdgIJPaeuV/cUxxmIpIj/SKPjgJXE7pvJAAtrD/A9F2seyLDYt+j0cgenVVvdmFvA==",
+      "type": "package",
+      "path": "blazorise.bootstrap/1.2.4",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Blazorise.png",
+        "LICENSE.md",
+        "blazorise.bootstrap.1.2.4.nupkg.sha512",
+        "blazorise.bootstrap.nuspec",
+        "build/Blazorise.Bootstrap.props",
+        "build/Microsoft.AspNetCore.StaticWebAssets.props",
+        "buildMultiTargeting/Blazorise.Bootstrap.props",
+        "buildTransitive/Blazorise.Bootstrap.props",
+        "lib/net6.0/Blazorise.Bootstrap.dll",
+        "lib/net7.0/Blazorise.Bootstrap.dll",
+        "staticwebassets/blazorise.bootstrap.css",
+        "staticwebassets/blazorise.bootstrap.min.css",
+        "staticwebassets/modal.js",
+        "staticwebassets/tooltip.js"
       ]
     },
     "Blazorise.Icons.FontAwesome/1.2.4": {
@@ -12357,6 +12401,7 @@
       "BlazorStrap >= 5.1.102.51923",
       "Blazored.Toast >= 4.1.0",
       "Blazorise >= 1.2.4",
+      "Blazorise.Bootstrap >= 1.2.4",
       "Blazorise.Icons.FontAwesome >= 1.2.4",
       "FontAwesome >= 4.7.0",
       "Microsoft.AspNet.WebApi.Client >= 5.2.9",
@@ -12427,6 +12472,10 @@
             "version": "[4.1.0, )"
           },
           "Blazorise": {
+            "target": "Package",
+            "version": "[1.2.4, )"
+          },
+          "Blazorise.Bootstrap": {
             "target": "Package",
             "version": "[1.2.4, )"
           },

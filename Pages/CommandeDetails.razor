@@ -13,6 +13,7 @@
 
 @if (StateContainer.SelectedCommande is not null)
 {
+    
     <p>ID : @StateContainer.SelectedCommande.Id</p>
 
     <p>ID_Date: @(((StateContainer.SelectedCommande.Id_Date.HasValue) ? ((DateTime)StateContainer.SelectedCommande.Id_Date).ToString("yyyyMMdd") : ""))</p>
@@ -29,6 +30,20 @@
     </div>
 
     @*<p>Date de la commande : @StateContainer.SelectedCommande.DateCommande</p>*@
+@*
+    <Addons>
+        <Addon AddonType="AddonType.Start">
+            <AddonLabel>Prix Htva :</AddonLabel>
+        </Addon>
+        <Addon AddonType="AddonType.Body">
+
+            <TextEdit @bind-Text="StateContainer.SelectedCommande.PrixHtva.ToString()" />
+
+
+        </Addon>
+    </Addons>
+*@
+
     <p>Prix Htva : @StateContainer.SelectedCommande.PrixHtva €</p>
     <p>Prix TvaC : @StateContainer.SelectedCommande.PrixTvaC €</p>
 
@@ -64,7 +79,7 @@ else
     [Parameter]
     public Action? OnCommandeSelected { get; set; }
     private Action? OnCommandeUpdated;
-    private bool isLoading = true;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -83,7 +98,7 @@ else
 
     private async Task GetCommandeById(string? id)
     {
-        isLoading = true; // Activer le loader
+        
         var request = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/commande/get?id={id}");
 
         using (var response = await HttpClient.SendAsync(request))
@@ -114,7 +129,7 @@ else
                 Console.WriteLine("Error retrieving commande. Status code: " + response.StatusCode);
             }
         }
-        isLoading = false; // Désactiver le loader
+
     }
     // Mettre à jour une commande
     private async Task UpdateCommande()

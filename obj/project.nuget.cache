@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "YeodPz8f1vesTamksDhaG6kS/KTCEk/sQXmEdape3IipsrQKCrMZanr+PQ4hPgY7y87hMGzM1lAkICHHVy06dw==",
+  "dgSpecHash": "eYNO5+jQ4kGg/PbprajtYSCiVmfLT0l8sMPDiJIhAW4THMoJMUVL9x2CuPLD655DHfUfOKinS3Yw8XtlwNv08Q==",
   "success": true,
   "projectFilePath": "C:\\Users\\VANCHRI\\source\\repos\\GesConso\\GesConso.csproj",
   "expectedPackageFiles": [
@@ -9,6 +9,7 @@
     "C:\\Users\\VANCHRI\\.nuget\\packages\\blazorcomponentutilities\\1.7.1\\blazorcomponentutilities.1.7.1.nupkg.sha512",
     "C:\\Users\\VANCHRI\\.nuget\\packages\\blazored.toast\\4.1.0\\blazored.toast.4.1.0.nupkg.sha512",
     "C:\\Users\\VANCHRI\\.nuget\\packages\\blazorise\\1.2.4\\blazorise.1.2.4.nupkg.sha512",
+    "C:\\Users\\VANCHRI\\.nuget\\packages\\blazorise.bootstrap\\1.2.4\\blazorise.bootstrap.1.2.4.nupkg.sha512",
     "C:\\Users\\VANCHRI\\.nuget\\packages\\blazorise.icons.fontawesome\\1.2.4\\blazorise.icons.fontawesome.1.2.4.nupkg.sha512",
     "C:\\Users\\VANCHRI\\.nuget\\packages\\blazorise.licensing\\1.1.0\\blazorise.licensing.1.1.0.nupkg.sha512",
     "C:\\Users\\VANCHRI\\.nuget\\packages\\blazorstrap\\5.1.102.51923\\blazorstrap.5.1.102.51923.nupkg.sha512",

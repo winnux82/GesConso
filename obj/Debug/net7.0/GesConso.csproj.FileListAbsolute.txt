@@ -11,6 +11,7 @@ C:\Users\VANCHRI\source\repos\GesConso\bin\Debug\net7.0\Azure.Identity.dll
 C:\Users\VANCHRI\source\repos\GesConso\bin\Debug\net7.0\BlazorComponentUtilities.dll
 C:\Users\VANCHRI\source\repos\GesConso\bin\Debug\net7.0\Blazored.Toast.dll
 C:\Users\VANCHRI\source\repos\GesConso\bin\Debug\net7.0\Blazorise.dll
+C:\Users\VANCHRI\source\repos\GesConso\bin\Debug\net7.0\Blazorise.Bootstrap.dll
 C:\Users\VANCHRI\source\repos\GesConso\bin\Debug\net7.0\Blazorise.Icons.FontAwesome.dll
 C:\Users\VANCHRI\source\repos\GesConso\bin\Debug\net7.0\Blazorise.Licensing.dll
 C:\Users\VANCHRI\source\repos\GesConso\bin\Debug\net7.0\BlazorStrap.dll
