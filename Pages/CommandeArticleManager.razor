@@ -259,7 +259,7 @@
     private double tvac = 0;
 
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         this.OnCommandeArticleUpdated = async () =>
         {
@@ -273,6 +273,7 @@
         StateContainer.OnCommandeArticleUpdated += this.OnCommandeArticleUpdated;
         StateContainer.OnCommandeArticleSelected += this.OnCommandeArticleSelected;
     }
+
 
     protected override async Task OnParametersSetAsync()
     {

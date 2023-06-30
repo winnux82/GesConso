@@ -16,14 +16,21 @@ namespace GesConso.Controllers
             this.context = context;
         }
 
-        // GetAll
         [HttpGet]
-        
         public IActionResult GetAll()
         {
-            var commandes = this.context.Commandes.ToList();
+            var commandes = this.context.Commandes
+                .OrderByDescending(c => c.CreatedAt) // Tri par date de mise à jour décroissante
+                //.OrderBy(c => c.UpdatedAt) // Tri par date de mise à jour croissant
+                //.OrderByDescending(c => c.UpdatedAt) // Tri par date de mise à jour décroissante
+                //.OrderByDescending(c => c.CreatedAt) // Tri par date de mise à jour décroissante
+                .ToList();
+
             return StatusCode(StatusCodes.Status200OK, commandes);
         }
+
+
+
         // Récupérer une commande par son ID
         [HttpGet]
         public IActionResult Get(Guid id)

@@ -17,7 +17,14 @@
 
 <div class="row">
     <div class="col-md-4">
-
+        @if (isLoading)
+        {
+            <div class="skeleton-loader">
+                <div class="loader"></div>
+                <div>Loading...</div>
+            </div>
+        }            else
+            {
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -32,15 +39,8 @@
 
                 </tr>
             </thead>
-            @if (isLoading)
-            {
-                <div class="skeleton-loader">
-                    <div class="loader"></div>
-                    <div>Loading...</div>
-                </div>
-            }
-            else
-            {
+
+
                 <tbody>
 
 
@@ -67,9 +67,9 @@
                         </tr>
                     }
                 </tbody>
-            }
+            
         </table>
-
+        }
     </div>
     <div class="col-md-12">
         <EditForm Model="@commande" OnValidSubmit="@(selected is null ? (Func<Task>)AddCommande : UpdateCommande)">

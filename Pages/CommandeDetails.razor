@@ -15,7 +15,8 @@
 {
     <p>ID : @StateContainer.SelectedCommande.Id</p>
 
-    <p>ID_Date : @(((DateTime)StateContainer.SelectedCommande.Id_Date).ToString("yyyyMMdd"))</p>
+    <p>ID_Date: @(((StateContainer.SelectedCommande.Id_Date.HasValue) ? ((DateTime)StateContainer.SelectedCommande.Id_Date).ToString("yyyyMMdd") : ""))</p>
+
     <div class="row">
         <div class="col-sm-2">
             <div class="form-group">
@@ -35,6 +36,8 @@
     <p>Date de modification : @StateContainer.SelectedCommande.UpdatedAt</p>
     <p>Date d'effacement : @StateContainer.SelectedCommande.DeletedAt</p>
 
+    <button type="button" class="btn btn-info" @onclick="UpdateCommande"><i class="oi oi-check"></i>Update</button>
+
     @if (StateContainer.SelectedCommande.DeletedAt is null)
     {
         <button type="button" class="btn btn-danger" @onclick="DeleteCommande">Delete</button>
@@ -45,8 +48,8 @@
         
     }
 
+    <CommandeArticleManager CommandeIdSelected="@(StateContainer.SelectedCommande.Id.HasValue ? StateContainer.SelectedCommande.Id.Value : default)" />
 
-    <CommandeArticleManager CommandeIdSelected="@(StateContainer.SelectedCommande.Id.Value)" />
 }
 else
 {
@@ -78,7 +81,7 @@ else
         await GetCommandeById(Id);
     }
 
-    private async Task GetCommandeById(string id)
+    private async Task GetCommandeById(string? id)
     {
         isLoading = true; // Activer le loader
         var request = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/commande/get?id={id}");
@@ -113,7 +116,39 @@ else
         }
         isLoading = false; // Désactiver le loader
     }
+    // Mettre à jour une commande
+    private async Task UpdateCommande()
+    {
+        var commandeUpdate = new Commande
+            {
 
+                Id = StateContainer?.SelectedCommande?.Id,
+                Id_Date = StateContainer?.SelectedCommande?.Id_Date,
+                DateCommande = StateContainer?.SelectedCommande?.DateCommande,
+                PrixHtva = StateContainer?.SelectedCommande?.PrixHtva,
+                PrixTvaC = StateContainer?.SelectedCommande?.PrixTvaC,
+                CreatedAt = StateContainer?.SelectedCommande?.CreatedAt,
+                UpdatedAt = DateTime.Now,
+                DeletedAt = StateContainer?.SelectedCommande?.DeletedAt,
+
+            };
+
+
+        var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/commande/update");
+        requestMsg.Content = JsonContent.Create(commandeUpdate);
+        using (var msg = await HttpClient.SendAsync(requestMsg))
+        {
+            if (msg.IsSuccessStatusCode)
+            {
+
+                    StateContainer?.NotifyCommandesUpdated();
+
+                }
+                ToastService.ShowSuccess("Commande mise à jour!");
+
+            }
+        }
+    
     // Delete Commande
     private async Task DeleteCommande()
     {
