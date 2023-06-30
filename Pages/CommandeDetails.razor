@@ -55,11 +55,11 @@
 
     @if (StateContainer.SelectedCommande.DeletedAt is null)
     {
-        <button type="button" class="btn btn-danger" @onclick="DeleteCommande">Delete</button>
+        <button type="button" class="btn btn-danger" @onclick="DeleteCommande"><i class="oi oi-trash"></i>Delete</button>
     }
     else
     {
-    <button type="button" class="btn btn-info" @onclick="RestoreDeletedCommande">Restaurer</button>
+        <button type="button" class="btn btn-info" @onclick="RestoreDeletedCommande"><i class="oi oi-action-undo"></i>Restaurer</button>
         
     }
 
@@ -71,7 +71,7 @@ else
     <p>Commande introuvable.</p>
 }
 
-<button class="btn btn-primary" @onclick="GoBack">Retour</button>
+<button class="btn btn-primary" @onclick="GoBack"><i class="oi oi-action-undo"></i>Retour</button>
 
 @code {
     [Parameter]
@@ -98,7 +98,7 @@ else
 
     private async Task GetCommandeById(string? id)
     {
-        
+
         var request = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/commande/get?id={id}");
 
         using (var response = await HttpClient.SendAsync(request))
@@ -156,10 +156,12 @@ else
             if (msg.IsSuccessStatusCode)
             {
 
-                    StateContainer?.NotifyCommandesUpdated();
+                StateContainer?.NotifyCommandesUpdated();
 
-                }
-                ToastService.ShowSuccess("Commande mise à jour!");
+            }
+            ToastService.ShowSuccess("Commande mise à jour!");
+            InvokeAsync(StateHasChanged);
+
 
             }
         }

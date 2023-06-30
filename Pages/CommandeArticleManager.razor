@@ -352,7 +352,7 @@
             if (response.IsSuccessStatusCode)
             {
                 var comArticles = await response.Content.ReadFromJsonAsync<List<CommandeArticle>>();
-            
+
                 if (comArticles != null)
                 {
                     StateContainer.CommandeArticles = comArticles;
@@ -675,8 +675,8 @@
             {
                 var index = StateContainer.Commandes.IndexOf(commandeImported);
                 StateContainer.Commandes[index] = commandeUpdate;
+                StateContainer.NotifyCommandeArticleUpdated();
                 StateContainer.NotifyCommandesUpdated();
-
                 ToastService.ShowSuccess("Commande mise à jour!");
 
             }
