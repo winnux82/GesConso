@@ -12,43 +12,43 @@
 
 @if (StateContainer.SelectedCommande is not null)
 {
-    <table>
-        <tr>
-            <td>ID Commande:</td>
-            <td>@StateContainer.SelectedCommande.Id</td>
-        </tr>
-        <tr>
-            <td>ID Date:</td>
-            <td>@((StateContainer.SelectedCommande.Id_Date.HasValue ? ((DateTime)StateContainer.SelectedCommande.Id_Date).ToString("yyyyMMdd") : ""))</td>
-        </tr>
-        <tr>
-            <td>Date et heure de la Commande:</td>
-            <td>
+    <Table>
+        <TableRow>
+            <TableRowCell>ID Commande:</TableRowCell>
+            <TableRowCell>@StateContainer.SelectedCommande.Id</TableRowCell>
+        </TableRow>
+        <TableRow>
+            <TableRowCell>ID Date:</TableRowCell>
+            <TableRowCell>@((StateContainer.SelectedCommande.Id_Date.HasValue ? ((DateTime)StateContainer.SelectedCommande.Id_Date).ToString("yyyyMMdd") : ""))</TableRowCell>
+            </TableRow>
+            <TableRow>
+                <TableRowCell>Date et heure de la Commande:</TableRowCell>
+                <TableRowCell>
 
-                <InputDate id="date" class="form-control" @bind-Value="@StateContainer.SelectedCommande.DateCommande" />
-            </td>
-        </tr>
-        <tr>
-            <td>Prix Htva :</td>
-            <td>@StateContainer.SelectedCommande.PrixHtva €</td>
-        </tr>
-        <tr>
-            <td>Prix TvaC :</td>
-            <td>@StateContainer.SelectedCommande.PrixTvaC €</td>
-        </tr>
-        <tr>
-            <td>Date de création :</td>
-            <td>@StateContainer.SelectedCommande.CreatedAt</td>
-        </tr>
-        <tr>
-            <td>Date de modification :</td>
-            <td>@StateContainer.SelectedCommande.UpdatedAt</td>
-        </tr>
-        <tr>
-            <td>Date d'effacement :</td>
-            <td>@StateContainer.SelectedCommande.DeletedAt</td>
-        </tr>
-    </table>
+                    <InputDate id="date" class="form-control" @bind-Value="@StateContainer.SelectedCommande.DateCommande" />
+                </TableRowCell>
+            </TableRow>
+            <TableRow>
+                <TableRowCell>Prix Htva :</TableRowCell>
+                <TableRowCell>@StateContainer.SelectedCommande.PrixHtva €</TableRowCell>
+            </TableRow>
+            <TableRow>
+                <TableRowCell>Prix TvaC :</TableRowCell>
+                <TableRowCell>@StateContainer.SelectedCommande.PrixTvaC €</TableRowCell>
+            </TableRow>
+            <TableRow>
+                <TableRowCell>Date de création :</TableRowCell>
+                <TableRowCell>@StateContainer.SelectedCommande.CreatedAt</TableRowCell>
+            </TableRow>
+            <TableRow>
+                <TableRowCell>Date de modification :</TableRowCell>
+                <TableRowCell>@StateContainer.SelectedCommande.UpdatedAt</TableRowCell>
+            </TableRow>
+            <TableRow>
+                <TableRowCell>Date d'effacement :</TableRowCell>
+                <TableRowCell>@StateContainer.SelectedCommande.DeletedAt</TableRowCell>
+            </TableRow>
+        </Table>
 
 
     <button type="button" class="btn btn-info m-2" @onclick="UpdateCommande"><i class="oi oi-check"></i> Update</button>
