@@ -23,41 +23,41 @@
     <ModalContent Centered>
         <ModalHeader>
             <ModalTitle>@(selected is null ? "Ajout d'un article" : "Modification d'un article")</ModalTitle>
-            <CloseButton />
-        </ModalHeader>
-        <ModalBody>
-            <EditForm Model="@article" OnValidSubmit="@(selected is null ? (Func<Task>)AddArticle : UpdateArticle)">
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <EditForm Model="@article" OnValidSubmit="@(selected is null ? (Func<Task>)AddArticle : UpdateArticle)">
 
 
-                <DataAnnotationsValidator />
+                    <DataAnnotationsValidator />
 
 
-                <Field>
+                    <Field>
 
-                    <div class="form-group">
-                        <label for="denomination">Dénomination</label>
-                        <div class="col-sm-10">
-                            <InputText id="denomination" type="text" class="form-control" placeholder="Obligatoire" @bind-Value="article.Denomination" autofocus />
-                            <ValidationMessage For="@(() => article.Denomination)" />
+                        <div class="form-group">
+                            <label for="denomination">Dénomination</label>
+                            <div class="col-sm-10">
+                                <InputText id="denomination" type="text" class="form-control" placeholder="Obligatoire" @bind-Value="article.Denomination" autofocus />
+                                <ValidationMessage For="@(() => article.Denomination)" />
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="description">Description</label>
-                        <div class="col-sm-10">
-                            <InputText id="description" type="text" class="form-control" placeholder="" @bind-Value="article.Description" />
-                            <ValidationMessage For="@(() => article.Description)" />
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <div class="col-sm-10">
+                                <InputText id="description" type="text" class="form-control" placeholder="" @bind-Value="article.Description" />
+                                <ValidationMessage For="@(() => article.Description)" />
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="puHtva">PuHtva</label>
-                        <div class="col-sm-10">
-                            <InputNumber id="puHtva" type="text" class="form-control" placeholder="@((selected is null) ? "Obligatoire" : "")" @bind-Value="article.PuHtva" />
-                            <ValidationMessage For="@(() => article.PuHtva)" />
+                        <div class="form-group">
+                            <label for="puHtva">PuHtva</label>
+                            <div class="col-sm-10">
+                                <InputNumber id="puHtva" type="text" class="form-control" placeholder="@((selected is null) ? "Obligatoire" : "")" @bind-Value="article.PuHtva" />
+                                <ValidationMessage For="@(() => article.PuHtva)" />
+                            </div>
                         </div>
-                    </div>
-                </Field>
-                <div>
-                    @if (article.CreatedAt is not null)
+                    </Field>
+                    <div>
+                        @if (article.CreatedAt is not null)
                     {
                         <p>Créé : @article.CreatedAt</p>
                         <p>Modifié : @article.UpdatedAt</p>
@@ -122,35 +122,38 @@
         }
         else
         {
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Dénomination</th>
-                        <th>Description</th>
-                        <th>PuHtva</th>
-                        <th>DeletedAt</th>
 
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (Article article in StateContainer.Articles)
+            <Table Hoverable Striped>
+            <TableHeader ThemeContrast="ThemeContrast.Dark">
+                <TableRow>
+
+                    <TableHeaderCell>ID</TableHeaderCell>
+                    <TableHeaderCell>Dénomination</TableHeaderCell>
+                    <TableHeaderCell>Description</TableHeaderCell>
+                    <TableHeaderCell>PuHtva</TableHeaderCell>
+                    <TableHeaderCell>DeletedAt</TableHeaderCell>
+                </TableRow>
+
+            </TableHeader>
+            <TableBody>
+
+                @foreach (Article article in StateContainer.Articles)
                     {
                         var isSelected = selected == article;
                         var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
 
-                        <tr @onclick="(() => SelectArticle(article))" style="@GetRowStyle(article)">
-                            <td>@article.Id</td>
-                            <td>@article.Denomination</td>
-                            <td>@article.Description</td>
-                            <td>@article.PuHtva</td>
-                            <td>@article.DeletedAt</td>
+                        <TableRow @onclick="(() => SelectArticle(article))" style="@GetRowStyle(article)">
+                            <TableRowHeader>@article.Id</TableRowHeader>
+                  
+                            <TableRowCell>@article.Denomination</TableRowCell>
+                            <TableRowCell>@article.Description</TableRowCell>
+                            <TableRowCell>@article.PuHtva</TableRowCell>
+                            <TableRowCell>@article.DeletedAt</TableRowCell>
 
-
-                        </tr>
+                        </TableRow>
                     }
-                </tbody>
-            </table>
+                </TableBody>
+            </Table>
         }
         <div class="highlight">
             <h2>User</h2>
@@ -163,17 +166,24 @@
             </div>
         }
         else
+
+
         {
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Dénomination</th>
-                        <th>Description</th>
-                        <th>PuHtva</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (Article article in StateContainer.Articles)
+            <Table Hoverable Striped>
+            <TableHeader ThemeContrast="ThemeContrast.Dark">
+                <TableRow>
+
+
+                    <TableHeaderCell>Dénomination</TableHeaderCell>
+                    <TableHeaderCell>Description</TableHeaderCell>
+                    <TableHeaderCell>PuHtva</TableHeaderCell>
+
+                </TableRow>
+
+            </TableHeader>
+            <TableBody>
+
+                @foreach (Article article in StateContainer.Articles)
                     {
                         // Vérifier si l'article est supprimé
                         var isDeleted = article.DeletedAt != null;
@@ -185,14 +195,18 @@
                         var isSelected = selected == article;
                         var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
 
-                        <tr @onclick="(() => SelectArticle(article))" style="@style">
-                            <td>@article.Denomination</td>
-                            <td>@article.Description</td>
-                            <td>@article.PuHtva</td>
-                        </tr>
+                        <TableRow @onclick="(() => SelectArticle(article))" style="@GetRowStyle(article)">
+                            <TableRowHeader>@article.Denomination</TableRowHeader>
+                            
+                            <TableRowCell>@article.Description</TableRowCell>
+                            <TableRowCell>@article.PuHtva</TableRowCell>
+  
+
+                        </TableRow>
+
                     }
-                </tbody>
-            </table>
+                </TableBody>
+            </Table>
         }
     </div>
     <div class="col-md-6">
@@ -298,7 +312,7 @@
             {
                 StateContainer.Articles?.Add(newArticle);
                 Reset();
-                HideModal();
+                await HideModal();
                 ToastService.ShowSuccess("Article ajouté!");
 
             }
@@ -341,7 +355,7 @@
                     StateContainer.Articles[index] = articleUpdate;
                     UnSelectArticle();
                     ToastService.ShowSuccess("Article mis à jour!");
-                    HideModal();
+                    await HideModal();
 
                 }
             }
@@ -389,7 +403,7 @@
                 {
                     StateContainer.Articles[index] = articleUpdate;
                     UnSelectArticle();
-                    HideModal();
+                    await HideModal();
                     ToastService.ShowWarning("Article effacé");
                 }
             }
@@ -429,7 +443,7 @@
                 {
                     StateContainer.Articles[index] = articleUpdate;
                     UnSelectArticle();
-                    HideModal();
+                    await HideModal();
                     ToastService.ShowInfo("Article Restauré");
                 }
             }
@@ -462,13 +476,13 @@
                 {
                     StateContainer.Articles.Remove(selected);
                     UnSelectArticle();
-                    HideModal();
+                    await HideModal();
                     ToastService.ShowWarning("Article complètement effacé");
                 }
                 else
                 {
                     string errorMessage = await msg.Content.ReadAsStringAsync();
-                    HideModal();
+                    await HideModal();
                     ToastService.ShowError(errorMessage);
                 }
             }
@@ -517,17 +531,18 @@
 
 
     // reference to the modal component
-    private Modal modalAjoutArticle;
+    private Modal? modalAjoutArticle;
 
     private Task ShowModal()
     {
-        return modalAjoutArticle.Show();
+        return modalAjoutArticle?.Show() ?? Task.CompletedTask;
     }
 
     private Task HideModal()
     {
-        return modalAjoutArticle.Hide();
+        return modalAjoutArticle?.Hide() ?? Task.CompletedTask;
     }
+
 
     //public void Dispose()
     //{

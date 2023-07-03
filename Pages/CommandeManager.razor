@@ -49,7 +49,7 @@ else
         }
         else
         {
-            <Table>
+            <Table Hoverable Striped>
                 <TableHeader ThemeContrast="ThemeContrast.Dark">
                     <TableRow>
                         <TableHeaderCell>#</TableHeaderCell>
@@ -85,7 +85,10 @@ else
                             <TableRowCell>@commande.PrixTvaC €</TableRowCell>
                             <TableRowCell>@commande.DeletedAt</TableRowCell>
                             <TableRowCell>
-                                <button type="button" class="btn btn-primary" @onclick="() => redirectToDetails(commande?.Id?.ToString())">
+@*                                <Button Color="Color.Primary" OnClick="() => redirectToDetails(commande?.Id?.ToString())">
+                                    <i class="oi oi-info"></i> Détails
+                                </Button>*@
+                                <button type="button" class="btn btn-primary" @onclick="() => RedirectToDetails(commande?.Id?.ToString())">
                                     <i class="oi oi-info"></i> Détails
                                 </button>
                             </TableRowCell>
@@ -227,7 +230,7 @@ else
                     //Délai d'une seconde
                     await Task.Delay(1000);
 
-                    redirectToDetails(newCommande?.Id?.ToString());
+                    RedirectToDetails(newCommande?.Id?.ToString());
 
                 }
                 else
@@ -406,10 +409,15 @@ else
     }
 
 
-    private void redirectToDetails(string commandeId)
+    private void RedirectToDetails(string commandeId)
     {
-        NavigationManager.NavigateTo("/commande/get/" + commandeId);
+        if (commandeId != null)
+        {
+            NavigationManager.NavigateTo($"/commande/get/{commandeId}");
+        }
     }
+
+
 
     private string GetRowStyle(Commande commande)
     {
