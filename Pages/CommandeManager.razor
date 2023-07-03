@@ -49,60 +49,54 @@ else
         }
         else
         {
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Commande</th>
-                        @*<th>ID_Date</th>*@
-                        <th>Date de la Commande</th>
-                        <th>Prix Htva</th>
-                        <th>Prix TvaC</th>
-                        <th>Date Delete</th>
-                        <th>Détails</th>
+            <Table>
+                <TableHeader ThemeContrast="ThemeContrast.Dark">
+                    <TableRow>
+                        <TableHeaderCell>#</TableHeaderCell>
+                        <TableHeaderCell>Commande</TableHeaderCell>
+                        <TableHeaderCell>Date de la Commande</TableHeaderCell>
+                        <TableHeaderCell>Prix Htva</TableHeaderCell>
+                        <TableHeaderCell>Prix TvaC</TableHeaderCell>
+                        <TableHeaderCell>Date Delete</TableHeaderCell>
+                        <TableHeaderCell>Détails</TableHeaderCell>
+                    </TableRow>
 
-                    </tr>
-                </thead>
-
-
-                <tbody>
+                </TableHeader>
+                <TableBody>
 
 
                     @foreach (Commande commande in StateContainer.Commandes)
                     {
-                 
+
                         var isSelected = StateContainer.SelectedCommande?.Equals(commande) ?? false;
                         var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
 
-                        <tr @onclick="(() => SelectCommande(commande))" style="@style">
-                            <td>@commande.Id</td>
-                            <td>
+                        <TableRow @onclick="(() => SelectCommande(commande))" style="@style">
+
+                            <TableRowHeader>@commande.Id</TableRowHeader>
+                            <TableRowCell>
                                 @if (commande.Id_Date != null)
                                 {
                                     @(((DateTime)commande.Id_Date).ToString("yyyyMMdd"))
                                 }
-                            </td>
-                            <td>@commande.DateCommande</td>
-                            <td>@commande.PrixHtva €</td>
-                            <td>@commande.PrixTvaC €</td>
-                            <td>@commande.DeletedAt</td>
-                            <td>
-             
-                                
-                                    <button type="button" class="btn btn-primary" @onclick="() => redirectToDetails(commande?.Id?.ToString())">
-                                        <i class="oi oi-info"></i> Détails
-                                    </button>
-                                
-                               
+                            </TableRowCell>
+                            <TableRowCell>@commande.DateCommande</TableRowCell>
+                            <TableRowCell>@commande.PrixHtva €</TableRowCell>
+                            <TableRowCell>@commande.PrixTvaC €</TableRowCell>
+                            <TableRowCell>@commande.DeletedAt</TableRowCell>
+                            <TableRowCell>
+                                <button type="button" class="btn btn-primary" @onclick="() => redirectToDetails(commande?.Id?.ToString())">
+                                    <i class="oi oi-info"></i> Détails
+                                </button>
+                            </TableRowCell>
 
 
-                            </td>
-                        </tr>
-                        
+                        </TableRow>
+
                     }
-                </tbody>
+                </TableBody>
 
-            </table>
+            </Table>
         }
     </div>
 
@@ -152,7 +146,7 @@ else
     public async Task GetCommandes()
 
     {
-        
+
         var request = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/commande/getall");
 
         using (var response = await HttpClient.SendAsync(request))
@@ -168,12 +162,12 @@ else
                 }
             }
         }
-        
+
     }
 
     public async Task GetArticles()
     {
-    
+
 
         var request = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/article/getall");
 
@@ -191,7 +185,7 @@ else
             }
         }
 
-       
+
     }
 
     private async Task NewCommande()
@@ -201,6 +195,10 @@ else
 
     private async Task AddCommande()
     {
+
+
+
+
         var newCommande = new Commande
             {
                 Id = Guid.NewGuid(),
@@ -212,31 +210,33 @@ else
                 UpdatedAt = DateTime.Now,
 
             };
-
-        var content = JsonContent.Create(newCommande);
-
-        var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/commande/add");
-        requestMsg.Content = content;
-
-        using (var msg = await HttpClient.SendAsync(requestMsg))
+        if (newCommande is not null)
         {
-            if (msg.IsSuccessStatusCode)
+            var content = JsonContent.Create(newCommande);
+
+            var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/commande/add");
+            requestMsg.Content = content;
+
+            using (var msg = await HttpClient.SendAsync(requestMsg))
             {
+                if (msg.IsSuccessStatusCode)
+                {
 
-                ToastService.ShowSuccess("Commande ajoutée!");
-                StateContainer.Commandes?.Add(newCommande);
-                //Délai d'une seconde
-                await Task.Delay(1000); 
+                    ToastService.ShowSuccess("Commande ajoutée!");
+                    StateContainer.Commandes?.Add(newCommande);
+                    //Délai d'une seconde
+                    await Task.Delay(1000);
 
-                redirectToDetails(newCommande.Id.ToString());
+                    redirectToDetails(newCommande?.Id?.ToString());
 
+                }
+                else
+                {
+                    ToastService.ShowError("Une erreur s'est produite.");
+                }
             }
-            else
-            {
-                ToastService.ShowError("Une erreur s'est produite.");
-            }
+            await Reset();
         }
-        await Reset();
     }
 
     // Mettre à jour une commande
@@ -408,12 +408,9 @@ else
 
     private void redirectToDetails(string commandeId)
     {
-
-        if (commandeId != null)
-        {
-            NavigationManager.NavigateTo("/commande/get/" + commandeId);
-        }
+        NavigationManager.NavigateTo("/commande/get/" + commandeId);
     }
+
     private string GetRowStyle(Commande commande)
     {
         return selected == commande ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;

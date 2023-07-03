@@ -12,25 +12,44 @@
 
 @if (StateContainer.SelectedCommande is not null)
 {
-    <p>ID : @StateContainer.SelectedCommande.Id</p>
-    <p>ID_Date: @((StateContainer.SelectedCommande.Id_Date.HasValue ? ((DateTime)StateContainer.SelectedCommande.Id_Date).ToString("yyyyMMdd") : ""))</p>
+    <table>
+        <tr>
+            <td>ID Commande:</td>
+            <td>@StateContainer.SelectedCommande.Id</td>
+        </tr>
+        <tr>
+            <td>ID Date:</td>
+            <td>@((StateContainer.SelectedCommande.Id_Date.HasValue ? ((DateTime)StateContainer.SelectedCommande.Id_Date).ToString("yyyyMMdd") : ""))</td>
+        </tr>
+        <tr>
+            <td>Date et heure de la Commande:</td>
+            <td>
 
-    <div class="row">
-        <div class="col-sm-2">
-            <div class="form-group">
-                <label for="date">Date et heure de la Commande:</label>
-            </div>
-        </div>
-        <div class="col-sm-2">
-            <InputDate id="date" class="form-control" @bind-Value="@StateContainer.SelectedCommande.DateCommande" />
-        </div>
-    </div>
+                <InputDate id="date" class="form-control" @bind-Value="@StateContainer.SelectedCommande.DateCommande" />
+            </td>
+        </tr>
+        <tr>
+            <td>Prix Htva :</td>
+            <td>@StateContainer.SelectedCommande.PrixHtva €</td>
+        </tr>
+        <tr>
+            <td>Prix TvaC :</td>
+            <td>@StateContainer.SelectedCommande.PrixTvaC €</td>
+        </tr>
+        <tr>
+            <td>Date de création :</td>
+            <td>@StateContainer.SelectedCommande.CreatedAt</td>
+        </tr>
+        <tr>
+            <td>Date de modification :</td>
+            <td>@StateContainer.SelectedCommande.UpdatedAt</td>
+        </tr>
+        <tr>
+            <td>Date d'effacement :</td>
+            <td>@StateContainer.SelectedCommande.DeletedAt</td>
+        </tr>
+    </table>
 
-    <p>Prix Htva : @StateContainer.SelectedCommande.PrixHtva €</p>
-    <p>Prix TvaC : @StateContainer.SelectedCommande.PrixTvaC €</p>
-    <p>Date de création : @StateContainer.SelectedCommande.CreatedAt</p>
-    <p>Date de modification : @StateContainer.SelectedCommande.UpdatedAt</p>
-    <p>Date d'effacement : @StateContainer.SelectedCommande.DeletedAt</p>
 
     <button type="button" class="btn btn-info m-2" @onclick="UpdateCommande"><i class="oi oi-check"></i> Update</button>
 
@@ -110,16 +129,16 @@ else
     private async Task UpdateCommande()
     {
         var commandeUpdate = new Commande
-        {
-            Id = StateContainer.SelectedCommande?.Id,
-            Id_Date = StateContainer.SelectedCommande?.Id_Date,
-            DateCommande = StateContainer.SelectedCommande?.DateCommande,
-            PrixHtva = StateContainer.SelectedCommande?.PrixHtva,
-            PrixTvaC = StateContainer.SelectedCommande?.PrixTvaC,
-            CreatedAt = StateContainer.SelectedCommande?.CreatedAt,
-            UpdatedAt = DateTime.Now,
-            DeletedAt = StateContainer.SelectedCommande?.DeletedAt,
-        };
+            {
+                Id = StateContainer.SelectedCommande?.Id,
+                Id_Date = StateContainer.SelectedCommande?.Id_Date,
+                DateCommande = StateContainer.SelectedCommande?.DateCommande,
+                PrixHtva = StateContainer.SelectedCommande?.PrixHtva,
+                PrixTvaC = StateContainer.SelectedCommande?.PrixTvaC,
+                CreatedAt = StateContainer.SelectedCommande?.CreatedAt,
+                UpdatedAt = DateTime.Now,
+                DeletedAt = StateContainer.SelectedCommande?.DeletedAt,
+            };
 
         var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/commande/update");
         requestMsg.Content = JsonContent.Create(commandeUpdate);
@@ -138,16 +157,16 @@ else
     private async Task DeleteCommande()
     {
         var commandeUpdate = new Commande
-        {
-            Id = StateContainer.SelectedCommande?.Id,
-            Id_Date = StateContainer.SelectedCommande?.Id_Date,
-            DateCommande = StateContainer.SelectedCommande?.DateCommande,
-            PrixHtva = StateContainer.SelectedCommande?.PrixHtva,
-            PrixTvaC = StateContainer.SelectedCommande?.PrixTvaC,
-            CreatedAt = StateContainer.SelectedCommande?.CreatedAt,
-            UpdatedAt = DateTime.Now,
-            DeletedAt = DateTime.Now,
-        };
+            {
+                Id = StateContainer.SelectedCommande?.Id,
+                Id_Date = StateContainer.SelectedCommande?.Id_Date,
+                DateCommande = StateContainer.SelectedCommande?.DateCommande,
+                PrixHtva = StateContainer.SelectedCommande?.PrixHtva,
+                PrixTvaC = StateContainer.SelectedCommande?.PrixTvaC,
+                CreatedAt = StateContainer.SelectedCommande?.CreatedAt,
+                UpdatedAt = DateTime.Now,
+                DeletedAt = DateTime.Now,
+            };
 
         var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/commande/update");
         requestMsg.Content = JsonContent.Create(commandeUpdate);
@@ -165,16 +184,16 @@ else
     private async Task RestoreDeletedCommande()
     {
         var commandeUpdate = new Commande
-        {
-            Id = StateContainer.SelectedCommande?.Id,
-            Id_Date = StateContainer.SelectedCommande?.Id_Date,
-            DateCommande = StateContainer.SelectedCommande?.DateCommande,
-            PrixHtva = StateContainer.SelectedCommande?.PrixHtva,
-            PrixTvaC = StateContainer.SelectedCommande?.PrixTvaC,
-            CreatedAt = StateContainer.SelectedCommande?.CreatedAt,
-            UpdatedAt = DateTime.Now,
-            DeletedAt = null,
-        };
+            {
+                Id = StateContainer.SelectedCommande?.Id,
+                Id_Date = StateContainer.SelectedCommande?.Id_Date,
+                DateCommande = StateContainer.SelectedCommande?.DateCommande,
+                PrixHtva = StateContainer.SelectedCommande?.PrixHtva,
+                PrixTvaC = StateContainer.SelectedCommande?.PrixTvaC,
+                CreatedAt = StateContainer.SelectedCommande?.CreatedAt,
+                UpdatedAt = DateTime.Now,
+                DeletedAt = null,
+            };
 
         var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/commande/update");
         requestMsg.Content = JsonContent.Create(commandeUpdate);
