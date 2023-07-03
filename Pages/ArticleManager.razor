@@ -13,13 +13,16 @@
 <h1>Gestion des articles</h1>
 
 
-<Button Color="Color.Primary" Clicked="@Reset">Ajouter un Article</Button>
-<Button Color="Color.Primary" Clicked="@ShowModal">Modifier un Article</Button>
+<Button Color="Color.Primary" Clicked="@Reset" Class="m-2">Ajouter un Article</Button>
+@if (selected is not null)
+{
+    <Button Color="Color.Secondary" Clicked="@ShowModal">Modifier un Article</Button>
+}
 
 <Modal @ref="modalAjoutArticle">
     <ModalContent Centered>
         <ModalHeader>
-            <ModalTitle>Ajout d'article</ModalTitle>
+            <ModalTitle>@(selected is null ? "Ajout d'un article" : "Modification d'un article")</ModalTitle>
             <CloseButton />
         </ModalHeader>
         <ModalBody>
@@ -30,8 +33,6 @@
 
 
                 <Field>
-                    <legend>@(selected is null ? "Ajout d'un article" : "Modification d'un article")</legend>
-
 
                     <div class="form-group">
                         <label for="denomination">Dénomination</label>
@@ -66,19 +67,19 @@
                         <p>Effacé : @article.DeletedAt</p>
                     }
                 </div>
-                
+                <button type="submit" class="btn btn-primary mt-2"><i class="oi oi-check"></i> @((selected is null) ? "Ajouter" : "Update")</button>
             </EditForm>
         </ModalBody>
         <ModalFooter>
             <Button Color="Color.Secondary" Clicked="@HideModal">Close</Button>
 
-            <button type="submit" class="btn btn-primary mt-2"><i class="oi oi-check"></i> @((selected is null) ? "Ajouter" : "Update")</button>
-            <div class="buttonsGroup m-1 ml-auto" style="display: flex; gap: 5px; justify-content: flex-end;">
 
+            <div class="buttonsGroup m-1 ml-auto" style="display: flex; gap: 5px; justify-content: flex-end;">
+                @*
                 <button type="button" class="btn btn-secondary" @onclick="Reset">
-                    <i class="oi oi-loop-circular"></i>
-                    Reset
-                </button>
+                <i class="oi oi-loop-circular"></i>
+                Reset
+                </button>*@
 
                 @if (selected is not null)
                 {
@@ -121,35 +122,35 @@
         }
         else
         {
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Dénomination</th>
-                    <th>Description</th>
-                    <th>PuHtva</th>
-                    <th>DeletedAt</th>
-                    
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (Article article in StateContainer.Articles)
-                {
-                    var isSelected = selected == article;
-                    var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
-
-                    <tr @onclick="(() => SelectArticle(article))" style="@GetRowStyle(article)">
-                        <td>@article.Id</td>
-                        <td>@article.Denomination</td>
-                        <td>@article.Description</td>
-                        <td>@article.PuHtva</td>
-                        <td>@article.DeletedAt</td>
-                            
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Dénomination</th>
+                        <th>Description</th>
+                        <th>PuHtva</th>
+                        <th>DeletedAt</th>
 
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (Article article in StateContainer.Articles)
+                    {
+                        var isSelected = selected == article;
+                        var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
+
+                        <tr @onclick="(() => SelectArticle(article))" style="@GetRowStyle(article)">
+                            <td>@article.Id</td>
+                            <td>@article.Denomination</td>
+                            <td>@article.Description</td>
+                            <td>@article.PuHtva</td>
+                            <td>@article.DeletedAt</td>
+
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
         }
         <div class="highlight">
             <h2>User</h2>
@@ -160,45 +161,41 @@
                 <div class="loader"></div>
                 <div>Loading...</div>
             </div>
-        }        else
+        }
+        else
         {
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Dénomination</th>
-                    <th>Description</th>
-                    <th>PuHtva</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (Article article in StateContainer.Articles)
-                {
-                    // Vérifier si l'article est supprimé
-                    var isDeleted = article.DeletedAt != null;
-                    if (isDeleted)
-                    {
-                        continue;
-                    }
-
-                    var isSelected = selected == article;
-                    var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
-
-                    <tr @onclick="(() => SelectArticle(article))" style="@style">
-                        <td>@article.Denomination</td>
-                        <td>@article.Description</td>
-                        <td>@article.PuHtva</td>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Dénomination</th>
+                        <th>Description</th>
+                        <th>PuHtva</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (Article article in StateContainer.Articles)
+                    {
+                        // Vérifier si l'article est supprimé
+                        var isDeleted = article.DeletedAt != null;
+                        if (isDeleted)
+                        {
+                            continue;
+                        }
+
+                        var isSelected = selected == article;
+                        var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
+
+                        <tr @onclick="(() => SelectArticle(article))" style="@style">
+                            <td>@article.Denomination</td>
+                            <td>@article.Description</td>
+                            <td>@article.PuHtva</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         }
     </div>
     <div class="col-md-6">
-
-
-
-
-   
     </div>
 </div>
 
@@ -299,9 +296,10 @@
         {
             if (msg.IsSuccessStatusCode)
             {
-                ToastService.ShowSuccess("Article ajouté!");
                 StateContainer.Articles?.Add(newArticle);
                 Reset();
+                HideModal();
+                ToastService.ShowSuccess("Article ajouté!");
 
             }
             else
@@ -343,6 +341,7 @@
                     StateContainer.Articles[index] = articleUpdate;
                     UnSelectArticle();
                     ToastService.ShowSuccess("Article mis à jour!");
+                    HideModal();
 
                 }
             }
@@ -390,6 +389,7 @@
                 {
                     StateContainer.Articles[index] = articleUpdate;
                     UnSelectArticle();
+                    HideModal();
                     ToastService.ShowWarning("Article effacé");
                 }
             }
@@ -429,6 +429,7 @@
                 {
                     StateContainer.Articles[index] = articleUpdate;
                     UnSelectArticle();
+                    HideModal();
                     ToastService.ShowInfo("Article Restauré");
                 }
             }
@@ -461,11 +462,13 @@
                 {
                     StateContainer.Articles.Remove(selected);
                     UnSelectArticle();
+                    HideModal();
                     ToastService.ShowWarning("Article complètement effacé");
                 }
                 else
                 {
                     string errorMessage = await msg.Content.ReadAsStringAsync();
+                    HideModal();
                     ToastService.ShowError(errorMessage);
                 }
             }
@@ -513,7 +516,7 @@
     }
 
 
-        // reference to the modal component
+    // reference to the modal component
     private Modal modalAjoutArticle;
 
     private Task ShowModal()
