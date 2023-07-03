@@ -57,6 +57,14 @@
       "PackagePath": "staticwebassets\\favicon.png"
     },
     {
+      "Id": "C:\\Users\\VANCHRI\\source\\repos\\GesConso\\wwwroot\\images\\GesConso_logo.png",
+      "PackagePath": "staticwebassets\\images\\GesConso_logo.png"
+    },
+    {
+      "Id": "C:\\Users\\VANCHRI\\source\\repos\\GesConso\\wwwroot\\images\\logoVille.png",
+      "PackagePath": "staticwebassets\\images\\logoVille.png"
+    },
+    {
       "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.GesConso.Microsoft.AspNetCore.StaticWebAssets.props",
       "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
     },

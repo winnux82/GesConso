@@ -192,7 +192,10 @@
                 </div>
             </div>
             <div class="col-md-1">
-                <button type="submit" class="btn btn-warning m-2" @onclick="AddCommandeArticle"><i class="oi oi-cart"></i>Commander</button>
+                @*<button type="submit" class="btn btn-warning m-2" @onclick="AddCommandeArticle"><i class="oi oi-cart"></i>Commander</button>*@
+                <Button Color="Color.Danger" Class="m-2" @onclick="AddCommandeArticle">
+                    <i class="oi oi-cart"></i>Commander</Button>
+                <Button Color="Color.Warning" Clicked="@ShowModal" Class="m-2">Ajouter un Article</Button>
             </div>
 
         </div>
@@ -618,5 +621,19 @@
                 ToastService.ShowSuccess("Commande mise à jour!");
             }
         }
+    }
+
+
+    // reference to the modal component
+    private Modal? modalAjoutArticle;
+
+    private Task ShowModal()
+    {
+        return modalAjoutArticle?.Show() ?? Task.CompletedTask;
+    }
+
+    private Task HideModal()
+    {
+        return modalAjoutArticle?.Hide() ?? Task.CompletedTask;
     }
 }

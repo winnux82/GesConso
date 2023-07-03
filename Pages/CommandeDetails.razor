@@ -79,6 +79,7 @@ else
     [Parameter]
     public Action? OnCommandeSelected { get; set; }
     private Action? OnCommandeUpdated;
+    private Action? OnCommandeArticleUpdated;
 
     protected override async Task OnInitializedAsync()
     {
@@ -90,10 +91,20 @@ else
         {
             await InvokeAsync(StateHasChanged);
         };
+        OnCommandeArticleUpdated = async () =>
+        {
+            await GetCommandeById(StateContainer.SelectedCommande?.Id.ToString());
+            await InvokeAsync(StateHasChanged);
+        };
         StateContainer.OnCommandeUpdated += OnCommandeUpdated;
         StateContainer.OnCommandeSelected += OnCommandeSelected;
+        StateContainer.OnCommandeArticleUpdated += OnCommandeArticleUpdated; 
         await GetCommandeById(Id);
     }
+
+
+
+
 
     public async Task GetCommandeById(string? id)
     {
@@ -178,9 +189,9 @@ else
         if (msg.IsSuccessStatusCode)
         {
             ToastService.ShowWarning("Commande effacée");
+            GoBack();
         }
 
-        NavigationManager.NavigateTo("/commande");
     }
 
     private async Task RestoreDeletedCommande()
@@ -206,6 +217,7 @@ else
         {
             ToastService.ShowInfo("Commande restaurée");
             await InvokeAsync(StateHasChanged);
+            GoBack();
         }
     }
 
@@ -214,8 +226,16 @@ else
         await InvokeAsync(StateHasChanged);
     }
 
-    private void GoBack()
+    private async Task GoBack()
     {
+        await Task.Delay(500); 
         NavigationManager.NavigateTo("/commande");
     }
+    public void Dispose()
+    {
+        StateContainer.OnCommandeUpdated -= OnCommandeUpdated;
+        StateContainer.OnCommandeSelected -= OnCommandeSelected;
+        StateContainer.OnCommandeArticleUpdated -= OnCommandeArticleUpdated;
+    }
+
 }

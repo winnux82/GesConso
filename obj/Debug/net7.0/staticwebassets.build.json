@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "LRH+3AcpekniJUI1givccfnsnvR9m+jNQ/iCAprmxZw=",
+  "Hash": "CuTxwX5JM5rWYrcq9yQ4UZF0GzLIzRV+e90A+KGT5PA=",
   "Source": "GesConso",
   "BasePath": "_content/GesConso",
   "Mode": "Default",
@@ -2786,6 +2786,40 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\favicon.png"
+    },
+    {
+      "Identity": "C:\\Users\\VANCHRI\\source\\repos\\GesConso\\wwwroot\\images\\GesConso_logo.png",
+      "SourceId": "GesConso",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\VANCHRI\\source\\repos\\GesConso\\wwwroot\\",
+      "BasePath": "_content/GesConso",
+      "RelativePath": "images/GesConso_logo.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\GesConso_logo.png"
+    },
+    {
+      "Identity": "C:\\Users\\VANCHRI\\source\\repos\\GesConso\\wwwroot\\images\\logoVille.png",
+      "SourceId": "GesConso",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\VANCHRI\\source\\repos\\GesConso\\wwwroot\\",
+      "BasePath": "_content/GesConso",
+      "RelativePath": "images/logoVille.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\logoVille.png"
     }
   ]
 }

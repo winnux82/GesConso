@@ -71,6 +71,8 @@ namespace GesConso
             }
         }
 
+
+
         public event Action? OnArticleUpdated;
         public event Action? OnCommandeUpdated;
         public event Action? OnCommandeArticleUpdated;
