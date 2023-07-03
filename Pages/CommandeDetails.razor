@@ -189,7 +189,7 @@ else
         if (msg.IsSuccessStatusCode)
         {
             ToastService.ShowWarning("Commande effacée");
-            GoBack();
+            await GoBack();
         }
 
     }
@@ -217,7 +217,7 @@ else
         {
             ToastService.ShowInfo("Commande restaurée");
             await InvokeAsync(StateHasChanged);
-            GoBack();
+            await GoBack();
         }
     }
 

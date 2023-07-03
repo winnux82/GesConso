@@ -139,7 +139,7 @@
         @if (CommandeIdSelected == Guid.Empty)
         {
             <div class="row">
-                <div class="col-md-8">
+                <div class="col-md-6">
                     <label for="commande">Choisissez une commande :</label>
                     @{
                         //Ajout du premier ID par défaut dans la liste
@@ -164,7 +164,7 @@
             </div>
         }
         <div class="row">
-            <div class="col-md-8">
+            <div class="col-md-6">
                 <label for="Id_Article">Choisissez un article :</label>
 
                 @{
@@ -191,16 +191,68 @@
                     <InputNumber id="quantite" class="form-control" @bind-Value="_newQuantite" min="1" />
                 </div>
             </div>
-            <div class="col-md-1">
+            <div class="col-md-2">
                 @*<button type="submit" class="btn btn-warning m-2" @onclick="AddCommandeArticle"><i class="oi oi-cart"></i>Commander</button>*@
                 <Button Color="Color.Danger" Class="m-2" @onclick="AddCommandeArticle">
-                    <i class="oi oi-cart"></i>Commander</Button>
-                <Button Color="Color.Warning" Clicked="@ShowModal" Class="m-2">Ajouter un Article</Button>
+                    <i class="oi oi-cart"></i> Commander
+                </Button>
+            </div>           
+            <div class="col-md-2">
+                <Button Color="Color.Warning" Clicked="@ShowModal" Class="m-2">
+                    <i class="oi oi-plus"></i> Ajouter un Article
+                </Button>
             </div>
-
         </div>
     </EditForm>
 </div>
+
+
+@*Modal Ajout d'article'*@
+<Modal @ref="modalAjoutArticle">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>@(selected is null ? "Ajout d'un article" : "Modification d'un article")</ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <EditForm Model="@article" OnValidSubmit="@AddArticle">
+
+
+                    <DataAnnotationsValidator />
+
+
+                    <Field>
+
+                        <div class="form-group">
+                            <label for="denomination">Dénomination</label>
+                            <div class="col-sm-10">
+                                <InputText id="denomination" type="text" class="form-control" placeholder="Obligatoire" @bind-Value="article.Denomination" autofocus />
+                                <ValidationMessage For="@(() => article.Denomination)" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <div class="col-sm-10">
+                                <InputText id="description" type="text" class="form-control" placeholder="" @bind-Value="article.Description" />
+                                <ValidationMessage For="@(() => article.Description)" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="puHtva">PuHtva</label>
+                            <div class="col-sm-10">
+                                <InputNumber id="puHtva" type="text" class="form-control" placeholder="@((selected is null) ? "Obligatoire" : "")" @bind-Value="article.PuHtva" />
+                                <ValidationMessage For="@(() => article.PuHtva)" />
+                            </div>
+                        </div>
+                    </Field>
+                <button type="submit" class="btn btn-primary mt-2"><i class="oi oi-check"></i> @((selected is null) ? "Ajouter" : "Update")</button>
+            </EditForm>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@HideModal">Close</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
 
 
 @code {
@@ -230,6 +282,8 @@
 
     private double htva = 0;
     private double tvac = 0;
+
+    Article article = new Article();
 
 
     protected override void OnInitialized()
@@ -636,4 +690,39 @@
     {
         return modalAjoutArticle?.Hide() ?? Task.CompletedTask;
     }
+
+    // Ajouter un article
+    private async Task AddArticle()
+    {
+        var newArticle = new Article
+            {
+                Id = Guid.NewGuid(),
+                Denomination = article.Denomination,
+                Description = article.Description,
+                PuHtva = article.PuHtva,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+            };
+
+        var content = JsonContent.Create(newArticle);
+
+        var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/article/add");
+        requestMsg.Content = content;
+        using (var msg = await HttpClient.SendAsync(requestMsg))
+        {
+            if (msg.IsSuccessStatusCode)
+            {
+                StateContainer.Articles?.Add(newArticle);
+                Reset();
+                await HideModal();
+                ToastService.ShowSuccess("Article ajouté!");
+
+            }
+            else
+            {
+                ToastService.ShowError("Une erreur s'est produite.");
+            }
+        }
+    }
+
 }
