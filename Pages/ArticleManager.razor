@@ -13,6 +13,97 @@
 <h1>Gestion des articles</h1>
 
 
+<Button Color="Color.Primary" Clicked="@Reset">Ajouter un Article</Button>
+<Button Color="Color.Primary" Clicked="@ShowModal">Modifier un Article</Button>
+
+<Modal @ref="modalAjoutArticle">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>Ajout d'article</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <EditForm Model="@article" OnValidSubmit="@(selected is null ? (Func<Task>)AddArticle : UpdateArticle)">
+
+
+                <DataAnnotationsValidator />
+
+
+                <Field>
+                    <legend>@(selected is null ? "Ajout d'un article" : "Modification d'un article")</legend>
+
+
+                    <div class="form-group">
+                        <label for="denomination">Dénomination</label>
+                        <div class="col-sm-10">
+                            <InputText id="denomination" type="text" class="form-control" placeholder="Obligatoire" @bind-Value="article.Denomination" autofocus />
+                            <ValidationMessage For="@(() => article.Denomination)" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <div class="col-sm-10">
+                            <InputText id="description" type="text" class="form-control" placeholder="" @bind-Value="article.Description" />
+                            <ValidationMessage For="@(() => article.Description)" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="puHtva">PuHtva</label>
+                        <div class="col-sm-10">
+                            <InputNumber id="puHtva" type="text" class="form-control" placeholder="@((selected is null) ? "Obligatoire" : "")" @bind-Value="article.PuHtva" />
+                            <ValidationMessage For="@(() => article.PuHtva)" />
+                        </div>
+                    </div>
+                </Field>
+                <div>
+                    @if (article.CreatedAt is not null)
+                    {
+                        <p>Créé : @article.CreatedAt</p>
+                        <p>Modifié : @article.UpdatedAt</p>
+                    }
+                    @if (article.DeletedAt is not null)
+                    {
+                        <p>Effacé : @article.DeletedAt</p>
+                    }
+                </div>
+                
+            </EditForm>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@HideModal">Close</Button>
+
+            <button type="submit" class="btn btn-primary mt-2"><i class="oi oi-check"></i> @((selected is null) ? "Ajouter" : "Update")</button>
+            <div class="buttonsGroup m-1 ml-auto" style="display: flex; gap: 5px; justify-content: flex-end;">
+
+                <button type="button" class="btn btn-secondary" @onclick="Reset">
+                    <i class="oi oi-loop-circular"></i>
+                    Reset
+                </button>
+
+                @if (selected is not null)
+                {
+                    @if (article.DeletedAt is null)
+                    {
+                        <button type="button" class="btn btn-danger" @onclick="DeleteArticle"> <i class="oi oi-trash"></i> Delete</button>
+
+
+                        @*                    <Button Color="Color.Danger" Clicked="DeleteArticle">
+                <i class="fas fa-trash"></i> Delete
+                </Button>*@
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-info" @onclick="RestoreDeletedArticle"><i class="oi oi-action-undo"></i>Restaurer</button>
+                        <button type="button" class="btn btn-danger" @onclick="DeleteCompleteArticle"><i class="oi oi-trash"></i> Effacer définitivement</button>
+                    }
+                }
+
+            </div>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+
 
 
 <div class="row">
@@ -38,6 +129,7 @@
                     <th>Description</th>
                     <th>PuHtva</th>
                     <th>DeletedAt</th>
+                    
                 </tr>
             </thead>
             <tbody>
@@ -52,6 +144,7 @@
                         <td>@article.Description</td>
                         <td>@article.PuHtva</td>
                         <td>@article.DeletedAt</td>
+                            
 
                     </tr>
                 }
@@ -101,128 +194,11 @@
         }
     </div>
     <div class="col-md-6">
-        <EditForm Model="@article" OnValidSubmit="@(selected is null ? (Func<Task>)AddArticle : UpdateArticle)">
 
 
-            <DataAnnotationsValidator />
 
 
-            <fieldset>
-                <legend>@(selected is null ? "Ajout d'un article" : "Modification d'un article")</legend>
-
-
-                <div class="form-group">
-                    <label for="denomination">Dénomination</label>
-                    <div class="col-sm-10">
-                        <InputText id="denomination" type="text" class="form-control" placeholder="Obligatoire" @bind-Value="article.Denomination" autofocus />
-                        <ValidationMessage For="@(() => article.Denomination)" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <div class="col-sm-10">
-                        <InputText id="description" type="text" class="form-control" placeholder="" @bind-Value="article.Description" />
-                        <ValidationMessage For="@(() => article.Description)" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="puHtva">PuHtva</label>
-                    <div class="col-sm-10">
-                        <InputNumber id="puHtva" type="text" class="form-control" placeholder="@((selected is null) ? "Obligatoire" : "")" @bind-Value="article.PuHtva" />
-                        <ValidationMessage For="@(() => article.PuHtva)" />
-                    </div>
-                </div>
-            </fieldset>
-@*            <fieldset>
-                <legend>@(selected is null ? "Ajout d'un article" : "Modification d'un article")</legend>
-
-
-                <div class="form-group">
-                    <label for="denomination">Dénomination</label>
-                    <div class="col-sm-10">
-                    <Addons>
-                        <Addon AddonType="AddonType.Start">
-                                <AddonLabel Size="50">Dénomination</AddonLabel>
-                        </Addon>
-                        <Addon AddonType="AddonType.Body">
-                            <InputText id="denomination" type="text" class="form-control" placeholder="Obligatoire" @bind-Value="article.Denomination" autofocus />
-                            <ValidationMessage For="@(() => article.Denomination)" />
-                        </Addon>
-                    </Addons>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <div class="col-sm-10">
-                        <Addons>
-                            <Addon AddonType="AddonType.Start">
-                                <AddonLabel >Description</AddonLabel>
-                            </Addon>
-                            <Addon AddonType="AddonType.Body">
-                                <InputText id="description" type="text" class="form-control" placeholder="" @bind-Value="article.Description" />
-                                <ValidationMessage For="@(() => article.Description)" />
-                            </Addon>
-                        </Addons>
-                        
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="puHtva">PuHtva</label>
-                    <div class="col-sm-10">
-                        <Addons>
-                            <Addon AddonType="AddonType.Start" >
-                                <AddonLabel >PuHtva</AddonLabel>
-                            </Addon>
-                            <Addon AddonType="AddonType.Body">
-                                <InputNumber id="puHtva" type="text" class="form-control" placeholder="@((selected is null) ? "Obligatoire" : "")" @bind-Value="article.PuHtva" />
-                                <ValidationMessage For="@(() => article.PuHtva)" />
-                            </Addon>
-                        </Addons>
-                        
-                    </div>
-                </div>
-            </fieldset>*@
-
-            <button type="submit" class="btn btn-primary mt-2"><i class="oi oi-check"></i> @((selected is null) ? "Ajouter" : "Update")</button>
-        </EditForm>
-
-
-        <div>
-            @if (article.CreatedAt is not null)
-            {
-                <p>Créé : @article.CreatedAt</p>
-                <p>Modifié : @article.UpdatedAt</p>
-            }
-            @if (article.DeletedAt is not null)
-            {
-                <p>Effacé : @article.DeletedAt</p>
-            }
-        </div>
-        <div class="buttonsGroup m-1 ml-auto" style="display: flex; gap: 5px; justify-content: flex-end;">
-
-            <button type="button" class="btn btn-secondary" @onclick="Reset">
-                <i class="oi oi-loop-circular"></i> 
-                Reset</button>
-
-            @if (selected is not null)
-            {
-                @if (article.DeletedAt is null)
-                {
-                    <button type="button" class="btn btn-danger" @onclick="DeleteArticle"> <i class="oi oi-trash"></i> Delete</button>
-
-
-@*                    <Button Color="Color.Danger" Clicked="DeleteArticle">
-                        <i class="fas fa-trash"></i> Delete
-                    </Button>*@
-                }
-                else
-                {
-                    <button type="button" class="btn btn-info" @onclick="RestoreDeletedArticle"><i class="oi oi-action-undo"></i>Restaurer</button>
-                    <button type="button" class="btn btn-danger" @onclick="DeleteCompleteArticle"><i class="oi oi-trash"></i> Effacer définitivement</button>
-                }
-            }
-
-        </div>
+   
     </div>
 </div>
 
@@ -367,7 +343,7 @@
                     StateContainer.Articles[index] = articleUpdate;
                     UnSelectArticle();
                     ToastService.ShowSuccess("Article mis à jour!");
-                    
+
                 }
             }
         }
@@ -378,6 +354,7 @@
     {
         article = new Article();
         selected = null;
+        ShowModal();
     }
 
     // Delete Article
@@ -534,6 +511,21 @@
         bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Êtes-vous sûr de vouloir supprimer définitivement cet article ??");
         return confirmed;
     }
+
+
+        // reference to the modal component
+    private Modal modalAjoutArticle;
+
+    private Task ShowModal()
+    {
+        return modalAjoutArticle.Show();
+    }
+
+    private Task HideModal()
+    {
+        return modalAjoutArticle.Hide();
+    }
+
     //public void Dispose()
     //{
     //    StateContainer.OnArticlesUpdated -= this.OnArticlesUpdated;
