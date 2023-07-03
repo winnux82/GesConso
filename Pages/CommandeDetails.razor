@@ -12,6 +12,8 @@
 
 @if (StateContainer.SelectedCommande is not null)
 {
+    <div class="row">
+    <div class="col-md-9">
     <Table>
         <TableRow>
             <TableRowCell>ID Commande:</TableRowCell>
@@ -49,7 +51,7 @@
                 <TableRowCell>@StateContainer.SelectedCommande.DeletedAt</TableRowCell>
             </TableRow>
         </Table>
-
+        </div></div>
 
     <button type="button" class="btn btn-info m-2" @onclick="UpdateCommande"><i class="oi oi-check"></i> Update</button>
 
