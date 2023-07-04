@@ -124,10 +124,12 @@
             //fix the header
             
             @*<Table Hoverable Striped FixedHeader FixedHeaderTableHeight="900px">*@
+
+
             <Table Hoverable Striped>
                 <TableHeader>
                     <TableRow>
-                        <TableHeaderCell>ID</TableHeaderCell>
+                        <TableHeaderCell>#</TableHeaderCell>
                         <TableHeaderCell>Dénomination</TableHeaderCell>
                         <TableHeaderCell>Description</TableHeaderCell>
                         <TableHeaderCell>PuHtva</TableHeaderCell>
@@ -179,6 +181,7 @@
                     </PaginationItem>
                 </Pagination>
                 </div>
+
         }
 @*        <div class="highlight">
             <h2>User</h2>
@@ -307,27 +310,7 @@
         => currentPageAsInt = int.Parse(page);
 
 
-
-
-    //protected override async Task OnAfterRenderAsync(bool firstRender)
-    //{
-    //    // if (firstRender)
-    //    //{
-    //    //    this.OnArticleUpdated = async () =>
-    //    //    {
-    //    //        await InvokeAsync(StateHasChanged);
-    //    //    };
-    //    //    this.OnArticleSelected = async () =>
-    //    //    {
-    //    //        await InvokeAsync(StateHasChanged);
-    //    //    };
-
-    //    //    StateContainer.OnArticleUpdated += this.OnArticleUpdated;
-    //    //    StateContainer.OnArticleSelected += this.OnArticleSelected;
-    //    //    await GetArticles();
-    //    // }
-    //}
-
+    // Récupérer les articles
     public async Task GetArticles()
     {
         isLoading = true; // Activer le loader
@@ -580,17 +563,20 @@
         //_deletedAt = article?.DeletedAt;
     }
 
+    // Déselectionner un article
     private void UnSelectArticle()
     {
         selected = null;
         Reset();
     }
 
+    // Mettre en évidence la ligne sélectionnée
     private string GetRowStyle(Article article)
     {
         return selected == article ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
     }
 
+    // Confirmation d'effacement
     async Task<bool> ConfirmDelete()
     {
         bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Êtes-vous sûr de vouloir supprimer définitivement cet article ??");
@@ -598,23 +584,25 @@
     }
 
 
-    // reference to the modal component
+    // Référence au Modal d'ajout d'Article
     private Modal? modalAjoutArticle;
 
+    // Montrer la modal
     private Task ShowModal()
     {
         return modalAjoutArticle?.Show() ?? Task.CompletedTask;
     }
 
+    // Cacher la modal
     private Task HideModal()
     {
         return modalAjoutArticle?.Hide() ?? Task.CompletedTask;
     }
 
-
-    //public void Dispose()
-    //{
-    //    StateContainer.OnArticlesUpdated -= this.OnArticlesUpdated;
-    //    StateContainer.OnArticleSelected -= this.OnArticleSelected;
-    //}
+    // Nettoyage et libération des ressources
+    public void Dispose()
+    {
+        StateContainer.OnArticleUpdated -= this.OnArticleUpdated;
+        StateContainer.OnArticleSelected -= this.OnArticleSelected;
+    }
 }
