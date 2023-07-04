@@ -15,7 +15,6 @@
 @*<button class="btn btn-primary" @onclick="NewCommande"><i class="oi oi-plus"></i> Nouvelle Commande</button>
 *@
 
-
 @if (commande.Id_Date is not null)
 {
     <h3>Détails de la Commande : @commande.Id_Date?.ToString("yyyyMMdd")</h3>
@@ -144,10 +143,6 @@ else
     private double PrixTotal { get; set; }
     private bool isLoading = true;
 
-    
-
-
-
     protected override async Task OnInitializedAsync()
     {
         this.OnCommandeUpdated = async () =>
@@ -186,15 +181,11 @@ else
                 }
             }
         }
-
     }
 
     public async Task GetArticles()
     {
-
-
         var request = new HttpRequestMessage(HttpMethod.Get, $"{NavigationManager.BaseUri}api/article/getall");
-
         using (var response = await HttpClient.SendAsync(request))
         {
             if (response.IsSuccessStatusCode)
@@ -217,12 +208,9 @@ else
         await Reset();
     }
 
+    // Ajouter une commande
     private async Task AddCommande()
     {
-
-
-
-
         var newCommande = new Commande
             {
                 Id = Guid.NewGuid(),
@@ -403,7 +391,7 @@ else
             }
         }
     }
-    // RESET
+    // Reset
     private async Task Reset()
     {
 
@@ -419,17 +407,15 @@ else
         commande = comm;
     }
 
-
+    // Déselectionner une commande
     private void UnSelectCommande()
     {
         StateContainer.SelectedCommande = null;
         selected = null;
         commande = new Commande();
-
-
     }
 
-
+    // Rediriger
     private void RedirectToDetails(string commandeId)
     {
         if (commandeId != null)
@@ -437,21 +423,20 @@ else
             NavigationManager.NavigateTo($"/commande/get/{commandeId}");
         }
     }
-
-
-
+    // Mettre en évidence une ligne
     private string GetRowStyle(Commande commande)
     {
         return selected == commande ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
     }
 
+    // Confirmer la suppression
     async Task<bool> ConfirmDelete()
     {
         bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Êtes-vous sûr de vouloir supprimer définitivement cet commande ??");
         return confirmed;
     }
-    //système de pagination
 
+    // Système de pagination
     private const string PREVIOUS = "previous";
     private const string NEXT = "next";
     private int currentPageAsInt = 1;

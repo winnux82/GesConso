@@ -27,11 +27,7 @@
             </ModalHeader>
             <ModalBody>
                 <EditForm Model="@article" OnValidSubmit="@(selected is null ? (Func<Task>)AddArticle : UpdateArticle)">
-
-
                     <DataAnnotationsValidator />
-
-
                     <Field>
 
                         <div class="form-group">
@@ -103,9 +99,6 @@
         </ModalFooter>
     </ModalContent>
 </Modal>
-
-
-
 
 <div class="row">
     <div class="col-md-9">
