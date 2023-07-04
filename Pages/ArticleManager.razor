@@ -122,41 +122,65 @@
         else
         {
             //fix the header
-            <Table Hoverable Striped FixedHeader FixedHeaderTableHeight="900px">
+            
+            @*<Table Hoverable Striped FixedHeader FixedHeaderTableHeight="900px">*@
+            <Table Hoverable Striped>
+                <TableHeader>
+                    <TableRow>
+                        <TableHeaderCell>ID</TableHeaderCell>
+                        <TableHeaderCell>Dénomination</TableHeaderCell>
+                        <TableHeaderCell>Description</TableHeaderCell>
+                        <TableHeaderCell>PuHtva</TableHeaderCell>
+                        <TableHeaderCell>DeletedAt</TableHeaderCell>
+                    </TableRow>
+                </TableHeader>
 
-            <TableHeader>
-            @*<TableHeader ThemeContrast="ThemeContrast.Light">*@
-                <TableRow>
+                <TableBody>
+                    @foreach (Article article in StateContainer.Articles.Skip((currentPageAsInt - 1) * PageSize).Take(PageSize))
+                        {
+                            var isSelected = selected == article;
+                            var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
 
-                    <TableHeaderCell>ID</TableHeaderCell>
-                    <TableHeaderCell>Dénomination</TableHeaderCell>
-                    <TableHeaderCell>Description</TableHeaderCell>
-                    <TableHeaderCell>PuHtva</TableHeaderCell>
-                    <TableHeaderCell>DeletedAt</TableHeaderCell>
-                </TableRow>
+                            <TableRow @onclick="(() => SelectArticle(article))" style="@GetRowStyle(article)">
+                                <TableRowHeader>@article.Id</TableRowHeader>
+                                <TableRowCell>@article.Denomination</TableRowCell>
+                                <TableRowCell>@article.Description</TableRowCell>
+                                <TableRowCell>@article.PuHtva</TableRowCell>
+                                <TableRowCell>@article.DeletedAt</TableRowCell>
+                            </TableRow>
+                        }
+                    </TableBody>
+                </Table>
+            <div style="display: flex; justify-content: center;">
+                <Pagination>
+                    <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
+                        <PaginationLink>
+                            <span aria-hidden="true">«</span>
+                        </PaginationLink>
+                    </PaginationItem>
 
-            </TableHeader>
-            <TableBody>
-
-                @foreach (Article article in StateContainer.Articles)
-                    {
-                        var isSelected = selected == article;
-                        var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
-
-                        <TableRow @onclick="(() => SelectArticle(article))" style="@GetRowStyle(article)">
-                            <TableRowHeader>@article.Id</TableRowHeader>
-                  
-                            <TableRowCell>@article.Denomination</TableRowCell>
-                            <TableRowCell>@article.Description</TableRowCell>
-                            <TableRowCell>@article.PuHtva</TableRowCell>
-                            <TableRowCell>@article.DeletedAt</TableRowCell>
-
-                        </TableRow>
+                    @{
+                        var totalPages = (int)Math.Ceiling((double)StateContainer.Articles.Count / PageSize);
+                        for (var i = 1; i <= totalPages; i++)
+                        {
+                            var pageNumberAsString = i.ToString();
+                            <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
+                                <PaginationLink Page="@pageNumberAsString" Clicked="SetActive">
+                                    @pageNumberAsString
+                                </PaginationLink>
+                            </PaginationItem>
+                        }
                     }
-                </TableBody>
-            </Table>
+
+                    <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next">
+                        <PaginationLink>
+                            <span aria-hidden="true">»</span>
+                        </PaginationLink>
+                    </PaginationItem>
+                </Pagination>
+                </div>
         }
-        <div class="highlight">
+@*        <div class="highlight">
             <h2>User</h2>
         </div>
         @if (isLoading)
@@ -172,20 +196,20 @@
         {
             <Table Hoverable Striped FixedHeader FixedHeaderTableHeight="400px">
 
-            <TableHeader >
-                <TableRow>
+                <TableHeader>
+                    <TableRow>
 
 
-                    <TableHeaderCell>Dénomination</TableHeaderCell>
-                    <TableHeaderCell>Description</TableHeaderCell>
-                    <TableHeaderCell>PuHtva</TableHeaderCell>
+                        <TableHeaderCell>Dénomination</TableHeaderCell>
+                        <TableHeaderCell>Description</TableHeaderCell>
+                        <TableHeaderCell>PuHtva</TableHeaderCell>
 
-                </TableRow>
+                    </TableRow>
 
-            </TableHeader>
-            <TableBody>
+                </TableHeader>
+                <TableBody>
 
-                @foreach (Article article in StateContainer.Articles)
+                    @foreach (Article article in StateContainer.Articles)
                     {
                         // Vérifier si l'article est supprimé
                         var isDeleted = article.DeletedAt != null;
@@ -199,17 +223,17 @@
 
                         <TableRow @onclick="(() => SelectArticle(article))" style="@GetRowStyle(article)">
                             <TableRowHeader>@article.Denomination</TableRowHeader>
-                            
+
                             <TableRowCell>@article.Description</TableRowCell>
                             <TableRowCell>@article.PuHtva</TableRowCell>
-  
+
 
                         </TableRow>
 
                     }
                 </TableBody>
             </Table>
-        }
+        }*@
     </div>
 
 </div>
@@ -240,6 +264,49 @@
     }
 
     private bool isLoading = true;
+
+    //système de pagination
+    private const string PREVIOUS = "previous";
+    private const string NEXT = "next";
+    private int currentPageAsInt = 1;
+    private const int PageSize = 10;
+
+    private bool IsActive(string page)
+        => currentPageAsInt.ToString() == page;
+
+    private bool IsPageNavigationDisabled(string navigation)
+    {
+        if (navigation.Equals(PREVIOUS))
+        {
+            return currentPageAsInt == 1;
+        }
+        else if (navigation.Equals(NEXT))
+        {
+            return currentPageAsInt == (int)Math.Ceiling((double)StateContainer.Articles.Count / PageSize);
+        }
+        return false;
+    }
+
+    private void Previous()
+    {
+        if (currentPageAsInt > 1)
+        {
+            currentPageAsInt -= 1;
+        }
+    }
+
+    private void Next()
+    {
+        if (currentPageAsInt < (int)Math.Ceiling((double)StateContainer.Articles.Count / PageSize))
+        {
+            currentPageAsInt += 1;
+        }
+    }
+
+    private void SetActive(string page)
+        => currentPageAsInt = int.Parse(page);
+
+
 
 
     //protected override async Task OnAfterRenderAsync(bool firstRender)

@@ -50,29 +50,25 @@ else
         else
         {
             <Table Hoverable Striped>
-                <TableHeader ThemeContrast="ThemeContrast.Dark">
-                    <TableRow>
-                        <TableHeaderCell>#</TableHeaderCell>
-                        <TableHeaderCell>Commande</TableHeaderCell>
-                        <TableHeaderCell>Date de la Commande</TableHeaderCell>
-                        <TableHeaderCell>Prix Htva</TableHeaderCell>
-                        <TableHeaderCell>Prix TvaC</TableHeaderCell>
-                        <TableHeaderCell>Date Delete</TableHeaderCell>
-                        <TableHeaderCell>Détails</TableHeaderCell>
-                    </TableRow>
+            <TableHeader ThemeContrast="ThemeContrast.Dark">
+                <TableRow>
+                    <TableHeaderCell>#</TableHeaderCell>
+                    <TableHeaderCell>Commande</TableHeaderCell>
+                    <TableHeaderCell>Date de la Commande</TableHeaderCell>
+                    <TableHeaderCell>Prix Htva</TableHeaderCell>
+                    <TableHeaderCell>Prix TvaC</TableHeaderCell>
+                    <TableHeaderCell>Date Delete</TableHeaderCell>
+                    <TableHeaderCell>Détails</TableHeaderCell>
+                </TableRow>
+            </TableHeader>
 
-                </TableHeader>
-                <TableBody>
-
-
-                    @foreach (Commande commande in StateContainer.Commandes)
+            <TableBody>
+                @foreach (Commande commande in StateContainer.Commandes.Skip((currentPageAsInt - 1) * PageSize).Take(PageSize))
                     {
-
                         var isSelected = StateContainer.SelectedCommande?.Equals(commande) ?? false;
                         var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
 
                         <TableRow @onclick="(() => SelectCommande(commande))" style="@style">
-
                             <TableRowHeader>@commande.Id</TableRowHeader>
                             <TableRowCell>
                                 @if (commande.Id_Date != null)
@@ -85,21 +81,44 @@ else
                             <TableRowCell>@commande.PrixTvaC €</TableRowCell>
                             <TableRowCell>@commande.DeletedAt</TableRowCell>
                             <TableRowCell>
-@*                                <Button Color="Color.Primary" OnClick="() => redirectToDetails(commande?.Id?.ToString())">
-                                    <i class="oi oi-info"></i> Détails
-                                </Button>*@
                                 <button type="button" class="btn btn-primary" @onclick="() => RedirectToDetails(commande?.Id?.ToString())">
                                     <i class="oi oi-info"></i> Détails
                                 </button>
                             </TableRowCell>
-
-
                         </TableRow>
-
                     }
                 </TableBody>
-
             </Table>
+
+            @*Système de pagination*@
+            <div style="display: flex; justify-content: center;">
+            <Pagination>
+                <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
+                    <PaginationLink>
+                        <span aria-hidden="true">«</span>
+                    </PaginationLink>
+                </PaginationItem>
+
+                @{
+                    var totalPages = (int)Math.Ceiling((double)StateContainer.Commandes.Count / PageSize);
+                    for (var i = 1; i <= totalPages; i++)
+                    {
+                        var pageNumberAsString = i.ToString();
+                        <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
+                            <PaginationLink Page="@pageNumberAsString" Clicked="SetActive">
+                                @pageNumberAsString
+                            </PaginationLink>
+                        </PaginationItem>
+                    }
+                }
+
+                <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next">
+                    <PaginationLink>
+                        <span aria-hidden="true">»</span>
+                    </PaginationLink>
+                </PaginationItem>
+            </Pagination>
+            </div>
         }
     </div>
 
@@ -124,6 +143,8 @@ else
 
     private double PrixTotal { get; set; }
     private bool isLoading = true;
+
+    
 
 
 
@@ -429,5 +450,47 @@ else
         bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Êtes-vous sûr de vouloir supprimer définitivement cet commande ??");
         return confirmed;
     }
+    //système de pagination
+
+    private const string PREVIOUS = "previous";
+    private const string NEXT = "next";
+    private int currentPageAsInt = 1;
+    private const int PageSize = 10;
+
+    private bool IsActive(string page)
+        => currentPageAsInt.ToString() == page;
+
+    private bool IsPageNavigationDisabled(string navigation)
+    {
+        if (navigation.Equals(PREVIOUS))
+        {
+            return currentPageAsInt == 1;
+        }
+        else if (navigation.Equals(NEXT))
+        {
+            return currentPageAsInt == (int)Math.Ceiling((double)StateContainer.Commandes.Count / PageSize);
+        }
+        return false;
+    }
+
+    private void Previous()
+    {
+        if (currentPageAsInt > 1)
+        {
+            currentPageAsInt -= 1;
+        }
+    }
+
+    private void Next()
+    {
+        if (currentPageAsInt < (int)Math.Ceiling((double)StateContainer.Commandes.Count / PageSize))
+        {
+            currentPageAsInt += 1;
+        }
+    }
+
+    private void SetActive(string page)
+        => currentPageAsInt = int.Parse(page);
+
 
 }

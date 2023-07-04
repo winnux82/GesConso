@@ -196,7 +196,7 @@
                 <Button Color="Color.Danger" Class="m-2" @onclick="AddCommandeArticle">
                     <i class="oi oi-cart"></i> Commander
                 </Button>
-            </div>           
+            </div>
             <div class="col-md-2">
                 <Button Color="Color.Warning" Clicked="@ShowModal" Class="m-2">
                     <i class="oi oi-plus"></i> Ajouter un Article
@@ -216,13 +216,8 @@
             </ModalHeader>
             <ModalBody>
                 <EditForm Model="@article" OnValidSubmit="@AddArticle">
-
-
                     <DataAnnotationsValidator />
-
-
                     <Field>
-
                         <div class="form-group">
                             <label for="denomination">Dénomination</label>
                             <div class="col-sm-10">
@@ -245,7 +240,7 @@
                             </div>
                         </div>
                     </Field>
-                <button type="submit" class="btn btn-primary mt-2"><i class="oi oi-check"></i> @((selected is null) ? "Ajouter" : "Update")</button>
+                    <button type="submit" class="btn btn-primary mt-2"><i class="oi oi-check"></i> @((selected is null) ? "Ajouter" : "Update")</button>
             </EditForm>
         </ModalBody>
         <ModalFooter>
