@@ -2,7 +2,7 @@ using Blazored.Toast;
 using Blazorise;
 using BlazorStrap;
 using GesConso;
-using GesConso.Data;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Syncfusion.Blazor;
@@ -19,7 +19,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<StateContainer>();
-builder.Services.AddSingleton<WeatherForecastService>();
+
 builder.Services.AddDbContext<Database>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("MainConnection")));
 builder.Services.AddBlazorStrap();
 //Ajout du service Toast

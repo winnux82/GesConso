@@ -26,8 +26,9 @@
             <TableRow>
                 <TableRowCell>Date et heure de la Commande:</TableRowCell>
                 <TableRowCell>
+                            <input type="datetime-local" id="date" class="form-control" @bind="StateContainer.SelectedCommande.DateCommande" />
 
-                    <InputDate id="date" class="form-control" @bind-Value="@StateContainer.SelectedCommande.DateCommande" />
+                    @*<InputDate id="date" class="form-control" @bind-Value="@StateContainer.SelectedCommande.DateCommande" />*@
                 </TableRowCell>
             </TableRow>
             <TableRow>

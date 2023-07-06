@@ -9,57 +9,61 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = GesConso
 build_property.RootNamespace = GesConso
-build_property.ProjectDir = C:\Users\VANCHRI\source\repos\GesConso\
+build_property.ProjectDir = C:\Users\WnX\repos\GesConso\
 build_property.RazorLangVersion = 7.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\VANCHRI\source\repos\GesConso
+build_property.MSBuildProjectDirectory = C:\Users\WnX\repos\GesConso
 build_property._RazorSourceGeneratorDebug = 
 
-[C:/Users/VANCHRI/source/repos/GesConso/App.razor]
+[C:/Users/WnX/repos/GesConso/App.razor]
 build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/VANCHRI/source/repos/GesConso/Pages/ArticleManager.razor]
+[C:/Users/WnX/repos/GesConso/Pages/ArticleManager.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQXJ0aWNsZU1hbmFnZXIucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/VANCHRI/source/repos/GesConso/Pages/CommandeArticleManager.razor]
+[C:/Users/WnX/repos/GesConso/Pages/CommandeArticleManager.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tbWFuZGVBcnRpY2xlTWFuYWdlci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/VANCHRI/source/repos/GesConso/Pages/CommandeDetails.razor]
+[C:/Users/WnX/repos/GesConso/Pages/CommandeDetails.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tbWFuZGVEZXRhaWxzLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/VANCHRI/source/repos/GesConso/Pages/CommandeManager.razor]
+[C:/Users/WnX/repos/GesConso/Pages/CommandeManager.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tbWFuZGVNYW5hZ2VyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/VANCHRI/source/repos/GesConso/Pages/Index.razor]
+[C:/Users/WnX/repos/GesConso/Pages/Counter.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ291bnRlci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/WnX/repos/GesConso/Pages/Index.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXgucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/VANCHRI/source/repos/GesConso/Shared/SurveyPrompt.razor]
+[C:/Users/WnX/repos/GesConso/Shared/SurveyPrompt.razor]
 build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXFN1cnZleVByb21wdC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/VANCHRI/source/repos/GesConso/_Imports.razor]
+[C:/Users/WnX/repos/GesConso/_Imports.razor]
 build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/VANCHRI/source/repos/GesConso/Shared/MainLayout.razor]
+[C:/Users/WnX/repos/GesConso/Shared/MainLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE1haW5MYXlvdXQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-5ged2f2vqz
 
-[C:/Users/VANCHRI/source/repos/GesConso/Shared/NavMenu.razor]
+[C:/Users/WnX/repos/GesConso/Shared/NavMenu.razor]
 build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE5hdk1lbnUucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-xz6q6qc3hl
 
-[C:/Users/VANCHRI/source/repos/GesConso/Pages/Error.cshtml]
+[C:/Users/WnX/repos/GesConso/Pages/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/VANCHRI/source/repos/GesConso/Pages/_Host.cshtml]
+[C:/Users/WnX/repos/GesConso/Pages/_Host.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0hvc3QuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
