@@ -17,11 +17,7 @@
     <Table>
         <TableRow>
             <TableRowCell>ID Commande:</TableRowCell>
-            <TableRowCell>@StateContainer.SelectedCommande.Id</TableRowCell>
-        </TableRow>
-        <TableRow>
-            <TableRowCell>ID Date:</TableRowCell>
-            <TableRowCell>@((StateContainer.SelectedCommande.Id_Date.HasValue ? ((DateTime)StateContainer.SelectedCommande.Id_Date).ToString("yyyyMMdd") : ""))</TableRowCell>
+            <TableRowCell>@((StateContainer.SelectedCommande.Id.HasValue ? ((DateTime)StateContainer.SelectedCommande.Id).ToString("yyyyMMdd") : ""))</TableRowCell>
             </TableRow>
             <TableRow>
                 <TableRowCell>Date et heure de la Commande:</TableRowCell>
@@ -141,7 +137,6 @@ else
         var commandeUpdate = new Commande
             {
                 Id = StateContainer.SelectedCommande?.Id,
-                Id_Date = StateContainer.SelectedCommande?.Id_Date,
                 DateCommande = StateContainer.SelectedCommande?.DateCommande,
                 PrixHtva = StateContainer.SelectedCommande?.PrixHtva,
                 PrixTvaC = StateContainer.SelectedCommande?.PrixTvaC,
@@ -169,7 +164,6 @@ else
         var commandeUpdate = new Commande
             {
                 Id = StateContainer.SelectedCommande?.Id,
-                Id_Date = StateContainer.SelectedCommande?.Id_Date,
                 DateCommande = StateContainer.SelectedCommande?.DateCommande,
                 PrixHtva = StateContainer.SelectedCommande?.PrixHtva,
                 PrixTvaC = StateContainer.SelectedCommande?.PrixTvaC,
@@ -196,7 +190,6 @@ else
         var commandeUpdate = new Commande
             {
                 Id = StateContainer.SelectedCommande?.Id,
-                Id_Date = StateContainer.SelectedCommande?.Id_Date,
                 DateCommande = StateContainer.SelectedCommande?.DateCommande,
                 PrixHtva = StateContainer.SelectedCommande?.PrixHtva,
                 PrixTvaC = StateContainer.SelectedCommande?.PrixTvaC,

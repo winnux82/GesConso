@@ -11,7 +11,7 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                @if (CommandeIdSelected != Guid.Empty)
+                @if (CommandeIdSelected != DateTime.MinValue)
                 {
                     <th>Dénomination Article</th>
                     <th>Prix uhTva</th>
@@ -31,12 +31,12 @@
         </thead>
         <tbody>
 
-            @if (CommandeIdSelected != Guid.Empty)
+            @if(CommandeIdSelected != DateTime.MinValue)
             {
                 //Importer la commande
                 GetCommandeFromId(CommandeIdSelected);
 
-                var totals = new Dictionary<Guid, double>();
+                var totals = new Dictionary<DateTime, double>();
 
                 foreach (CommandeArticle commandeArticle in StateContainer.CommandeArticles)
                 {
@@ -135,7 +135,7 @@
     <div class="col-md-6">*@
     <EditForm Model="@commandeArticle">
         <DataAnnotationsValidator />
-        @if (CommandeIdSelected == Guid.Empty)
+        @if (CommandeIdSelected == DateTime.MinValue)
         {
             <div class="row">
                 <div class="col-md-6">
@@ -156,7 +156,7 @@
                             {
                                 continue;
                             }
-                            <option value="@commande.Id">@commande.Id_Date?.ToString("yyyyMMdd hh-mm")</option>
+                            <option value="@commande.Id">@commande.Id?.ToString("yyyyMMdd hh-mm")</option>
                         }
                     </InputSelect>
                 </div>
@@ -266,12 +266,12 @@
 
 
     [Parameter]
-    public Guid CommandeIdSelected { get; set; }
+    public DateTime CommandeIdSelected { get; set; }
 
     [Parameter]
     public EventCallback<double> PuHtvaCalculated { get; set; }
 
-    public Guid OnSelectCommande = Guid.Empty;
+    public DateTime OnSelectCommande = DateTime.Now;
     List<double> calculTotal = new List<double>();
 
     private double htva = 0;
@@ -386,7 +386,9 @@
         var newCommandeArticle = new CommandeArticle
             {
                 Id = Guid.NewGuid(),
-                Id_Commande = CommandeIdSelected != Guid.Empty ? CommandeIdSelected : commandeArticle.Id_Commande,
+                Id_Commande = CommandeIdSelected != DateTime.MinValue ? CommandeIdSelected : commandeArticle.Id_Commande,
+
+                //Id_Commande = CommandeIdSelected != Guid.Empty ? CommandeIdSelected : commandeArticle.Id_Commande,
                 Id_Article = _newIdArticle,
                 Quantite = _newQuantite,
                 CreatedAt = DateTime.Now,
@@ -627,7 +629,7 @@
 
 
     }
-    void GetCommandeFromId(Guid CommandeIdSelected)
+    void GetCommandeFromId(DateTime CommandeIdSelected)
     {
         // Rechercher la commande dans le stateContainer à partir de l'ID
         var commande = StateContainer.Commandes.FirstOrDefault(c => c.Id == CommandeIdSelected);
@@ -646,8 +648,7 @@
         var commandeUpdate = new Commande
             {
                 Id = commandeImported.Id,
-                Id_Date = commandeImported.Id_Date,
-                DateCommande = commandeImported.DateCommande,
+                //DateCommande = commandeImported.DateCommande,
                 PrixHtva = commandeImported.PrixHtva,
                 PrixTvaC = commandeImported.PrixTvaC,
                 CreatedAt = commandeImported.CreatedAt,

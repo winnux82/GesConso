@@ -18,7 +18,7 @@ namespace GesConso.Controllers
         // GetAll
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult GetAll(Guid commandId)
+        public IActionResult GetAll(DateTime commandId)
         {
             var commandeArticles = this.context.CommandeArticle.Where(x => x.Id_Commande == commandId).ToList();
             return StatusCode(StatusCodes.Status200OK, commandeArticles);

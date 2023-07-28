@@ -7,10 +7,10 @@ namespace GesConso.Entities
     {
         [Key]
         [Column("Id_Commande")]
-        public Guid? Id { get; set; }
+        public DateTime? Id { get; set; }
+        [NotMapped]
+        public string FormattedId => Id?.ToString("yyyyMMdd");
 
-        [Column("Id_Date")]
-        public DateTime? Id_Date { get; set; }
 
         [Column("DateCommande")]
         public DateTime? DateCommande { get; set; }

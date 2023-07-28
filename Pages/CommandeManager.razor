@@ -5,6 +5,8 @@
 @inject IJSRuntime JsRuntime
 @inject IToastService ToastService
 @*@using System*@
+@using System.Globalization;
+
 
 
 <PageTitle>Gestion des commandes</PageTitle>
@@ -15,9 +17,9 @@
 @*<button class="btn btn-primary" @onclick="NewCommande"><i class="oi oi-plus"></i> Nouvelle Commande</button>
 *@
 
-@if (commande.Id_Date is not null)
+@if (commande.Id is not null)
 {
-    <h3>Détails de la Commande : @commande.Id_Date?.ToString("yyyyMMdd")</h3>
+    <h3>Détails de la Commande : @commande.Id?.ToString("yyyyMMdd")</h3>
 }
 
 @if (selected is not null)
@@ -52,7 +54,7 @@ else
             <TableHeader ThemeContrast="ThemeContrast.Dark">
                 <TableRow>
                     <TableHeaderCell>#</TableHeaderCell>
-                    <TableHeaderCell>Commande</TableHeaderCell>
+                    @*<TableHeaderCell>Commande</TableHeaderCell>*@
                     <TableHeaderCell>Date de la Commande</TableHeaderCell>
                     <TableHeaderCell>Prix Htva</TableHeaderCell>
                     <TableHeaderCell>Prix TvaC</TableHeaderCell>
@@ -68,19 +70,19 @@ else
                         var style = isSelected ? "box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); border: 1px solid #333; color: white; background-color: #337ab7;" : string.Empty;
 
                         <TableRow @onclick="(() => SelectCommande(commande))" style="@style">
-                            <TableRowHeader>@commande.Id</TableRowHeader>
-                            <TableRowCell>
-                                @if (commande.Id_Date != null)
+                            <TableRowHeader>
+                                @if (commande.Id != null)
                                 {
-                                    @(((DateTime)commande.Id_Date).ToString("yyyyMMdd"))
+                                    @(((DateTime)commande.Id).ToString("yyyyMMdd"))
                                 }
-                            </TableRowCell>
+                            </TableRowHeader>
+
                             <TableRowCell>@commande.DateCommande</TableRowCell>
                             <TableRowCell>@commande.PrixHtva €</TableRowCell>
                             <TableRowCell>@commande.PrixTvaC €</TableRowCell>
                             <TableRowCell>@commande.DeletedAt</TableRowCell>
                             <TableRowCell>
-                                <button type="button" class="btn btn-primary" @onclick="() => RedirectToDetails(commande?.Id?.ToString())">
+                                <button type="button" class="btn btn-primary" @onclick="() => RedirectToDetails(commande.FormattedId)">
                                     <i class="oi oi-info"></i> Détails
                                 </button>
                             </TableRowCell>
@@ -208,22 +210,30 @@ else
         await Reset();
     }
 
-    // Ajouter une commande
+    //Ajouter une commande
     private async Task AddCommande()
     {
         var newCommande = new Commande
             {
-                Id = Guid.NewGuid(),
-                Id_Date = DateTime.Now,
-                DateCommande = commande.DateCommande,
+                Id = DateTime.ParseExact(DateTime.Today.ToString("yyyyMMdd"), "yyyyMMdd", CultureInfo.InvariantCulture),
+                //DateCommande = commande.DateCommande,
                 PrixHtva = commande.PrixHtva,
                 PrixTvaC = commande.PrixTvaC,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
-
             };
+
         if (newCommande is not null)
         {
+            // Check if the command with the same ID already exists
+            bool commandExists = StateContainer.Commandes?.Any(c => c.Id == newCommande.Id) ?? false;
+
+            if (commandExists)
+            {
+                ToastService.ShowError("La commande existe déjà.");
+                return;
+            }
+
             var content = JsonContent.Create(newCommande);
 
             var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"{NavigationManager.BaseUri}api/commande/add");
@@ -233,14 +243,12 @@ else
             {
                 if (msg.IsSuccessStatusCode)
                 {
-
                     ToastService.ShowSuccess("Commande ajoutée!");
                     StateContainer.Commandes?.Add(newCommande);
                     //Délai d'une seconde
                     await Task.Delay(1000);
 
-                    RedirectToDetails(newCommande?.Id?.ToString());
-
+                    RedirectToDetails(newCommande.FormattedId);
                 }
                 else
                 {
@@ -250,6 +258,7 @@ else
             await Reset();
         }
     }
+
 
     // Mettre à jour une commande
     private async Task UpdateCommande()
@@ -262,7 +271,6 @@ else
         var commandeUpdate = new Commande
             {
                 Id = this.selected.Id,
-                Id_Date = commande.Id_Date,
                 DateCommande = commande.DateCommande,
                 PrixHtva = commande.PrixHtva,
                 PrixTvaC = commande.PrixTvaC,
@@ -305,8 +313,7 @@ else
             {
 
                 Id = this.selected.Id,
-                Id_Date = commande.Id_Date,
-                DateCommande = commande.DateCommande,
+                //DateCommande = commande.DateCommande,
                 PrixHtva = commande.PrixHtva,
                 PrixTvaC = commande.PrixTvaC,
                 CreatedAt = commande.CreatedAt,
@@ -339,8 +346,7 @@ else
             {
 
                 Id = this.selected.Id,
-                Id_Date = commande.Id_Date,
-                DateCommande = commande.DateCommande,
+                //DateCommande = commande.DateCommande,
                 PrixHtva = commande.PrixHtva,
                 PrixTvaC = commande.PrixTvaC,
                 CreatedAt = commande.CreatedAt,

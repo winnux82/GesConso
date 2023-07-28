@@ -33,7 +33,7 @@ namespace GesConso.Controllers
 
         // Récupérer une commande par son ID
         [HttpGet]
-        public IActionResult Get(Guid id)
+        public IActionResult Get(DateTime id)
         {
             var commande = this.context.Commandes.Find(id);
 
@@ -52,11 +52,20 @@ namespace GesConso.Controllers
 
         // Ajout d'une commande
         [HttpPost]
-        
         public IActionResult Add([FromBody] Commande commande)
         {
             if (commande != null)
             {
+                // Check if the command with the same id_commande already exists
+                bool commandExists = this.context.Commandes.Any(c => c.Id == commande.Id);
+
+                if (commandExists)
+                {
+                    // A command with the same id_commande already exists, return an error
+                    return StatusCode(StatusCodes.Status409Conflict, "Une commande avec cet id existe déjà.");
+                }
+
+                // The command doesn't exist, add it to the context and save changes
                 this.context.Commandes.Add(commande);
                 this.context.SaveChanges();
 
@@ -64,7 +73,7 @@ namespace GesConso.Controllers
             }
             else
             {
-                // La commande est null, vous pouvez retourner un code d'erreur approprié
+                // The command is null, return an appropriate error code
                 return StatusCode(StatusCodes.Status400BadRequest, "Commande is null.");
             }
         }
@@ -82,7 +91,7 @@ namespace GesConso.Controllers
                 return NotFound("Commande not found.");
             }
 
-            commande.Id_Date = updatedCommande.Id_Date;
+            //commande.Id_Date = updatedCommande.Id_Date;
             commande.DateCommande = updatedCommande.DateCommande;
             commande.PrixHtva = updatedCommande.PrixHtva;
             commande.PrixTvaC = updatedCommande.PrixTvaC;

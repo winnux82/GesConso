@@ -11,7 +11,11 @@ namespace GesConso.Entities
         public Guid? Id { get; set; }
 
         [Column("Id_Commande")]
-        public Guid? Id_Commande { get; set; }
+        public DateTime? Id_Commande { get; set; }
+
+        [NotMapped]
+        public string FormattedId => Id_Commande.ToString("yyyyMMdd");
+
 
         [Required(ErrorMessage = "Le champ Article est requis.")]
         [Column("Id_Article")]
