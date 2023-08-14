@@ -1,16 +1,18 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+//coucou
 using Blazored.Toast;
 using Blazorise;
-using BlazorStrap;
-using GesConso;
-
-using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
-using Syncfusion.Blazor;
-
-
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
-
+using BlazorStrap;
+using GesConso;
+using Microsoft.EntityFrameworkCore;
+using Syncfusion.Blazor;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,9 +46,6 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-
-
-
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
@@ -56,12 +55,8 @@ app.MapControllers();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
-
 app.MapRazorPages(); // Ajoutez cette ligne si elle n'est pas déjà présente
 
-
 app.MapFallbackToPage("/commandedetails/{id}", "/commandeid/{id}");
-
-
 
 app.Run();

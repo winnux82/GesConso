@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "EZA6wp4qBdL3PSd6HZwBWuDrO7UJqKjmLZnUaGfJjD9NX7ncOdyCfwzyxaKqkT12GglR24fsZDefFIGNQYW4HA==",
+  "dgSpecHash": "g9UqXsAEm0Y4okUAzP3Cp47Wt+YyOH5yxeAr0N3HryhYIqPlS0NcJHLg82Q36Kbnv++c8+P+fqbCd/be/RwqvQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\WnX\\repos\\GesConso\\GesConso.csproj",
+  "projectFilePath": "C:\\Users\\WnX\\OneDrive\\Documents\\Bac Informatique\\repos\\GesConso\\GesConso.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\WnX\\.nuget\\packages\\azure.core\\1.24.0\\azure.core.1.24.0.nupkg.sha512",
     "C:\\Users\\WnX\\.nuget\\packages\\azure.identity\\1.6.0\\azure.identity.1.6.0.nupkg.sha512",

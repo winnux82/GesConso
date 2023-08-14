@@ -12424,11 +12424,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\WnX\\repos\\GesConso\\GesConso.csproj",
+      "projectUniqueName": "C:\\Users\\WnX\\OneDrive\\Documents\\Bac Informatique\\repos\\GesConso\\GesConso.csproj",
       "projectName": "GesConso",
-      "projectPath": "C:\\Users\\WnX\\repos\\GesConso\\GesConso.csproj",
+      "projectPath": "C:\\Users\\WnX\\OneDrive\\Documents\\Bac Informatique\\repos\\GesConso\\GesConso.csproj",
       "packagesPath": "C:\\Users\\WnX\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\WnX\\repos\\GesConso\\obj\\",
+      "outputPath": "C:\\Users\\WnX\\OneDrive\\Documents\\Bac Informatique\\repos\\GesConso\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

@@ -5,6 +5,12 @@
       "resourceId": null,
       "type": "secrets.user",
       "connectionId": null
+    },
+    "mssql1": {
+      "secretStore": "LocalSecretsFile",
+      "type": "mssql.local",
+      "connectionId": "ConnectionStrings:MainConnection",
+      "dynamicId": null
     }
   }
 }
