@@ -1,6 +1,23 @@
-bin/Debug/
-.vs
+
+
+# Visual Studio specific files and directories
+bin/
+.vs/
 obj/
+Properties/ 
+
+# Ignore .config directory
+.config/
+
+# Ignore Entity Framework Migrations directory
+Migrations/
+
+# Ignore Node.js dependencies
+node_modules/
+
+# Ignore sensitive files (customize as needed)
+secret_key.txt
+config.json
 
 
 ## Ignore Visual Studio temporary files, build results, and

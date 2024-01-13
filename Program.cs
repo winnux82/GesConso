@@ -22,7 +22,19 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<StateContainer>();
 
-builder.Services.AddDbContext<Database>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("MainConnection")));
+//builder.Services.AddDbContext<Database>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("MainConnection")));
+builder.Services.AddDbContext<Database>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("MainConnection"),
+        sqlOptions => sqlOptions.EnableRetryOnFailure()
+    )
+);
+
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+
+
+
 builder.Services.AddBlazorStrap();
 //Ajout du service Toast
 builder.Services.AddBlazoredToast();
@@ -53,7 +65,7 @@ app.UseStaticFiles();
 app.UseRouting();
 app.MapControllers();
 app.MapBlazorHub();
-app.MapFallbackToPage("/_Host");
+//app.MapFallbackToPage("/_Host");
 
 app.MapRazorPages(); // Ajoutez cette ligne si elle n'est pas déjà présente
 
